@@ -1,29 +1,6 @@
 @import "tailwindcss";
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/inter/opsz.css";
-@import "@fontsource-variable/bricolage-grotesque";
-
-@font-face {
-  font-family: "Satoshi";
-  src: url("/fonts/satoshi/satoshi-400.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Satoshi";
-  src: url("/fonts/satoshi/satoshi-500.woff2") format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Satoshi";
-  src: url("/fonts/satoshi/satoshi-700.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
 
 /*
   Tokens measured live from https://dhruvbelekar.framer.website/ — see
@@ -40,8 +17,8 @@
 
   --font-display: "Inter Variable", "Inter", sans-serif;
   --font-sans: "Inter Variable", "Inter", sans-serif;
-  --font-name: "Bricolage Grotesque Variable", "Bricolage Grotesque", sans-serif;
-  --font-quote: "Satoshi", sans-serif;
+  --font-name: "Inter Variable", "Inter", sans-serif;
+  --font-quote: "Inter Variable", "Inter", sans-serif;
 }
 
 :root {
