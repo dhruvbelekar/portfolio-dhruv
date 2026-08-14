@@ -1,0 +1,95 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ScrollReveal from "../components/ScrollReveal";
+import Marquee from "../components/Marquee";
+import { experience, skillsRowA, skillsRowB, bio } from "../data/projects";
+---
+
+<Layout title="About — Dhruv Belekar" ogImage="/og/og-projects-about-contact.png">
+  <section class="px-6 pt-16 md:px-10">
+    <div class="mx-auto max-w-[1400px]">
+      <ScrollReveal client:load>
+        <h1
+          class="select-none font-black leading-[0.9] text-blue"
+          style="font-family: var(--font-display); font-size: var(--type-section);"
+        >
+          About Dhruv
+        </h1>
+      </ScrollReveal>
+
+      <div class="mt-12 grid gap-4 sm:grid-cols-2">
+        <ScrollReveal client:load>
+          <img
+            src="/img/about/vinyl-hero.png"
+            alt="About Image of Designer"
+            class="aspect-[4/3] w-full rounded-2xl object-cover"
+          />
+        </ScrollReveal>
+        <ScrollReveal client:load delay={0.1}>
+          <img
+            src="/img/about/portrait-halftone-blue.png"
+            alt=""
+            class="aspect-[4/3] w-full rounded-2xl object-cover"
+          />
+        </ScrollReveal>
+      </div>
+
+      <ScrollReveal client:load delay={0.15} className="mt-12 max-w-3xl">
+        <h2
+          class="font-black leading-tight text-ink"
+          style="font-family: var(--font-display); font-size: var(--type-heading);"
+        >
+          {bio.heading}
+        </h2>
+        <div class="mt-6 space-y-4 text-base text-ink-muted sm:text-lg">
+          {bio.paragraphs.map((p) => <p>{p}</p>)}
+        </div>
+      </ScrollReveal>
+
+      <div class="mt-10 space-y-2 text-lg font-bold text-blue">
+        <Marquee client:load speed={22}>
+          {
+            skillsRowA.map((s) => (
+              <span class="whitespace-nowrap">
+                {s} <span class="text-gray-300">✦</span>
+              </span>
+            ))
+          }
+        </Marquee>
+        <Marquee client:load speed={26} direction="right">
+          {
+            skillsRowB.map((s) => (
+              <span class="whitespace-nowrap">
+                {s} <span class="text-gray-300">✦</span>
+              </span>
+            ))
+          }
+        </Marquee>
+      </div>
+
+      <ScrollReveal client:load className="mt-12 max-w-3xl pb-[var(--space-section)]">
+        <h3 class="text-sm font-bold tracking-wide text-ink">Experience</h3>
+        <ul class="mt-4 space-y-3">
+          {
+            experience.map((e) => (
+              <li class="flex flex-wrap items-baseline justify-between gap-x-4 border-b border-black/5 pb-3 text-sm sm:text-base">
+                <span class="font-bold text-ink">
+                  {e.role} <span class="font-normal text-ink-muted">— {e.company}</span>
+                </span>
+                <span class="text-ink-muted">{e.dates}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <a
+          href="https://drive.google.com/drive/folders/1e92a3IZ8tz1NUu0pfwsmL1pdgHECwokr"
+          target="_blank"
+          rel="noreferrer"
+          class="mt-10 inline-block text-xl font-bold text-blue transition-opacity hover:opacity-70"
+        >
+          Resume
+        </a>
+      </ScrollReveal>
+    </div>
+  </section>
+</Layout>

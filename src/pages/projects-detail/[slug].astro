@@ -1,0 +1,114 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ScrollReveal from "../../components/ScrollReveal";
+import { projects } from "../../data/projects";
+
+export function getStaticPaths() {
+  return projects.map((project, i) => ({
+    params: { slug: project.slug },
+    props: { project, next: projects[(i + 1) % projects.length] },
+  }));
+}
+
+const { project, next } = Astro.props;
+
+const gallery = Array.from(
+  { length: project.galleryCount },
+  (_, i) => `/img/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.png`
+);
+---
+
+<Layout title={`${project.title} — Dhruv Belekar`}>
+  <section class="px-6 pt-16 md:px-10">
+    <div class="mx-auto max-w-[1400px]">
+      <ScrollReveal client:load>
+        <img
+          src={project.thumb}
+          alt={project.thumbAlt}
+          class="aspect-[16/9] w-full rounded-3xl object-cover"
+        />
+      </ScrollReveal>
+
+      <div class="mt-10 grid gap-10 md:grid-cols-[1fr_auto] md:items-start">
+        <ScrollReveal client:load>
+          <h1
+            class="font-black leading-none text-blue"
+            style="font-family: var(--font-display); font-size: var(--type-heading); font-size: clamp(2.5rem, 1.5rem + 5vw, 5rem);"
+          >
+            {project.title}
+          </h1>
+          <p class="mt-2 text-sm font-bold tracking-wide text-ink-muted">{project.category}</p>
+          <p class="mt-6 max-w-2xl text-base text-ink-muted sm:text-lg">{project.description}</p>
+        </ScrollReveal>
+
+        <ScrollReveal client:load delay={0.1} className="flex flex-col gap-4 sm:min-w-[220px]">
+          {
+            project.timeline && (
+              <div>
+                <p class="text-xs font-bold tracking-wide text-ink-muted">Timeline</p>
+                <p class="text-base font-bold text-ink">{project.timeline}</p>
+              </div>
+            )
+          }
+          {
+            project.live && (
+              <span class="w-fit rounded-full bg-blue/10 px-3 py-1 text-xs font-bold text-blue">
+                Live Project
+              </span>
+            )
+          }
+          {
+            project.links.length > 0 && (
+              <ul class="space-y-1">
+                {project.links.map((link) => (
+                  <li>
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      class="text-sm font-bold text-blue transition-opacity hover:opacity-70"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )
+          }
+        </ScrollReveal>
+      </div>
+
+      <div class="mt-16 grid gap-6 pb-[var(--space-section)] sm:grid-cols-2">
+        {
+          gallery.map((src, i) => (
+            <ScrollReveal client:load delay={(i % 4) * 0.06}>
+              <img
+                src={src}
+                alt=""
+                loading="lazy"
+                class="w-full rounded-2xl object-cover"
+              />
+            </ScrollReveal>
+          ))
+        }
+      </div>
+
+      <ScrollReveal client:load className="border-t border-black/5 py-16">
+        <a href={`/projects-detail/${next.slug}`} class="group flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold tracking-wide text-ink-muted">Next project</p>
+            <h2
+              class="font-black text-ink transition-colors group-hover:text-blue"
+              style="font-family: var(--font-display); font-size: var(--type-heading);"
+            >
+              {next.title}
+            </h2>
+          </div>
+          <span class="text-3xl text-blue opacity-0 transition-opacity group-hover:opacity-100">
+            →
+          </span>
+        </a>
+      </ScrollReveal>
+    </div>
+  </section>
+</Layout>

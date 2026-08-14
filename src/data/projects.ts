@@ -1,0 +1,129 @@
+export type Project = {
+  slug: string;
+  title: string;
+  category: string;
+  thumb: string;
+  thumbAlt: string;
+  description: string;
+  timeline?: string;
+  live: boolean;
+  links: { label: string; href: string }[];
+  galleryCount: number;
+};
+
+export const projects: Project[] = [
+  {
+    slug: "mahavitaran",
+    title: "Mahavitaran",
+    category: "UI/UX",
+    thumb: "/img/projects/mahavitaran-thumb.png",
+    thumbAlt: "Serene Portrait flowers",
+    description:
+      "Mahavitaran is a UI/UX redesign project that aims to make electricity services simpler and more accessible. Through user research, personas, and journey mapping, we identified key user problems and designed a seamless experience using a mobile app, WhatsApp, AI support, kiosks, and feature phones.",
+    timeline: "3 months",
+    live: true,
+    links: [
+      { label: "mahavitaran.whatsapp", href: "https://mahavitaranwhatsapp.figma.site" },
+      { label: "mahavitaran.featurephone", href: "https://featurephonemahavitaran.figma.site" },
+      { label: "mahavitaran.atm", href: "https://atmmahavitaran.figma.site" },
+    ],
+    galleryCount: 14,
+  },
+  {
+    slug: "aria",
+    title: "Aria",
+    category: "UI/UX",
+    thumb: "/img/projects/aria-thumb.png",
+    thumbAlt: "avant garde portrait",
+    description:
+      "ARIA is an AI-powered fitness platform that replaces traditional app navigation with a conversational AI assistant. It combines voice interactions, personalized coaching, activity tracking, nutrition guidance, gesture-based workouts, and expert support to create a simple and engaging fitness experience.",
+    timeline: "3 months",
+    live: true,
+    links: [{ label: "aria.fitness", href: "https://aria.fitness" }],
+    galleryCount: 21,
+  },
+  {
+    slug: "mp4",
+    title: "Mp4 Productions",
+    category: "Branding",
+    thumb: "/img/projects/mp4-thumb.png",
+    thumbAlt: "red hat portrait",
+    description:
+      "Created in my second year of college, this self-initiated branding project for .mp4 Productions combines my interest in visual identity design with my passion for filmmaking and cinematic storytelling.",
+    timeline: "1 month",
+    live: false,
+    links: [],
+    galleryCount: 5,
+  },
+  {
+    slug: "frelo",
+    title: "Frelo",
+    category: "Brand & Content",
+    thumb: "/img/projects/frelo-thumb.png",
+    thumbAlt: "Elegant red portrait",
+    description:
+      "Strengthening Frelo's digital presence through branding, social media campaigns, content strategy, video production, and a community platform designed to connect freelancers and creators.",
+    live: true,
+    links: [
+      { label: "frelo.community", href: "https://frelo.community" },
+      { label: "frelo.instagram", href: "https://instagram.com/frelo" },
+    ],
+    galleryCount: 5,
+  },
+];
+
+export const testimonials = [
+  {
+    name: "Vaishakh Sajeevan",
+    role: "Founder, Frelo",
+    quote:
+      "Dhruv played a key role in building Frelo's brand through our website, social media, reels, and creative content, helping us grow our community.",
+    avatar: "/img/testimonials/vaishakh-sajeevan.png",
+  },
+  {
+    name: "Nikhil Kulkarni",
+    role: "Founder, Docville",
+    quote: "The AI-generated UGC videos were creative, engaging, and delivered exactly what we were looking for.",
+    avatar: "/img/testimonials/nikhil-kulkarni.png",
+  },
+  {
+    name: "Rupak Shah",
+    role: "Co-founder, AiVANTA",
+    quote:
+      "Over three months, Dhruv used Runway, Midjourney, Kling, and ElevenLabs to create an AI film with strong visual storytelling.",
+    avatar: "/img/testimonials/rupak-shah.jpeg",
+  },
+  {
+    name: "Ankit Savla",
+    role: "Founder, OPE Innovation Lab",
+    quote:
+      "It was great working with Dhruv. He captured the event beautifully and made sure every important moment was documented.",
+    avatar: "/img/testimonials/ankit-savla.png",
+  },
+];
+
+export const experience = [
+  { role: "Creative Head", company: "Frelo", dates: "Present" },
+  { role: "Creative Designer", company: "AiVANTA", dates: "Dec 24/May 25" },
+  { role: "Design Intern", company: "Lit Lamps", dates: "Jul 24/Dec 24" },
+];
+
+export const skillsRowA = ["UI/UX Design", "Brand Identity", "Visual Design"];
+export const skillsRowB = ["Creative Direction", "Photography", "Filmmaking", "AI"];
+
+export const clientLogos = [
+  "/img/logos/logo-1.png",
+  "/img/logos/logo-2.png",
+  "/img/logos/logo-3.png",
+  "/img/logos/logo-4.png",
+];
+
+export const bio = {
+  heading:
+    "Hi, I'm Dhruv — I design digital experiences, create visual stories, and collect hobbies faster than I finish personal projects.",
+  paragraphs: [
+    "Somehow, that's worked out pretty well so far. One day I'm designing an app. The next I'm shooting a film, building a brand, or editing a video. I stopped trying to explain it. I just call it making things.",
+    "Outside work, I'm usually watching Chelsea, (the jersey probably gave that away) chasing the city's best shawarma, wearing way too much silver, or taking the long route home because the drive is better than the destination.",
+    "I'm just trying to make things that people remember. If my work makes someone pause, smile, or quietly whisper, \"Damn that's nice,\" I'll call that a win.",
+  ],
+};

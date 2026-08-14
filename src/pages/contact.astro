@@ -1,0 +1,41 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ScrollReveal from "../components/ScrollReveal";
+
+// Handles reconciled to match the footer everywhere (see rebuild decisions —
+// the live site's contact page pointed at different handles than its own footer).
+const links = [
+  { label: "Email me", href: "mailto:dhruv.belekar@gmail.com" },
+  { label: "Behance", href: "https://www.behance.net/dhruvbelekar1" },
+  { label: "Instagram", href: "https://www.instagram.com/dhruvv.mp4/?hl=en" },
+];
+---
+
+<Layout title="Contact — Dhruv Belekar">
+  <section class="px-6 py-[var(--space-section)] md:px-10">
+    <div class="mx-auto flex max-w-[1400px] flex-col gap-2">
+      {
+        links.map((link, i) => (
+          <ScrollReveal client:load delay={i * 0.08}>
+            <a
+              href={link.href}
+              target={link.href.startsWith("http") ? "_blank" : undefined}
+              rel={link.href.startsWith("http") ? "noreferrer" : undefined}
+              class="group flex items-center justify-between border-b border-black/5 py-8 transition-colors hover:border-blue"
+            >
+              <span
+                class="font-black text-ink transition-colors group-hover:text-blue"
+                style="font-family: var(--font-display); font-size: var(--type-heading);"
+              >
+                {link.label}
+              </span>
+              <span class="text-3xl text-blue opacity-0 transition-opacity group-hover:opacity-100">
+                →
+              </span>
+            </a>
+          </ScrollReveal>
+        ))
+      }
+    </div>
+  </section>
+</Layout>

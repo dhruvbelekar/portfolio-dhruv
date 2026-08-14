@@ -1,0 +1,198 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ScrollReveal from "../components/ScrollReveal";
+import Marquee from "../components/Marquee";
+import ProjectCard from "../components/ProjectCard.astro";
+import TestimonialCarousel from "../components/TestimonialCarousel";
+import {
+  projects,
+  testimonials,
+  experience,
+  skillsRowA,
+  skillsRowB,
+  clientLogos,
+  bio,
+} from "../data/projects";
+---
+
+<Layout>
+  <!-- Hero -->
+  <section class="px-6 pt-10 md:px-10">
+    <div class="mx-auto max-w-[1400px]">
+      <h1
+        class="select-none font-black leading-[0.85] text-blue"
+        style="font-family: var(--font-display); font-size: var(--type-hero);"
+      >
+        dhruv
+      </h1>
+      <p
+        class="mt-6 max-w-3xl font-black leading-tight text-gray-400"
+        style="font-family: var(--font-display); font-size: var(--type-heading);"
+      >
+        I design <span class="text-blue">digital experiences</span>,{" "}
+        create <span class="text-blue">visual stories</span>,{" "}
+        and bring ideas to life through <span class="text-blue">design and film</span>.{" "}
+        I also have a slight obsession with the color <span class="text-blue">blue</span>. You'll notice.
+      </p>
+
+      <div class="mt-10 overflow-hidden rounded-3xl bg-black/5">
+        <video
+          class="h-auto w-full"
+          src="/video/hero.mp4"
+          autoplay
+          muted
+          loop
+          playsinline
+        ></video>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Projects -->
+  <section class="px-6 pt-[var(--space-section)] md:px-10">
+    <div class="mx-auto max-w-[1400px]">
+      <ScrollReveal client:load>
+        <h2
+          class="select-none font-black leading-[0.9] text-blue"
+          style="font-family: var(--font-display); font-size: var(--type-section);"
+        >
+          Featured Projects
+        </h2>
+      </ScrollReveal>
+
+      <div class="mt-12 grid gap-x-8 gap-y-12 sm:grid-cols-2">
+        {
+          projects.map((p, i) => (
+            <ScrollReveal client:load delay={i * 0.08}>
+              <ProjectCard
+                slug={p.slug}
+                title={p.title}
+                category={p.category}
+                image={p.thumb}
+                alt={p.thumbAlt}
+              />
+            </ScrollReveal>
+          ))
+        }
+      </div>
+
+      <a
+        href="/projects"
+        class="mt-12 inline-block text-2xl font-bold text-blue transition-opacity hover:opacity-70 sm:text-3xl"
+      >
+        View all projects
+      </a>
+    </div>
+  </section>
+
+  <!-- About preview -->
+  <section class="px-6 pt-[var(--space-section)] md:px-10">
+    <div class="mx-auto max-w-[1400px]">
+      <ScrollReveal client:load>
+        <h2
+          class="select-none font-black leading-[0.9] text-blue"
+          style="font-family: var(--font-display); font-size: var(--type-section);"
+        >
+          About Dhruv
+        </h2>
+      </ScrollReveal>
+
+      <div class="mt-12 grid gap-10 md:grid-cols-[minmax(0,320px)_1fr] md:items-start">
+        <ScrollReveal client:load>
+          <img
+            src="/img/about/home-preview-portrait.png"
+            alt="About Image of Designer"
+            class="aspect-square w-full rounded-2xl object-cover"
+          />
+        </ScrollReveal>
+
+        <ScrollReveal client:load delay={0.1}>
+          <div>
+            <h3
+              class="font-black leading-tight text-ink"
+              style="font-family: var(--font-display); font-size: var(--type-heading);"
+            >
+              {bio.heading}
+            </h3>
+            <div class="mt-6 space-y-4 text-base text-ink-muted sm:text-lg">
+              {bio.paragraphs.map((p) => <p>{p}</p>)}
+            </div>
+
+            <div class="mt-10 space-y-2 text-lg font-bold text-blue">
+              <Marquee client:load speed={22}>
+                {
+                  skillsRowA.map((s) => (
+                    <span class="whitespace-nowrap">
+                      {s} <span class="text-gray-300">✦</span>
+                    </span>
+                  ))
+                }
+              </Marquee>
+              <Marquee client:load speed={26} direction="right">
+                {
+                  skillsRowB.map((s) => (
+                    <span class="whitespace-nowrap">
+                      {s} <span class="text-gray-300">✦</span>
+                    </span>
+                  ))
+                }
+              </Marquee>
+            </div>
+
+            <h4 class="mt-12 text-sm font-bold tracking-wide text-ink">Experience</h4>
+            <ul class="mt-4 space-y-3">
+              {
+                experience.map((e) => (
+                  <li class="flex flex-wrap items-baseline justify-between gap-x-4 border-b border-black/5 pb-3 text-sm sm:text-base">
+                    <span class="font-bold text-ink">
+                      {e.role} <span class="font-normal text-ink-muted">— {e.company}</span>
+                    </span>
+                    <span class="text-ink-muted">{e.dates}</span>
+                  </li>
+                ))
+              }
+            </ul>
+
+            <a
+              href="https://drive.google.com/drive/folders/1e92a3IZ8tz1NUu0pfwsmL1pdgHECwokr"
+              target="_blank"
+              rel="noreferrer"
+              class="mt-10 inline-block text-xl font-bold text-blue transition-opacity hover:opacity-70"
+            >
+              Resume
+            </a>
+          </div>
+        </ScrollReveal>
+      </div>
+    </div>
+  </section>
+
+  <!-- Client logos -->
+  <section class="mt-[var(--space-section)] border-y border-black/5 py-10">
+    <Marquee client:load speed={24} gap="4rem">
+      {
+        clientLogos.map((logo) => (
+          <img src={logo} alt="" class="h-8 w-auto object-contain opacity-70 sm:h-10" />
+        ))
+      }
+    </Marquee>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="px-6 py-[var(--space-section)] md:px-10">
+    <div class="mx-auto max-w-[1400px]">
+      <ScrollReveal client:load>
+        <h2
+          class="select-none font-black leading-[0.9] text-blue"
+          style="font-family: var(--font-display); font-size: var(--type-section);"
+        >
+          Testimonials
+        </h2>
+      </ScrollReveal>
+
+      <div class="mt-12 max-w-3xl">
+        <TestimonialCarousel client:load items={testimonials} />
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,94 @@
+---
+const navigate = [
+  { label: "Home", href: "/" },
+  { label: "Projects", href: "/projects" },
+  { label: "Sidequest", href: "/side-quest" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+];
+
+// Corrected to match the footer's handles everywhere (per rebuild decision —
+// the live site's /contact page pointed at different handles than its own footer).
+const social = [
+  { label: "Behance", href: "https://www.behance.net/dhruvbelekar1" },
+  { label: "Linkedin", href: "https://www.linkedin.com/in/dhruv-belekar-089636214/" },
+  { label: "Instagram", href: "https://www.instagram.com/dhruvv.mp4/?hl=en" },
+];
+---
+
+<footer class="border-t border-black/5 px-6 pb-10 pt-[var(--space-section)] md:px-10">
+  <div class="mx-auto max-w-[1400px]">
+    <a href="mailto:dhruv.belekar@gmail.com" class="text-xs font-bold tracking-wide text-blue">
+      Get in touch
+    </a>
+
+    <h2
+      class="mt-4 font-black leading-[0.9] text-blue"
+      style="font-family: var(--font-display); font-size: var(--type-section);"
+    >
+      Get in touch
+    </h2>
+
+    <div class="mt-10 grid gap-10 md:grid-cols-[1fr_auto_auto] md:items-end">
+      <div>
+        <p class="text-sm text-gray-400">Still here?</p>
+        <p class="text-lg font-bold text-ink">Let's make something cool.</p>
+      </div>
+      <a
+        href="mailto:dhruv.belekar@gmail.com"
+        class="text-2xl font-bold text-blue transition-opacity hover:opacity-70"
+      >
+        Say Hello
+      </a>
+      <a
+        href="mailto:dhruv.belekar@gmail.com"
+        class="text-sm text-ink-muted transition-colors hover:text-blue"
+      >
+        dhruv.belekar@gmail.com
+      </a>
+    </div>
+
+    <p
+      class="mt-16 select-none font-black uppercase leading-[0.85] text-ink"
+      style="font-family: var(--font-display); font-size: var(--type-heading); font-size: clamp(2.5rem, 1.5rem + 6vw, 7rem);"
+    >
+      Dhruv<br />Belekar
+    </p>
+
+    <div class="mt-16 grid grid-cols-2 gap-8 text-sm sm:grid-cols-4">
+      <div>
+        <p class="mb-3 text-xs tracking-wide text-gray-400">(Navigate)</p>
+        <ul class="space-y-2 font-bold text-blue">
+          {
+            navigate.map((item) => (
+              <li>
+                <a href={item.href} class="transition-colors hover:text-ink">
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div>
+        <p class="mb-3 text-xs tracking-wide text-gray-400">(Social)</p>
+        <ul class="space-y-2 font-bold text-blue">
+          {
+            social.map((item) => (
+              <li>
+                <a href={item.href} target="_blank" rel="noreferrer" class="transition-colors hover:text-ink">
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-16 flex items-center justify-between text-xs text-gray-400">
+      <a href="#top" class="font-bold text-blue transition-colors hover:text-ink">Back to Top</a>
+      <span>&copy; {new Date().getFullYear()} Dhruv Belekar</span>
+    </div>
+  </div>
+</footer>

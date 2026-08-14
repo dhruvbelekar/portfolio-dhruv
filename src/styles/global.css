@@ -1,0 +1,90 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/inter/opsz.css";
+@import "@fontsource-variable/bricolage-grotesque";
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/satoshi/satoshi-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/satoshi/satoshi-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/satoshi/satoshi-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/*
+  Tokens measured live from https://dhruvbelekar.framer.website/ — see
+  dhruv-site-inventory.md for the inspection this was captured from.
+  This is a light, blue-on-white palette (NOT the dark theme drafted
+  earlier — confirmed against the live site's computed styles).
+*/
+@theme {
+  --color-ink: #20242f; /* testimonial / body copy */
+  --color-ink-muted: #7f7e90; /* testimonial meta, secondary labels */
+  --color-blue: #1343f0; /* brand accent — headlines, links, icons */
+  --color-gray: #b3b3b3; /* secondary hero copy, timestamp */
+  --color-paper: #ffffff;
+
+  --font-display: "Inter Variable", "Inter", sans-serif;
+  --font-sans: "Inter Variable", "Inter", sans-serif;
+  --font-name: "Bricolage Grotesque Variable", "Bricolage Grotesque", sans-serif;
+  --font-quote: "Satoshi", sans-serif;
+}
+
+:root {
+  /*
+    Giant section headlines scale with viewport width on the live site
+    (measured ~461px at 1280px viewport for the hero wordmark). Exact
+    clamp formula wasn't independently recoverable from computed pixel
+    values, so these are tuned to land close to the measured sizes at
+    common breakpoints rather than copied from a source stylesheet.
+  */
+  --type-hero: clamp(3.5rem, 2rem + 14vw, 14rem);
+  --type-section: clamp(2.5rem, 1.5rem + 8vw, 9.5rem);
+  --type-heading: clamp(1.75rem, 1.3rem + 2vw, 2.5rem);
+
+  --space-section: clamp(4rem, 3rem + 6vw, 9rem);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-blue);
+  color: var(--color-paper);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
