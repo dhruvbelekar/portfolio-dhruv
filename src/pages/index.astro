@@ -3,7 +3,6 @@ import Layout from "../layouts/Layout.astro";
 import ScrollReveal from "../components/ScrollReveal";
 import Marquee from "../components/Marquee";
 import ProjectCard from "../components/ProjectCard.astro";
-import TestimonialCarousel from "../components/TestimonialCarousel";
 import {
   projects,
   testimonials,
@@ -190,8 +189,39 @@ import {
         </h2>
       </ScrollReveal>
 
-      <div class="mt-12 max-w-3xl">
-        <TestimonialCarousel client:load items={testimonials} />
+      <div class="mt-12 space-y-4">
+        <Marquee client:load speed={38} gap="1rem">
+          {
+            [testimonials[2], testimonials[3]].map((t) => (
+              <div class="w-[320px] shrink-0 rounded-2xl border border-black/10 p-6">
+                <div class="flex items-center gap-3">
+                  <img src={t.avatar} alt="" class="h-10 w-10 rounded-full object-cover" />
+                  <div>
+                    <p class="font-bold text-ink">{t.name}</p>
+                    <p class="text-sm text-ink-muted">{t.role}</p>
+                  </div>
+                </div>
+                <p class="mt-4 text-sm text-ink-muted">{t.quote}</p>
+              </div>
+            ))
+          }
+        </Marquee>
+        <Marquee client:load speed={44} gap="1rem">
+          {
+            [testimonials[0], testimonials[1]].map((t) => (
+              <div class="w-[320px] shrink-0 rounded-2xl border border-black/10 p-6">
+                <div class="flex items-center gap-3">
+                  <img src={t.avatar} alt="" class="h-10 w-10 rounded-full object-cover" />
+                  <div>
+                    <p class="font-bold text-ink">{t.name}</p>
+                    <p class="text-sm text-ink-muted">{t.role}</p>
+                  </div>
+                </div>
+                <p class="mt-4 text-sm text-ink-muted">{t.quote}</p>
+              </div>
+            ))
+          }
+        </Marquee>
       </div>
     </div>
   </section>
