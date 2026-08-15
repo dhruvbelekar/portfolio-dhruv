@@ -16,34 +16,32 @@ const social = [
 ];
 ---
 
-<footer class="border-t border-black/5 px-6 pb-10 pt-[var(--space-section)] md:px-10">
+<footer class="overflow-x-hidden border-t border-black/5 px-6 pb-10 pt-[var(--space-section)]">
   <div class="mx-auto max-w-[1400px]">
-    <a href="mailto:dhruv.belekar@gmail.com" class="text-xs font-bold tracking-wide text-blue">
-      Get in touch
+    <a href="mailto:dhruv.belekar@gmail.com" class="block">
+      <h2
+        class="select-none font-bold leading-[1.1] text-blue"
+        style="font-family: var(--font-display); font-size: clamp(3rem, 16.5vw, 260px); letter-spacing: -0.05em;"
+      >
+        Get in touch
+      </h2>
     </a>
-
-    <h2
-      class="mt-4 font-black leading-[0.9] text-blue"
-      style="font-family: var(--font-display); font-size: var(--type-section);"
-    >
-      Get in touch
-    </h2>
 
     <div class="mt-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
       <div>
-        <p class="text-sm text-gray-400">Still here?</p>
-        <p class="text-lg font-bold text-ink">Let's make something cool.</p>
+        <p class="text-2xl text-gray">Still here?</p>
+        <p class="text-2xl text-gray">Let's make something cool.</p>
       </div>
       <div class="text-left sm:text-right">
         <a
           href="mailto:dhruv.belekar@gmail.com"
-          class="block text-2xl font-bold text-blue transition-opacity hover:opacity-70"
+          class="block text-2xl text-blue transition-opacity hover:opacity-70"
         >
           Say Hello
         </a>
         <a
           href="mailto:dhruv.belekar@gmail.com"
-          class="text-sm text-ink-muted transition-colors hover:text-blue"
+          class="text-2xl text-blue transition-opacity hover:opacity-70"
         >
           dhruv.belekar@gmail.com
         </a>
@@ -52,15 +50,15 @@ const social = [
 
     <div class="mt-16 grid grid-cols-1 gap-10 border-t border-black/10 pt-10 sm:grid-cols-[1fr_auto_auto_auto] sm:items-start">
       <p
-        class="select-none font-black uppercase leading-[0.85] text-blue"
-        style="font-family: var(--font-display); font-size: clamp(2.5rem, 1.5rem + 6vw, 7rem);"
+        class="select-none font-bold uppercase leading-[0.9] text-blue"
+        style="font-family: var(--font-display); font-size: clamp(2.5rem, 5.5vw, 80px); letter-spacing: -0.04em;"
       >
         Dhruv<br />Belekar
       </p>
 
-      <div class="text-lg sm:text-xl">
-        <p class="mb-3 text-xs tracking-wide text-gray-400">(Navigate)</p>
-        <ul class="space-y-3 font-bold text-blue">
+      <div>
+        <p class="mb-3 text-base text-gray">(Navigate)</p>
+        <ul class="space-y-3 font-bold text-blue" style="font-size: clamp(1.25rem, 2.5vw, 36px); letter-spacing: -0.04em;">
           {
             navigate.map((item) => (
               <li>
@@ -73,9 +71,9 @@ const social = [
         </ul>
       </div>
 
-      <div class="text-lg sm:text-xl">
-        <p class="mb-3 text-xs tracking-wide text-gray-400">(Social)</p>
-        <ul class="space-y-3 font-bold text-blue">
+      <div>
+        <p class="mb-3 text-base text-gray">(Social)</p>
+        <ul class="space-y-3 font-bold text-blue" style="font-size: clamp(1.25rem, 2.5vw, 36px); letter-spacing: -0.04em;">
           {
             social.map((item) => (
               <li>
@@ -90,7 +88,7 @@ const social = [
 
       <a
         href="#top"
-        class="flex items-center gap-2 text-sm font-bold text-blue transition-colors hover:text-ink sm:justify-self-end"
+        class="flex items-center gap-2 text-base text-blue transition-colors hover:text-ink sm:justify-self-end"
       >
         Back to Top <span aria-hidden="true">↑</span>
       </a>
