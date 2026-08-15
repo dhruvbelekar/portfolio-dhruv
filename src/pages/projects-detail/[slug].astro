@@ -132,7 +132,9 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                 img.type === "video" ? (
                   <video
                     src={img.src}
-                    controls
+                    autoplay
+                    muted
+                    loop
                     playsinline
                     class="w-full rounded-2xl"
                   />
