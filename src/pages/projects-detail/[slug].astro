@@ -140,15 +140,27 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
             >
               {
                 img.type === "video" ? (
-                  <video
-                    src={img.src}
-                    autoplay
-                    muted
-                    loop
-                    playsinline
-                    data-hover-sound={img.hoverSound ? "true" : undefined}
-                    class="w-full rounded-2xl"
-                  />
+                  <>
+                    <video
+                      src={img.src}
+                      autoplay
+                      muted
+                      loop
+                      playsinline
+                      data-hover-sound={img.hoverSound ? "true" : undefined}
+                      class="w-full rounded-2xl"
+                    />
+                    {img.hoverSound && (
+                      <a
+                        href="https://www.instagram.com/p/DEsODJ8B3Vx/?hl=en"
+                        target="_blank"
+                        rel="noreferrer"
+                        class="mt-4 block text-center text-lg font-bold text-blue transition-opacity hover:opacity-70"
+                      >
+                        Want to watch part two and three?
+                      </a>
+                    )}
+                  </>
                 ) : (
                   <img
                     src={img.src}
