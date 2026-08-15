@@ -4,10 +4,10 @@ import ScrollReveal from "../components/ScrollReveal";
 import Marquee from "../components/Marquee";
 import ProjectCard from "../components/ProjectCard.astro";
 import BioCopy from "../components/BioCopy.astro";
+import ExperienceSection from "../components/ExperienceSection.astro";
 import {
   projects,
   testimonials,
-  experience,
   skillsRowA,
   skillsRowB,
   clientLogos,
@@ -130,28 +130,9 @@ import {
               </Marquee>
             </div>
 
-            <h4 class="mt-12 text-sm font-bold tracking-wide text-ink">Experience</h4>
-            <ul class="mt-4 space-y-3">
-              {
-                experience.map((e) => (
-                  <li class="flex flex-wrap items-baseline justify-between gap-x-4 border-b border-black/5 pb-3 text-sm sm:text-base">
-                    <span class="font-bold text-ink">
-                      {e.role} <span class="font-normal text-ink-muted">— {e.company}</span>
-                    </span>
-                    <span class="text-ink-muted">{e.dates}</span>
-                  </li>
-                ))
-              }
-            </ul>
-
-            <a
-              href="https://drive.google.com/drive/folders/1e92a3IZ8tz1NUu0pfwsmL1pdgHECwokr"
-              target="_blank"
-              rel="noreferrer"
-              class="mt-10 inline-block text-xl font-bold text-blue transition-opacity hover:opacity-70"
-            >
-              Resume
-            </a>
+            <div class="mt-12">
+              <ExperienceSection />
+            </div>
           </div>
         </ScrollReveal>
       </div>

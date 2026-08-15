@@ -29,34 +29,36 @@ const social = [
       Get in touch
     </h2>
 
-    <div class="mt-10 grid gap-10 md:grid-cols-[1fr_auto_auto] md:items-end">
+    <div class="mt-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
       <div>
         <p class="text-sm text-gray-400">Still here?</p>
         <p class="text-lg font-bold text-ink">Let's make something cool.</p>
       </div>
-      <a
-        href="mailto:dhruv.belekar@gmail.com"
-        class="text-2xl font-bold text-blue transition-opacity hover:opacity-70"
-      >
-        Say Hello
-      </a>
-      <a
-        href="mailto:dhruv.belekar@gmail.com"
-        class="text-sm text-ink-muted transition-colors hover:text-blue"
-      >
-        dhruv.belekar@gmail.com
-      </a>
+      <div class="text-left sm:text-right">
+        <a
+          href="mailto:dhruv.belekar@gmail.com"
+          class="block text-2xl font-bold text-blue transition-opacity hover:opacity-70"
+        >
+          Say Hello
+        </a>
+        <a
+          href="mailto:dhruv.belekar@gmail.com"
+          class="text-sm text-ink-muted transition-colors hover:text-blue"
+        >
+          dhruv.belekar@gmail.com
+        </a>
+      </div>
     </div>
 
-    <p
-      class="mt-16 select-none font-black uppercase leading-[0.85] text-ink"
-      style="font-family: var(--font-display); font-size: var(--type-heading); font-size: clamp(2.5rem, 1.5rem + 6vw, 7rem);"
-    >
-      Dhruv<br />Belekar
-    </p>
+    <div class="mt-16 grid grid-cols-1 gap-10 border-t border-black/10 pt-10 sm:grid-cols-[1fr_auto_auto_auto] sm:items-start">
+      <p
+        class="select-none font-black uppercase leading-[0.85] text-ink"
+        style="font-family: var(--font-display); font-size: clamp(2.5rem, 1.5rem + 6vw, 7rem);"
+      >
+        Dhruv<br />Belekar
+      </p>
 
-    <div class="mt-16 grid grid-cols-2 gap-8 text-sm sm:grid-cols-4">
-      <div>
+      <div class="text-sm">
         <p class="mb-3 text-xs tracking-wide text-gray-400">(Navigate)</p>
         <ul class="space-y-2 font-bold text-blue">
           {
@@ -70,7 +72,8 @@ const social = [
           }
         </ul>
       </div>
-      <div>
+
+      <div class="text-sm">
         <p class="mb-3 text-xs tracking-wide text-gray-400">(Social)</p>
         <ul class="space-y-2 font-bold text-blue">
           {
@@ -84,11 +87,13 @@ const social = [
           }
         </ul>
       </div>
-    </div>
 
-    <div class="mt-16 flex items-center justify-between text-xs text-gray-400">
-      <a href="#top" class="font-bold text-blue transition-colors hover:text-ink">Back to Top</a>
-      <span>&copy; {new Date().getFullYear()} Dhruv Belekar</span>
+      <a
+        href="#top"
+        class="flex items-center gap-2 text-sm font-bold text-blue transition-colors hover:text-ink sm:justify-self-end"
+      >
+        Back to Top <span aria-hidden="true">↑</span>
+      </a>
     </div>
   </div>
 </footer>

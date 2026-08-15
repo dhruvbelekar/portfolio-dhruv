@@ -3,7 +3,8 @@ import Layout from "../layouts/Layout.astro";
 import ScrollReveal from "../components/ScrollReveal";
 import Marquee from "../components/Marquee";
 import BioCopy from "../components/BioCopy.astro";
-import { experience, skillsRowA, skillsRowB } from "../data/projects";
+import ExperienceSection from "../components/ExperienceSection.astro";
+import { skillsRowA, skillsRowB } from "../data/projects";
 ---
 
 <Layout title="About — Dhruv Belekar" ogImage="/og/og-projects-about-contact.png">
@@ -52,28 +53,8 @@ import { experience, skillsRowA, skillsRowB } from "../data/projects";
         </Marquee>
       </div>
 
-      <ScrollReveal client:load className="mt-12 max-w-3xl pb-[var(--space-section)]">
-        <h3 class="text-sm font-bold tracking-wide text-ink">Experience</h3>
-        <ul class="mt-4 space-y-3">
-          {
-            experience.map((e) => (
-              <li class="flex flex-wrap items-baseline justify-between gap-x-4 border-b border-black/5 pb-3 text-sm sm:text-base">
-                <span class="font-bold text-ink">
-                  {e.role} <span class="font-normal text-ink-muted">— {e.company}</span>
-                </span>
-                <span class="text-ink-muted">{e.dates}</span>
-              </li>
-            ))
-          }
-        </ul>
-        <a
-          href="https://drive.google.com/drive/folders/1e92a3IZ8tz1NUu0pfwsmL1pdgHECwokr"
-          target="_blank"
-          rel="noreferrer"
-          class="mt-10 inline-block text-xl font-bold text-blue transition-opacity hover:opacity-70"
-        >
-          Resume
-        </a>
+      <ScrollReveal client:load className="mt-12">
+        <ExperienceSection />
       </ScrollReveal>
     </div>
   </section>
