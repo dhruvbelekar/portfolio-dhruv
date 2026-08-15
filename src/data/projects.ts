@@ -117,13 +117,3 @@ export const clientLogos = [
   "/img/logos/logo-3.png",
   "/img/logos/logo-4.png",
 ];
-
-export const bio = {
-  heading:
-    "Hi, I'm Dhruv — I design digital experiences, create visual stories, and collect hobbies faster than I finish personal projects.",
-  paragraphs: [
-    "Somehow, that's worked out pretty well so far. One day I'm designing an app. The next I'm shooting a film, building a brand, or editing a video. I stopped trying to explain it. I just call it making things.",
-    "Outside work, I'm usually watching Chelsea, (the jersey probably gave that away) chasing the city's best shawarma, wearing way too much silver, or taking the long route home because the drive is better than the destination.",
-    "I'm just trying to make things that people remember. If my work makes someone pause, smile, or quietly whisper, \"Damn that's nice,\" I'll call that a win.",
-  ],
-};

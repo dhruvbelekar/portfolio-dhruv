@@ -2,7 +2,8 @@
 import Layout from "../layouts/Layout.astro";
 import ScrollReveal from "../components/ScrollReveal";
 import Marquee from "../components/Marquee";
-import { experience, skillsRowA, skillsRowB, bio } from "../data/projects";
+import BioCopy from "../components/BioCopy.astro";
+import { experience, skillsRowA, skillsRowB } from "../data/projects";
 ---
 
 <Layout title="About — Dhruv Belekar" ogImage="/og/og-projects-about-contact.png">
@@ -17,34 +18,26 @@ import { experience, skillsRowA, skillsRowB, bio } from "../data/projects";
         </h1>
       </ScrollReveal>
 
-      <div class="mt-12 grid gap-4 sm:grid-cols-2">
+      <ScrollReveal client:load className="mx-auto mt-12 w-full max-w-xs">
+        <img
+          src="/img/about/vinyl-hero.png"
+          alt="About Image of Designer"
+          class="aspect-square w-full rounded-full object-cover"
+        />
+      </ScrollReveal>
+
+      <div class="mt-10 grid grid-cols-[100px_1fr] items-start gap-6 sm:grid-cols-[160px_1fr] sm:gap-10">
         <ScrollReveal client:load>
-          <img
-            src="/img/about/vinyl-hero.png"
-            alt="About Image of Designer"
-            class="aspect-[4/3] w-full rounded-2xl object-cover"
-          />
-        </ScrollReveal>
-        <ScrollReveal client:load delay={0.1}>
           <img
             src="/img/about/portrait-halftone-blue.png"
             alt=""
-            class="aspect-[4/3] w-full rounded-2xl object-cover"
+            class="aspect-square w-full rounded-2xl object-cover"
           />
         </ScrollReveal>
+        <ScrollReveal client:load delay={0.1}>
+          <BioCopy />
+        </ScrollReveal>
       </div>
-
-      <ScrollReveal client:load delay={0.15} className="mt-12 max-w-3xl">
-        <h2
-          class="font-black leading-tight text-ink"
-          style="font-family: var(--font-display); font-size: var(--type-heading);"
-        >
-          {bio.heading}
-        </h2>
-        <div class="mt-6 space-y-4 text-base text-ink-muted sm:text-lg">
-          {bio.paragraphs.map((p) => <p>{p}</p>)}
-        </div>
-      </ScrollReveal>
 
       <div class="mt-10 space-y-2 text-lg font-bold text-blue">
         <Marquee client:load speed={22}>

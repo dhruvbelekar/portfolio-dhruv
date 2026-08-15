@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import ScrollReveal from "../components/ScrollReveal";
 import Marquee from "../components/Marquee";
 import ProjectCard from "../components/ProjectCard.astro";
+import BioCopy from "../components/BioCopy.astro";
 import {
   projects,
   testimonials,
@@ -10,7 +11,6 @@ import {
   skillsRowA,
   skillsRowB,
   clientLogos,
-  bio,
 } from "../data/projects";
 ---
 
@@ -96,26 +96,26 @@ import {
         </h2>
       </ScrollReveal>
 
-      <div class="mt-12 grid gap-10 md:grid-cols-[minmax(0,320px)_1fr] md:items-start">
+      <ScrollReveal client:load className="mx-auto mt-12 w-full max-w-xs">
+        <img
+          src="/img/about/vinyl-hero.png"
+          alt="About Image of Designer"
+          class="aspect-square w-full rounded-full object-cover"
+        />
+      </ScrollReveal>
+
+      <div class="mt-10 grid grid-cols-[100px_1fr] items-start gap-6 sm:grid-cols-[160px_1fr] sm:gap-10">
         <ScrollReveal client:load>
           <img
-            src="/img/about/home-preview-portrait.png"
-            alt="About Image of Designer"
+            src="/img/about/portrait-halftone-blue.png"
+            alt=""
             class="aspect-square w-full rounded-2xl object-cover"
           />
         </ScrollReveal>
 
         <ScrollReveal client:load delay={0.1}>
           <div>
-            <h3
-              class="font-black leading-tight text-ink"
-              style="font-family: var(--font-display); font-size: var(--type-heading);"
-            >
-              {bio.heading}
-            </h3>
-            <div class="mt-6 space-y-4 text-base text-ink-muted sm:text-lg">
-              {bio.paragraphs.map((p) => <p>{p}</p>)}
-            </div>
+            <BioCopy />
 
             <div class="mt-10 space-y-2 text-lg font-bold text-blue">
               <Marquee client:load speed={22}>

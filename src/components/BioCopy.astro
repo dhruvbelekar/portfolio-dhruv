@@ -1,0 +1,36 @@
+---
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+---
+
+<div
+  class={`font-black leading-tight text-ink-muted ${className}`}
+  style="font-family: var(--font-display); font-size: var(--type-heading);"
+>
+  <p>Hi, I'm Dhruv</p>
+  <div class="mt-4 space-y-4">
+    <p>
+      I design <span class="text-blue">digital experiences, create visual stories,</span> and collect
+      hobbies faster than I finish personal projects. <span class="text-blue">Somehow, that's worked out
+      pretty well so far.</span>
+    </p>
+    <p>
+      One day I'm designing an app. The next I'm shooting a <span class="text-blue">film,</span> building a
+      <span class="text-blue">brand,</span> or editing a <span class="text-blue">video.</span> I stopped
+      trying to explain it. <span class="text-blue">I just call it making things.</span>
+    </p>
+    <p>
+      Outside work, I'm usually watching <span class="text-blue">Chelsea, (the jersey probably gave that
+      away)</span> chasing the city's best <span class="text-blue">shawarma,</span> wearing way too much
+      <span class="text-blue">silver,</span> or taking the long route home because
+      <span class="text-blue">the drive is better than the destination.</span>
+    </p>
+    <p>
+      I'm just trying to make things that <span class="text-blue">people remember.</span> If my work makes
+      someone pause, smile, or quietly whisper, <span class="text-blue">"Damn that's nice,"</span> I'll call
+      that a win.
+    </p>
+  </div>
+</div>

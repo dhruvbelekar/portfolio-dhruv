@@ -33,8 +33,8 @@ fetch "https://framerusercontent.com/images/EZCuO7eH74KGmfycJ1GrutzHEqg.png" pub
 
 # --- about ---
 fetch "https://framerusercontent.com/images/0ISJkjuAQ3x8BPfl4YMWEGFoC0.png" public/img/about/home-preview-portrait.png
-fetch "https://framerusercontent.com/images/LhOu7XwBlEAY4kAr6DqHKtdfIc.png" public/img/about/vinyl-hero.png
-fetch "https://framerusercontent.com/images/WAGqtGckgU6nYGbn8dvffgzbxMU.png" public/img/about/portrait-halftone-blue.png
+fetch "https://framerusercontent.com/images/WAGqtGckgU6nYGbn8dvffgzbxMU.png" public/img/about/vinyl-hero.png
+fetch "https://framerusercontent.com/images/LhOu7XwBlEAY4kAr6DqHKtdfIc.png" public/img/about/portrait-halftone-blue.png
 fetch "https://framerusercontent.com/images/yGiXWriRoctX0sOSxUN9jTLzlBM.jpg" public/img/about/layered-2.jpg
 fetch "https://framerusercontent.com/assets/DE4Gsvvep3fIBH5Ku8skhZG2Ggs.mp3" public/audio/about-ambient.mp3
 
