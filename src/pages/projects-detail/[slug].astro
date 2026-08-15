@@ -22,6 +22,7 @@ const gallery = await Promise.all(
   })
 );
 
+const isBento = project.slug === "frelo";
 const isDark = project.slug === "ai-film";
 const sectionBg = isDark ? "bg-black" : "";
 const categoryColor = isDark ? "text-white/50" : "text-ink-muted";
@@ -92,13 +93,13 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
         </ScrollReveal>
       </div>
 
-      <div class="mt-16 columns-2 gap-4 pb-[var(--space-section)] sm:columns-3">
+      <div class={isBento ? "mt-16 columns-2 gap-4 pb-[var(--space-section)] sm:columns-3" : "mt-16 flex flex-col gap-8 pb-[var(--space-section)]"}>
         {
           gallery.map((img, i) => (
             <ScrollReveal
               client:load
               delay={Math.min(i, 4) * 0.06}
-              className="mb-4 break-inside-avoid"
+              className={isBento ? "mb-4 break-inside-avoid" : ""}
             >
               <img
                 src={img.src}
@@ -106,7 +107,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                 height={img.height}
                 alt=""
                 loading="lazy"
-                class="w-full rounded-2xl"
+                class={isBento ? "w-full rounded-2xl" : "w-full rounded-2xl object-cover"}
               />
             </ScrollReveal>
           ))
