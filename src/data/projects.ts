@@ -70,6 +70,31 @@ export const projects: Project[] = [
     ],
     galleryCount: 5,
   },
+  {
+    slug: "ai-film",
+    title: "AI Film",
+    category: "AI Filmmaking",
+    thumb: "/img/projects/ai-film-thumb.jpg",
+    thumbAlt: "The New World, AI-generated short film title card",
+    description:
+      "An experimental short film created using generative AI, where I worked across the entire process — from developing the concept and creating visuals to generating scenes, voice, and editing the final film. I used tools like Runway, Midjourney, Kling, LumaLabs, and ElevenLabs to bring the story to life, combining AI-generated content with traditional editing. The final film reached 10,000+ views on Instagram.",
+    timeline: "6 months",
+    live: false,
+    links: [],
+    galleryCount: 9,
+  },
+  {
+    slug: "ope",
+    title: "OPE",
+    category: "Photography",
+    thumb: "/img/projects/ope-thumb.png",
+    thumbAlt: "OPE Global Jam Mumbai event branding",
+    description:
+      "Photography coverage for OPE's Global Jam event in Mumbai, capturing the energy, people, activities, and key moments throughout the event. I focused on documenting the overall experience through candid moments, event details, and interactions, creating a visual record that reflected the atmosphere and spirit of the global design community.",
+    live: false,
+    links: [],
+    galleryCount: 9,
+  },
 ];
 
 export const testimonials = [
