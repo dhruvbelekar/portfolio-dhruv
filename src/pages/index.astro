@@ -145,7 +145,7 @@ import {
   </section>
 
   <!-- Testimonials heading -->
-  <section class="px-6 pt-[var(--space-section)] md:px-10">
+  <section class="px-6 pt-16 md:px-10">
     <div class="mx-auto max-w-[1400px]">
       <ScrollReveal client:load>
         <h2
@@ -159,23 +159,23 @@ import {
   </section>
 
   <!-- Client logos -->
-  <section class="mt-12 border-y border-black/5 py-10">
+  <section class="mt-6 border-y border-black/5 py-4">
     <Marquee client:load speed={100} gap="4rem">
       {
         Array(6)
           .fill(clientLogos)
           .flat()
           .map((logo, i) => (
-            <img key={i} src={logo} alt="" class="h-8 w-auto object-contain sm:h-10" />
+            <img key={i} src={logo} alt="" class="h-5 w-auto object-contain sm:h-6" />
           ))
       }
     </Marquee>
   </section>
 
   <!-- Testimonial cards -->
-  <section class="px-6 pb-[var(--space-section)] pt-12 md:px-10">
+  <section class="px-6 pb-16 pt-6 md:px-10">
     <div class="mx-auto max-w-[1400px]">
-      <div class="flex flex-col gap-10">
+      <div class="flex flex-col gap-4">
         <Marquee client:load speed={65} gap="1rem">
           {
             Array(4)
