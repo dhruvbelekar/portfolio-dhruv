@@ -35,17 +35,17 @@ import {
       </p>
     </div>
 
-    <div class="pb-6">
-      <div class="overflow-hidden rounded-3xl bg-black/5">
-        <video
-          class="h-auto w-full"
-          src="/video/hero.mp4"
-          autoplay
-          muted
-          loop
-          playsinline
-        ></video>
-      </div>
+    <div class="-mx-6 mb-6 border-y border-black/5 py-4">
+      <Marquee client:load speed={100} gap="4rem">
+        {
+          Array(6)
+            .fill(clientLogos)
+            .flat()
+            .map((logo, i) => (
+              <img key={i} src={logo} alt="" class="h-5 w-auto object-contain sm:h-6" />
+            ))
+        }
+      </Marquee>
     </div>
   </section>
 
