@@ -23,6 +23,10 @@ const gallery = await Promise.all(
 );
 
 const isBento = project.slug === "frelo";
+const isMp4 = project.slug === "mp4";
+const thumbSize = isMp4
+  ? await sharp(path.join(process.cwd(), "public", project.thumb)).metadata()
+  : null;
 const isDark = project.slug === "ai-film";
 const sectionBg = isDark ? "bg-black" : "";
 const categoryColor = isDark ? "text-white/50" : "text-ink-muted";
@@ -37,11 +41,23 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
   <section class={`${sectionBg} px-6 pt-16 pb-[var(--space-section)] md:px-10`}>
     <div class="mx-auto max-w-[1400px]">
       <ScrollReveal client:load>
-        <img
-          src={project.thumb}
-          alt={project.thumbAlt}
-          class="aspect-[16/9] w-full rounded-3xl object-cover"
-        />
+        {
+          isMp4 ? (
+            <img
+              src={project.thumb}
+              alt={project.thumbAlt}
+              width={thumbSize.width}
+              height={thumbSize.height}
+              class="w-full rounded-3xl"
+            />
+          ) : (
+            <img
+              src={project.thumb}
+              alt={project.thumbAlt}
+              class="aspect-[16/9] w-full rounded-3xl object-cover"
+            />
+          )
+        }
       </ScrollReveal>
 
       <div class="mt-10 grid gap-10 md:grid-cols-[1fr_auto] md:items-start">
