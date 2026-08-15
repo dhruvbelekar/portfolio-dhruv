@@ -14,19 +14,30 @@ export function getStaticPaths() {
 
 const { project, next } = Astro.props;
 
-const gallery = await Promise.all(
-  Array.from({ length: project.galleryCount }, (_, i) => i).map(async (i) => {
-    const src = `/img/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.png`;
-    const { width, height } = await sharp(path.join(process.cwd(), "public", src)).metadata();
-    return { src, width, height };
-  })
-);
-
 const isBento = project.slug === "frelo";
 const isMp4 = project.slug === "mp4";
 const thumbSize = isMp4
   ? await sharp(path.join(process.cwd(), "public", project.thumb)).metadata()
   : null;
+
+const mp4GalleryTypes = ["image", "image", "image", "video", "video"];
+
+const gallery = await Promise.all(
+  Array.from({ length: project.galleryCount }, (_, i) => i).map(async (i) => {
+    if (isMp4) {
+      const type = mp4GalleryTypes[i];
+      if (type === "video") {
+        return { type, src: `/video/projects/mp4/gallery-${String(i + 1).padStart(2, "0")}.mp4` };
+      }
+      const src = `/img/projects/mp4/gallery-${String(i + 1).padStart(2, "0")}.png`;
+      const { width, height } = await sharp(path.join(process.cwd(), "public", src)).metadata();
+      return { type, src, width, height };
+    }
+    const src = `/img/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.png`;
+    const { width, height } = await sharp(path.join(process.cwd(), "public", src)).metadata();
+    return { type: "image", src, width, height };
+  })
+);
 const isDark = project.slug === "ai-film";
 const sectionBg = isDark ? "bg-black" : "";
 const categoryColor = isDark ? "text-white/50" : "text-ink-muted";
@@ -117,14 +128,25 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
               delay={Math.min(i, 4) * 0.06}
               className={isBento ? "mb-4 break-inside-avoid" : ""}
             >
-              <img
-                src={img.src}
-                width={img.width}
-                height={img.height}
-                alt=""
-                loading="lazy"
-                class={isBento ? "w-full rounded-2xl" : "w-full rounded-2xl object-cover"}
-              />
+              {
+                img.type === "video" ? (
+                  <video
+                    src={img.src}
+                    controls
+                    playsinline
+                    class="w-full rounded-2xl"
+                  />
+                ) : (
+                  <img
+                    src={img.src}
+                    width={img.width}
+                    height={img.height}
+                    alt=""
+                    loading="lazy"
+                    class={isBento ? "w-full rounded-2xl" : "w-full rounded-2xl object-cover"}
+                  />
+                )
+              }
             </ScrollReveal>
           ))
         }
