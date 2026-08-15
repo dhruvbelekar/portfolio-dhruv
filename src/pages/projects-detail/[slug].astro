@@ -1,4 +1,6 @@
 ---
+import path from "node:path";
+import sharp from "sharp";
 import Layout from "../../layouts/Layout.astro";
 import ScrollReveal from "../../components/ScrollReveal";
 import { projects } from "../../data/projects";
@@ -12,9 +14,12 @@ export function getStaticPaths() {
 
 const { project, next } = Astro.props;
 
-const gallery = Array.from(
-  { length: project.galleryCount },
-  (_, i) => `/img/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.png`
+const gallery = await Promise.all(
+  Array.from({ length: project.galleryCount }, (_, i) => i).map(async (i) => {
+    const src = `/img/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.png`;
+    const { width, height } = await sharp(path.join(process.cwd(), "public", src)).metadata();
+    return { src, width, height };
+  })
 );
 
 const isDark = project.slug === "ai-film";
@@ -87,19 +92,21 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
         </ScrollReveal>
       </div>
 
-      <div class="mt-16 grid grid-cols-2 gap-4 pb-[var(--space-section)] sm:grid-cols-3">
+      <div class="mt-16 columns-2 gap-4 pb-[var(--space-section)] sm:columns-3">
         {
-          gallery.map((src, i) => (
+          gallery.map((img, i) => (
             <ScrollReveal
               client:load
               delay={Math.min(i, 4) * 0.06}
-              className={i % 5 === 0 ? "col-span-2 row-span-2" : ""}
+              className="mb-4 break-inside-avoid"
             >
               <img
-                src={src}
+                src={img.src}
+                width={img.width}
+                height={img.height}
                 alt=""
                 loading="lazy"
-                class="aspect-square h-full w-full rounded-2xl object-cover"
+                class="w-full rounded-2xl"
               />
             </ScrollReveal>
           ))
