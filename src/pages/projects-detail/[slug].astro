@@ -19,7 +19,7 @@ const gallery = Array.from(
 ---
 
 <Layout title={`${project.title} — Dhruv Belekar`}>
-  <section class="px-6 pt-16 md:px-10">
+  <section class="bg-black px-6 pt-16 pb-[var(--space-section)] md:px-10">
     <div class="mx-auto max-w-[1400px]">
       <ScrollReveal client:load>
         <img
@@ -37,16 +37,16 @@ const gallery = Array.from(
           >
             {project.title}
           </h1>
-          <p class="mt-2 text-sm font-bold tracking-wide text-ink-muted">{project.category}</p>
-          <p class="mt-6 max-w-2xl text-base text-ink-muted sm:text-lg">{project.description}</p>
+          <p class="mt-2 text-sm font-bold tracking-wide text-white/50">{project.category}</p>
+          <p class="mt-6 max-w-2xl text-base text-white/70 sm:text-lg">{project.description}</p>
         </ScrollReveal>
 
         <ScrollReveal client:load delay={0.1} className="flex flex-col gap-4 sm:min-w-[220px]">
           {
             project.timeline && (
               <div>
-                <p class="text-xs font-bold tracking-wide text-ink-muted">Timeline</p>
-                <p class="text-base font-bold text-ink">{project.timeline}</p>
+                <p class="text-xs font-bold tracking-wide text-white/50">Timeline</p>
+                <p class="text-base font-bold text-white">{project.timeline}</p>
               </div>
             )
           }
@@ -93,12 +93,12 @@ const gallery = Array.from(
         }
       </div>
 
-      <ScrollReveal client:load className="border-t border-black/5 py-16">
+      <ScrollReveal client:load className="border-t border-white/10 py-16">
         <a href={`/projects-detail/${next.slug}`} class="group flex items-center justify-between">
           <div>
-            <p class="text-xs font-bold tracking-wide text-ink-muted">Next project</p>
+            <p class="text-xs font-bold tracking-wide text-white/50">Next project</p>
             <h2
-              class="font-black text-ink transition-colors group-hover:text-blue"
+              class="font-black text-white transition-colors group-hover:text-blue"
               style="font-family: var(--font-display); font-size: var(--type-heading);"
             >
               {next.title}
