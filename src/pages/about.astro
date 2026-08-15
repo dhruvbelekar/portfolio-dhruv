@@ -39,20 +39,26 @@ import { skillsRowA, skillsRowB } from "../data/projects";
   <div class="mt-10 space-y-2 py-2 text-lg font-bold text-blue">
     <Marquee client:load speed={22}>
       {
-        skillsRowA.map((s) => (
-          <span class="whitespace-nowrap">
-            {s} <span class="text-gray-300">✦</span>
-          </span>
-        ))
+        Array(8)
+          .fill(skillsRowA)
+          .flat()
+          .map((s, i) => (
+            <span key={i} class="whitespace-nowrap">
+              {s} <span class="text-gray-300">✦</span>
+            </span>
+          ))
       }
     </Marquee>
     <Marquee client:load speed={26} direction="right">
       {
-        skillsRowB.map((s) => (
-          <span class="whitespace-nowrap">
-            {s} <span class="text-gray-300">✦</span>
-          </span>
-        ))
+        Array(8)
+          .fill(skillsRowB)
+          .flat()
+          .map((s, i) => (
+            <span key={i} class="whitespace-nowrap">
+              {s} <span class="text-gray-300">✦</span>
+            </span>
+          ))
       }
     </Marquee>
   </div>

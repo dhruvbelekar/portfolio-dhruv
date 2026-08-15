@@ -117,20 +117,26 @@ import {
   <div class="mt-10 space-y-2 py-2 text-lg font-bold text-blue">
     <Marquee client:load speed={22}>
       {
-        skillsRowA.map((s) => (
-          <span class="whitespace-nowrap">
-            {s} <span class="text-gray-300">✦</span>
-          </span>
-        ))
+        Array(8)
+          .fill(skillsRowA)
+          .flat()
+          .map((s, i) => (
+            <span key={i} class="whitespace-nowrap">
+              {s} <span class="text-gray-300">✦</span>
+            </span>
+          ))
       }
     </Marquee>
     <Marquee client:load speed={26} direction="right">
       {
-        skillsRowB.map((s) => (
-          <span class="whitespace-nowrap">
-            {s} <span class="text-gray-300">✦</span>
-          </span>
-        ))
+        Array(8)
+          .fill(skillsRowB)
+          .flat()
+          .map((s, i) => (
+            <span key={i} class="whitespace-nowrap">
+              {s} <span class="text-gray-300">✦</span>
+            </span>
+          ))
       }
     </Marquee>
   </div>
@@ -147,9 +153,12 @@ import {
   <section class="mt-[var(--space-section)] border-y border-black/5 py-10">
     <Marquee client:load speed={24} gap="4rem">
       {
-        clientLogos.map((logo) => (
-          <img src={logo} alt="" class="h-8 w-auto object-contain opacity-70 sm:h-10" />
-        ))
+        Array(6)
+          .fill(clientLogos)
+          .flat()
+          .map((logo, i) => (
+            <img key={i} src={logo} alt="" class="h-8 w-auto object-contain opacity-70 sm:h-10" />
+          ))
       }
     </Marquee>
   </section>
