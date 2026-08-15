@@ -59,7 +59,7 @@ const gallery = await Promise.all(
   })
 );
 const isDark = isAiFilm;
-const sectionBg = isDark ? "bg-black" : "";
+const sectionBg = isDark ? "bg-black" : isPassionProject ? "bg-[#ff0000]" : "";
 const categoryColor = isDark ? "text-white/50" : "text-ink-muted";
 const descriptionColor = isDark ? "text-white/70" : "text-ink-muted";
 const labelColor = isDark ? "text-white/50" : "text-ink-muted";
