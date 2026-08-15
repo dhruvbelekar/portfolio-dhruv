@@ -158,20 +158,6 @@ import {
     </div>
   </section>
 
-  <!-- Client logos -->
-  <section class="mt-6 border-y border-black/5 py-4">
-    <Marquee client:load speed={100} gap="4rem">
-      {
-        Array(6)
-          .fill(clientLogos)
-          .flat()
-          .map((logo, i) => (
-            <img key={i} src={logo} alt="" class="h-5 w-auto object-contain sm:h-6" />
-          ))
-      }
-    </Marquee>
-  </section>
-
   <!-- Testimonial cards -->
   <section class="px-6 pb-16 pt-10 md:px-10">
     <div class="mx-auto max-w-[1400px]">
