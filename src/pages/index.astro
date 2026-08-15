@@ -17,16 +17,16 @@ import {
 <Layout>
   <!-- Hero -->
   <section class="px-6 md:px-10">
-    <div class="mx-auto flex min-h-screen max-w-[1400px] flex-col justify-center pt-10">
+    <div class="flex min-h-screen flex-col justify-center pt-10">
       <h1
         class="select-none font-black leading-[0.85] text-blue"
-        style="font-family: var(--font-display); font-size: var(--type-hero);"
+        style="font-family: var(--font-display); font-size: clamp(3.5rem, 25vw, 430px);"
       >
         dhruv
       </h1>
       <p
         class="mt-6 font-black leading-tight text-gray-400"
-        style="font-family: var(--font-display); font-size: var(--type-heading); text-indent: 42%;"
+        style="font-family: var(--font-display); font-size: clamp(1.125rem, 2.3vw, 40px); text-indent: 42%;"
       >
         I design <span class="text-blue">digital experiences</span>,{" "}
         create <span class="text-blue">visual stories</span>,{" "}
@@ -35,7 +35,7 @@ import {
       </p>
     </div>
 
-    <div class="mx-auto max-w-[1400px] pb-6">
+    <div class="pb-6">
       <div class="overflow-hidden rounded-3xl bg-black/5">
         <video
           class="h-auto w-full"
