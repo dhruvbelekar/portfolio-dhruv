@@ -155,7 +155,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
       </div>
 
       <ScrollReveal client:load className={`border-t ${dividerColor} py-16`}>
-        <a href={`/projects-detail/${next.slug}`} class="group ml-auto flex w-fit items-center gap-6 sm:gap-10">
+        <a href={`/projects-detail/${next.slug}`} class="group ml-auto flex w-fit flex-col items-end gap-4 sm:flex-row sm:items-center sm:gap-10">
           <div class="text-right">
             <p class={`text-xs font-bold tracking-wide ${labelColor}`}>Next project</p>
             <h2
