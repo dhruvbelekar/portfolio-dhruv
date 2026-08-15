@@ -44,7 +44,7 @@ body {
   background: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
-  letter-spacing: -0.5px;
+  letter-spacing: -0.05em;
   -webkit-font-smoothing: antialiased;
 }
 
