@@ -17,13 +17,17 @@ const { project, next } = Astro.props;
 const isBento = project.slug === "frelo";
 const isMp4 = project.slug === "mp4";
 const isAiFilm = project.slug === "ai-film";
-const thumbSize = isMp4
+const isPassionProject = project.slug === "passion-project";
+const coverFitsNatural = isMp4 || isPassionProject;
+const thumbSize = coverFitsNatural
   ? await sharp(path.join(process.cwd(), "public", project.thumb)).metadata()
   : null;
 
 const mp4GalleryTypes = ["image", "image", "image", "video", "video"];
 // AI Film's gallery is 9 images followed by one hover-for-sound video (index 9)
 const aiFilmVideoIndex = 9;
+// Passion Project's gallery is 12 images followed by one plain video (index 12)
+const passionProjectVideoIndex = 12;
 
 const gallery = await Promise.all(
   Array.from({ length: project.galleryCount }, (_, i) => i).map(async (i) => {
@@ -41,6 +45,12 @@ const gallery = await Promise.all(
         type: "video",
         src: `/video/projects/ai-film/gallery-${String(i + 1).padStart(2, "0")}.mp4`,
         hoverSound: true,
+      };
+    }
+    if (isPassionProject && i === passionProjectVideoIndex) {
+      return {
+        type: "video",
+        src: `/video/projects/passion-project/gallery-${String(i + 1).padStart(2, "0")}.mp4`,
       };
     }
     const src = `/img/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.png`;
@@ -63,7 +73,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
     <div class="mx-auto max-w-[1400px]">
       <ScrollReveal client:load>
         {
-          isMp4 ? (
+          coverFitsNatural ? (
             <img
               src={project.thumb}
               alt={project.thumbAlt}

@@ -84,6 +84,18 @@ export const projects: Project[] = [
     galleryCount: 10,
   },
   {
+    slug: "passion-project",
+    title: "Passion Project",
+    category: "Personal Project",
+    thumb: "/img/projects/passion-project-thumb.png",
+    thumbAlt: "8th August, a personal collage-style short film poster",
+    description:
+      "A personal passion project documenting my journey from childhood to the present and my growing love for filmmaking, editing, and capturing everyday moments. I explored my memories, experiences, and interests through a collage-style animation, bringing together photographs, videos, graphics, and personal moments to tell my story. The project is a visual reflection of how documenting life became a part of how I see and express the world.",
+    live: false,
+    links: [],
+    galleryCount: 13,
+  },
+  {
     slug: "ope",
     title: "OPE",
     category: "Photography",
