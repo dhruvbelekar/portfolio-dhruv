@@ -155,15 +155,8 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
       </div>
 
       <ScrollReveal client:load className={`border-t ${dividerColor} py-16`}>
-        <a href={`/projects-detail/${next.slug}`} class="group flex items-center gap-6 sm:gap-10">
-          <div class="aspect-[4/5] w-24 shrink-0 overflow-hidden rounded-xl sm:w-32">
-            <img
-              src={next.thumb}
-              alt={next.thumbAlt}
-              class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-            />
-          </div>
-          <div class="min-w-0 flex-1">
+        <a href={`/projects-detail/${next.slug}`} class="group ml-auto flex w-fit items-center gap-6 sm:gap-10">
+          <div class="text-right">
             <p class={`text-xs font-bold tracking-wide ${labelColor}`}>Next project</p>
             <h2
               class={`font-black transition-colors group-hover:text-blue ${nextTitleColor}`}
@@ -171,6 +164,13 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
             >
               {next.title}
             </h2>
+          </div>
+          <div class="aspect-[4/5] w-36 shrink-0 overflow-hidden rounded-xl sm:w-52">
+            <img
+              src={next.thumb}
+              alt={next.thumbAlt}
+              class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            />
           </div>
           <span class="hidden shrink-0 text-3xl text-blue opacity-0 transition-opacity group-hover:opacity-100 sm:inline">
             →
