@@ -110,7 +110,7 @@ import {
 
   <!-- Skills marquee (full-bleed, edge to edge) -->
   <div class="mt-10 space-y-2 py-2 text-2xl font-bold tracking-[-0.05em] text-blue sm:text-3xl">
-    <Marquee client:load speed={55}>
+    <Marquee client:load speed={90}>
       {
         Array(8)
           .fill(skillsRowA)
@@ -122,7 +122,7 @@ import {
           ))
       }
     </Marquee>
-    <Marquee client:load speed={65} direction="right">
+    <Marquee client:load speed={105} direction="right">
       {
         Array(8)
           .fill(skillsRowB)
@@ -160,7 +160,7 @@ import {
 
   <!-- Client logos -->
   <section class="mt-12 border-y border-black/5 py-10">
-    <Marquee client:load speed={60} gap="4rem">
+    <Marquee client:load speed={100} gap="4rem">
       {
         Array(6)
           .fill(clientLogos)
@@ -176,7 +176,7 @@ import {
   <section class="px-6 pb-[var(--space-section)] pt-12 md:px-10">
     <div class="mx-auto max-w-[1400px]">
       <div class="flex flex-col gap-10">
-        <Marquee client:load speed={38} gap="1rem">
+        <Marquee client:load speed={65} gap="1rem">
           {
             Array(4)
               .fill([testimonials[2], testimonials[3]])
@@ -195,7 +195,7 @@ import {
               ))
           }
         </Marquee>
-        <Marquee client:load speed={44} gap="1rem" direction="right">
+        <Marquee client:load speed={72} gap="1rem" direction="right">
           {
             Array(4)
               .fill([testimonials[0], testimonials[1]])
