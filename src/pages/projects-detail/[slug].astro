@@ -16,11 +16,14 @@ const { project, next } = Astro.props;
 
 const isBento = project.slug === "frelo";
 const isMp4 = project.slug === "mp4";
+const isAiFilm = project.slug === "ai-film";
 const thumbSize = isMp4
   ? await sharp(path.join(process.cwd(), "public", project.thumb)).metadata()
   : null;
 
 const mp4GalleryTypes = ["image", "image", "image", "video", "video"];
+// AI Film's gallery is 9 images followed by one hover-for-sound video (index 9)
+const aiFilmVideoIndex = 9;
 
 const gallery = await Promise.all(
   Array.from({ length: project.galleryCount }, (_, i) => i).map(async (i) => {
@@ -33,12 +36,19 @@ const gallery = await Promise.all(
       const { width, height } = await sharp(path.join(process.cwd(), "public", src)).metadata();
       return { type, src, width, height };
     }
+    if (isAiFilm && i === aiFilmVideoIndex) {
+      return {
+        type: "video",
+        src: `/video/projects/ai-film/gallery-${String(i + 1).padStart(2, "0")}.mp4`,
+        hoverSound: true,
+      };
+    }
     const src = `/img/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.png`;
     const { width, height } = await sharp(path.join(process.cwd(), "public", src)).metadata();
     return { type: "image", src, width, height };
   })
 );
-const isDark = project.slug === "ai-film";
+const isDark = isAiFilm;
 const sectionBg = isDark ? "bg-black" : "";
 const categoryColor = isDark ? "text-white/50" : "text-ink-muted";
 const descriptionColor = isDark ? "text-white/70" : "text-ink-muted";
@@ -136,6 +146,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                     muted
                     loop
                     playsinline
+                    data-hover-sound={img.hoverSound ? "true" : undefined}
                     class="w-full rounded-2xl"
                   />
                 ) : (
@@ -180,3 +191,14 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
     </div>
   </section>
 </Layout>
+
+<script>
+  document.querySelectorAll<HTMLVideoElement>('video[data-hover-sound="true"]').forEach((video) => {
+    video.addEventListener("mouseenter", () => {
+      video.muted = false;
+    });
+    video.addEventListener("mouseleave", () => {
+      video.muted = true;
+    });
+  });
+</script>

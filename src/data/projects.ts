@@ -81,7 +81,7 @@ export const projects: Project[] = [
     timeline: "6 months",
     live: false,
     links: [],
-    galleryCount: 9,
+    galleryCount: 10,
   },
   {
     slug: "ope",
