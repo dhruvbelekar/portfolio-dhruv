@@ -11,7 +11,7 @@ import { experience, skillsRowA, skillsRowB } from "../data/projects";
     <div class="mx-auto max-w-[1400px]">
       <ScrollReveal client:load>
         <h1
-          class="select-none font-black leading-[0.9] text-blue"
+          class="select-none text-center font-black leading-[0.9] text-blue"
           style="font-family: var(--font-display); font-size: var(--type-section);"
         >
           About Dhruv
@@ -26,7 +26,7 @@ import { experience, skillsRowA, skillsRowB } from "../data/projects";
             class="aspect-square w-full rounded-2xl object-cover"
           />
         </ScrollReveal>
-        <ScrollReveal client:load delay={0.1}>
+        <ScrollReveal client:load delay={0.1} className="min-w-0">
           <BioCopy />
         </ScrollReveal>
       </div>

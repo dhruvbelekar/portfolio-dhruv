@@ -78,7 +78,7 @@ const gallery = Array.from(
         </ScrollReveal>
       </div>
 
-      <div class="mx-auto mt-16 flex max-w-3xl flex-col gap-8 pb-[var(--space-section)]">
+      <div class="mt-16 flex flex-col gap-8 pb-[var(--space-section)]">
         {
           gallery.map((src, i) => (
             <ScrollReveal client:load delay={Math.min(i, 4) * 0.06}>
