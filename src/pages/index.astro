@@ -106,36 +106,34 @@ import {
         </ScrollReveal>
 
         <ScrollReveal client:load delay={0.1} className="min-w-0">
-          <div>
-            <BioCopy />
-
-            <div class="mt-10 space-y-2 text-lg font-bold text-blue">
-              <Marquee client:load speed={22}>
-                {
-                  skillsRowA.map((s) => (
-                    <span class="whitespace-nowrap">
-                      {s} <span class="text-gray-300">✦</span>
-                    </span>
-                  ))
-                }
-              </Marquee>
-              <Marquee client:load speed={26} direction="right">
-                {
-                  skillsRowB.map((s) => (
-                    <span class="whitespace-nowrap">
-                      {s} <span class="text-gray-300">✦</span>
-                    </span>
-                  ))
-                }
-              </Marquee>
-            </div>
-
-            <div class="mt-12">
-              <ExperienceSection />
-            </div>
-          </div>
+          <BioCopy />
         </ScrollReveal>
       </div>
+
+      <div class="mt-10 space-y-2 text-lg font-bold text-blue">
+        <Marquee client:load speed={22}>
+          {
+            skillsRowA.map((s) => (
+              <span class="whitespace-nowrap">
+                {s} <span class="text-gray-300">✦</span>
+              </span>
+            ))
+          }
+        </Marquee>
+        <Marquee client:load speed={26} direction="right">
+          {
+            skillsRowB.map((s) => (
+              <span class="whitespace-nowrap">
+                {s} <span class="text-gray-300">✦</span>
+              </span>
+            ))
+          }
+        </Marquee>
+      </div>
+
+      <ScrollReveal client:load className="mt-12">
+        <ExperienceSection />
+      </ScrollReveal>
     </div>
   </section>
 
