@@ -74,7 +74,7 @@ export const projects: Project[] = [
     slug: "ai-film",
     title: "AI Film",
     category: "AI Filmmaking",
-    thumb: "/img/projects/ai-film-thumb.jpg",
+    thumb: "/img/projects/ai-film-thumb.png",
     thumbAlt: "The New World, AI-generated short film title card",
     description:
       "An experimental short film created using generative AI, where I worked across the entire process — from developing the concept and creating visuals to generating scenes, voice, and editing the final film. I used tools like Runway, Midjourney, Kling, LumaLabs, and ElevenLabs to bring the story to life, combining AI-generated content with traditional editing. The final film reached 10,000+ views on Instagram.",
