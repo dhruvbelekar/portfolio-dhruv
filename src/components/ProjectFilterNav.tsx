@@ -20,7 +20,7 @@ export default function ProjectFilterNav({ categories, itemSelector }: Props) {
 
   return (
     <nav
-      className="fixed bottom-6 left-1/2 z-40 flex max-w-[92vw] -translate-x-1/2 items-center gap-1 overflow-x-auto rounded-full border border-white/60 bg-white/50 p-1.5 shadow-[0_8px_32px_rgba(19,67,240,0.12)] backdrop-blur-xl backdrop-saturate-150 [&::-webkit-scrollbar]:hidden"
+      className="fixed bottom-6 left-1/2 z-40 flex max-w-[92vw] -translate-x-1/2 items-center gap-1 overflow-x-auto rounded-full border border-black/[0.06] bg-[rgba(245,247,255,0.55)] p-1.5 shadow-[0_2px_8px_rgba(0,0,0,0.06),0_16px_40px_rgba(19,67,240,0.18)] backdrop-blur-xl backdrop-saturate-150 [&::-webkit-scrollbar]:hidden"
       style={{ scrollbarWidth: "none" }}
     >
       {options.map((option) => (
