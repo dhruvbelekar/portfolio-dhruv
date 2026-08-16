@@ -102,8 +102,16 @@ import {
         </h2>
       </ScrollReveal>
 
-      <div class="mt-12">
-        <ScrollReveal client:load delay={0.1}>
+      <div class="mt-12 grid grid-cols-[160px_1fr] items-start gap-6 sm:grid-cols-[280px_1fr] sm:gap-10 md:grid-cols-[360px_1fr]">
+        <ScrollReveal client:load>
+          <img
+            src="/img/about/portrait-illustration.png"
+            alt="Illustrated portrait of Dhruv"
+            class="aspect-square w-full rounded-2xl object-cover"
+          />
+        </ScrollReveal>
+
+        <ScrollReveal client:load delay={0.1} className="min-w-0">
           <BioCopy />
         </ScrollReveal>
       </div>
