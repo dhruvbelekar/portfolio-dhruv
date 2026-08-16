@@ -61,7 +61,7 @@ const gallery = await Promise.all(
 const isDark = isAiFilm;
 const sectionBg = isDark ? "bg-black" : isPassionProject ? "bg-[#ff0000]" : "";
 const categoryColor = isDark ? "text-white/50" : "text-ink-muted";
-const descriptionColor = isDark ? "text-white/70" : "text-ink-muted";
+const descriptionColor = isDark ? "text-white/70" : isPassionProject ? "text-white" : "text-ink-muted";
 const labelColor = isDark ? "text-white/50" : "text-ink-muted";
 const valueColor = isDark ? "text-white" : "text-ink";
 const dividerColor = isDark ? "border-white/10" : "border-black/5";
@@ -73,7 +73,15 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
     <div class="mx-auto max-w-[1400px]">
       <ScrollReveal client:load>
         {
-          coverFitsNatural ? (
+          isPassionProject ? (
+            <img
+              src={project.thumb}
+              alt={project.thumbAlt}
+              width={thumbSize.width}
+              height={thumbSize.height}
+              class="mx-auto max-h-[80vh] w-auto rounded-3xl object-contain"
+            />
+          ) : coverFitsNatural ? (
             <img
               src={project.thumb}
               alt={project.thumbAlt}
