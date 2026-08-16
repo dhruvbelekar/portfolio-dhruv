@@ -35,7 +35,7 @@ export default function ProjectFilterNav({ categories, itemSelector }: Props) {
           {active === option && (
             <motion.span
               layoutId="project-filter-active-pill"
-              className="absolute inset-0 rounded-full bg-blue"
+              className="absolute inset-1 rounded-full bg-blue"
               transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
             />
           )}
