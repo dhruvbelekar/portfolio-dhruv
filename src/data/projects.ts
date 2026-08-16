@@ -118,6 +118,19 @@ export const projects: Project[] = [
     links: [],
     galleryCount: 9,
   },
+  {
+    slug: "coke",
+    title: "Coke Ad",
+    category: "3D Animation",
+    filterCategory: "Film",
+    thumb: "/img/projects/coke-thumb.png",
+    thumbAlt: "3D-rendered Coca-Cola can, close-up with condensation",
+    description:
+      "A visual advertisement created in Blender to explore a more dynamic and cinematic approach. I focused on camera movement, lighting, animation, and editing to create an engaging visual piece that reflects my creative style.",
+    live: false,
+    links: [],
+    galleryCount: 8,
+  },
 ];
 
 export const testimonials = [

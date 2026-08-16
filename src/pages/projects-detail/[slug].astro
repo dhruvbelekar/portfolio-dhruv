@@ -18,6 +18,7 @@ const isBento = project.slug === "frelo";
 const isMp4 = project.slug === "mp4";
 const isAiFilm = project.slug === "ai-film";
 const isPassionProject = project.slug === "passion-project";
+const isCoke = project.slug === "coke";
 const coverFitsNatural = isMp4 || isPassionProject;
 const thumbSize = coverFitsNatural
   ? await sharp(path.join(process.cwd(), "public", project.thumb)).metadata()
@@ -28,6 +29,8 @@ const mp4GalleryTypes = ["image", "image", "image", "video", "video"];
 const aiFilmVideoIndex = 9;
 // Passion Project's gallery is 12 images followed by one plain video (index 12)
 const passionProjectVideoIndex = 12;
+// Coke's gallery is 7 process slides followed by the final rendered video (index 7)
+const cokeVideoIndex = 7;
 
 const gallery = await Promise.all(
   Array.from({ length: project.galleryCount }, (_, i) => i).map(async (i) => {
@@ -52,6 +55,12 @@ const gallery = await Promise.all(
         type: "video",
         src: `/video/projects/passion-project/gallery-${String(i + 1).padStart(2, "0")}.mp4`,
         hoverSound: true,
+      };
+    }
+    if (isCoke && i === cokeVideoIndex) {
+      return {
+        type: "video",
+        src: `/video/projects/coke/gallery-${String(i + 1).padStart(2, "0")}.mp4`,
       };
     }
     const src = `/img/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.png`;
