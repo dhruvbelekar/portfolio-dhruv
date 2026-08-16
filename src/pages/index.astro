@@ -52,7 +52,7 @@ import {
   </section>
 
   <!-- Projects -->
-  <section class="px-6 pt-[var(--space-section)] md:px-10" data-projects-section>
+  <section class="px-6 pt-[var(--space-section)] md:px-10">
     <div class="mx-auto max-w-[1400px]">
       <ScrollReveal client:load>
         <h2
@@ -83,12 +83,7 @@ import {
     </div>
   </section>
 
-  <ProjectFilterNav
-    client:load
-    categories={filterCategories}
-    sectionSelector="[data-projects-section]"
-    itemSelector="[data-project-category]"
-  />
+  <ProjectFilterNav client:load categories={filterCategories} itemSelector="[data-project-category]" />
 
   <!-- About preview -->
   <section class="px-6 pt-[var(--space-section)] md:px-10">
