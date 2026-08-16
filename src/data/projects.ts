@@ -1,7 +1,11 @@
+export const filterCategories = ["UI/UX", "Visual Design", "Film", "Photography"] as const;
+export type FilterCategory = (typeof filterCategories)[number];
+
 export type Project = {
   slug: string;
   title: string;
   category: string;
+  filterCategory: FilterCategory;
   thumb: string;
   thumbAlt: string;
   description: string;
@@ -16,6 +20,7 @@ export const projects: Project[] = [
     slug: "mahavitaran",
     title: "Mahavitaran",
     category: "UI/UX",
+    filterCategory: "UI/UX",
     thumb: "/img/projects/mahavitaran-thumb.png",
     thumbAlt: "Serene Portrait flowers",
     description:
@@ -33,6 +38,7 @@ export const projects: Project[] = [
     slug: "aria",
     title: "Aria",
     category: "UI/UX",
+    filterCategory: "UI/UX",
     thumb: "/img/projects/aria-thumb.png",
     thumbAlt: "avant garde portrait",
     description:
@@ -46,6 +52,7 @@ export const projects: Project[] = [
     slug: "mp4",
     title: "Mp4 Productions",
     category: "Branding",
+    filterCategory: "Visual Design",
     thumb: "/img/projects/mp4-thumb.png",
     thumbAlt: "red hat portrait",
     description:
@@ -59,6 +66,7 @@ export const projects: Project[] = [
     slug: "frelo",
     title: "Frelo",
     category: "Brand & Content",
+    filterCategory: "Visual Design",
     thumb: "/img/projects/frelo-thumb.png",
     thumbAlt: "Elegant red portrait",
     description:
@@ -74,6 +82,7 @@ export const projects: Project[] = [
     slug: "ai-film",
     title: "AI Film",
     category: "AI Filmmaking",
+    filterCategory: "Film",
     thumb: "/img/projects/ai-film-thumb.png",
     thumbAlt: "The New World, AI-generated short film title card",
     description:
@@ -87,6 +96,7 @@ export const projects: Project[] = [
     slug: "passion-project",
     title: "Passion Project",
     category: "Personal Project",
+    filterCategory: "Film",
     thumb: "/img/projects/passion-project-thumb.png",
     thumbAlt: "8th August, a personal collage-style short film poster",
     description:
@@ -99,6 +109,7 @@ export const projects: Project[] = [
     slug: "ope",
     title: "OPE",
     category: "Photography",
+    filterCategory: "Photography",
     thumb: "/img/projects/ope-thumb.png",
     thumbAlt: "OPE Global Jam Mumbai event branding",
     description:
