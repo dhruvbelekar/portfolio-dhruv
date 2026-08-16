@@ -51,6 +51,7 @@ const gallery = await Promise.all(
       return {
         type: "video",
         src: `/video/projects/passion-project/gallery-${String(i + 1).padStart(2, "0")}.mp4`,
+        hoverSound: true,
       };
     }
     const src = `/img/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.png`;
@@ -169,7 +170,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                       data-hover-sound={img.hoverSound ? "true" : undefined}
                       class="w-full rounded-2xl"
                     />
-                    {img.hoverSound && (
+                    {isAiFilm && img.hoverSound && (
                       <a
                         href="https://www.instagram.com/p/DEsODJ8B3Vx/?hl=en"
                         target="_blank"
