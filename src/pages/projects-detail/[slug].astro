@@ -60,6 +60,7 @@ const gallery = await Promise.all(
 );
 const isDark = isAiFilm;
 const sectionBg = isDark ? "bg-black" : isPassionProject ? "bg-[#ff0000]" : "";
+const titleColor = isPassionProject ? "text-white" : "text-blue";
 const categoryColor = isDark ? "text-white/50" : isPassionProject ? "text-white" : "text-ink-muted";
 const descriptionColor = isDark ? "text-white/70" : isPassionProject ? "text-white" : "text-ink-muted";
 const labelColor = isDark ? "text-white/50" : "text-ink-muted";
@@ -102,7 +103,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
       <div class="mt-10 grid gap-10 md:grid-cols-[1fr_auto] md:items-start">
         <ScrollReveal client:load>
           <h1
-            class="font-black leading-none text-blue"
+            class={`font-black leading-none ${titleColor}`}
             style="font-family: var(--font-display); font-size: var(--type-heading); font-size: clamp(2.5rem, 1.5rem + 5vw, 5rem);"
           >
             {project.title}
