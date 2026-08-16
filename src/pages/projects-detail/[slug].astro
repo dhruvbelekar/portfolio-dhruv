@@ -70,11 +70,7 @@ const gallery = await Promise.all(
   })
 );
 const isDark = isAiFilm;
-const sectionBg = isDark
-  ? "bg-black"
-  : isPassionProject
-    ? "bg-[url('/img/projects/passion-project-bg.png')] bg-repeat"
-    : "";
+const sectionBg = isDark ? "bg-black" : "";
 const titleColor = "text-blue";
 const categoryColor = isDark ? "text-white/50" : "text-ink-muted";
 const descriptionColor = isDark ? "text-white/70" : "text-ink-muted";
