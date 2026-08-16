@@ -1,4 +1,7 @@
 ---
+import path from "node:path";
+import sharp from "sharp";
+
 interface Props {
   slug: string;
   title: string;
@@ -8,13 +11,16 @@ interface Props {
 }
 
 const { slug, title, category, image, alt } = Astro.props;
+const { width, height } = await sharp(path.join(process.cwd(), "public", image)).metadata();
 ---
 
 <a href={`/projects-detail/${slug}`} class="group block">
-  <div class="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gray-100 p-4">
+  <div class="aspect-[3/2] w-full overflow-hidden rounded-2xl">
     <img
       src={image}
       alt={alt}
+      width={width}
+      height={height}
       loading="lazy"
       class="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:scale-105"
     />
