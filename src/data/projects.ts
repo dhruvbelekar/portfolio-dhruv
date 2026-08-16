@@ -120,7 +120,7 @@ export const projects: Project[] = [
   },
   {
     slug: "coke",
-    title: "Coke Ad",
+    title: "Coca-Cola Ad",
     category: "3D Animation",
     filterCategory: "Film",
     thumb: "/img/projects/coke-thumb.png",
