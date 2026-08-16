@@ -11,7 +11,7 @@ type MarqueeProps = {
 /**
  * Seamless infinite marquee: the track is duplicated once and translated
  * -50%, matching the duplicated-DOM technique observed on the live site's
- * skills ticker, testimonials, client-logo strip, and Sidequest photo strips.
+ * skills ticker, testimonials, and client-logo strip.
  */
 export default function Marquee({
   children,
