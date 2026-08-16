@@ -10,11 +10,11 @@ const links = [
 ---
 
 <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-sm">
-  <nav class="mx-auto flex max-w-[1400px] items-center justify-between gap-2 px-4 py-5 sm:gap-4 sm:px-6 md:px-10">
-    <a href="/" aria-label="Home" class="shrink-0 text-blue">
+  <nav class="mx-auto grid max-w-[1400px] grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-5 sm:gap-4 sm:px-6 md:px-10">
+    <a href="/" aria-label="Home" class="shrink-0 justify-self-start text-blue">
       <img src="/icons/logo-mark.png" alt="" class="h-5 w-auto sm:h-6" />
     </a>
-    <ul class="flex flex-nowrap items-center gap-x-2 whitespace-nowrap text-[10px] font-bold tracking-wide text-blue sm:gap-x-6 sm:text-sm">
+    <ul class="flex flex-nowrap items-center justify-self-center gap-x-2 whitespace-nowrap text-[10px] font-bold tracking-wide text-blue sm:gap-x-6 sm:text-sm">
       {
         links.map((link) => (
           <li>
@@ -25,7 +25,7 @@ const links = [
         ))
       }
     </ul>
-    <div class="hidden sm:block">
+    <div class="hidden justify-self-end sm:block">
       <Clock client:load />
     </div>
   </nav>
