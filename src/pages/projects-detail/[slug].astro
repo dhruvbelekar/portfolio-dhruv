@@ -3,6 +3,7 @@ import path from "node:path";
 import sharp from "sharp";
 import Layout from "../../layouts/Layout.astro";
 import ScrollReveal from "../../components/ScrollReveal";
+import StatCounter from "../../components/StatCounter";
 import { projects } from "../../data/projects";
 
 export function getStaticPaths() {
@@ -160,52 +161,68 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
         </ScrollReveal>
       </div>
 
-      <div class={isBento ? "mt-16 columns-2 gap-4 pb-[var(--space-section)] sm:columns-3" : "mt-16 flex flex-col gap-8 pb-[var(--space-section)]"}>
-        {
-          gallery.map((img, i) => (
-            <ScrollReveal
-              client:load
-              delay={Math.min(i, 4) * 0.06}
-              className={isBento ? "mb-4 break-inside-avoid" : ""}
-            >
-              {
-                img.type === "video" ? (
-                  <>
-                    <video
-                      src={img.src}
-                      autoplay
-                      muted
-                      loop
-                      playsinline
-                      data-hover-sound={img.hoverSound ? "true" : undefined}
-                      class="w-full rounded-2xl"
-                    />
-                    {isAiFilm && img.hoverSound && (
-                      <a
-                        href="https://www.instagram.com/p/DEsODJ8B3Vx/?hl=en"
-                        target="_blank"
-                        rel="noreferrer"
-                        class="mt-4 block text-center text-lg font-bold text-blue transition-opacity hover:opacity-70"
-                      >
-                        Want to watch part two and three?
-                      </a>
-                    )}
-                  </>
-                ) : (
-                  <img
-                    src={img.src}
-                    width={img.width}
-                    height={img.height}
-                    alt=""
-                    loading="lazy"
-                    class={isBento ? "w-full rounded-2xl" : "w-full rounded-2xl object-cover"}
-                  />
-                )
-              }
+      {
+        isBento ? (
+          <div class="mt-16 grid items-center gap-10 pb-[var(--space-section)] sm:grid-cols-2 sm:gap-16">
+            <ScrollReveal client:load className="mx-auto w-full max-w-sm">
+              <video
+                src="/video/projects/frelo/punit-chawla-reel.mp4"
+                autoplay
+                muted
+                loop
+                playsinline
+                class="aspect-[9/16] w-full rounded-2xl object-cover"
+              />
             </ScrollReveal>
-          ))
-        }
-      </div>
+            <ScrollReveal client:load delay={0.1}>
+              <StatCounter client:load target={33} suffix="K+" label="Views on Instagram — Punit Chawla highlight reel" />
+            </ScrollReveal>
+          </div>
+        ) : (
+          <div class="mt-16 flex flex-col gap-8 pb-[var(--space-section)]">
+            {
+              gallery.map((img, i) => (
+                <ScrollReveal client:load delay={Math.min(i, 4) * 0.06}>
+                  {
+                    img.type === "video" ? (
+                      <>
+                        <video
+                          src={img.src}
+                          autoplay
+                          muted
+                          loop
+                          playsinline
+                          data-hover-sound={img.hoverSound ? "true" : undefined}
+                          class="w-full rounded-2xl"
+                        />
+                        {isAiFilm && img.hoverSound && (
+                          <a
+                            href="https://www.instagram.com/p/DEsODJ8B3Vx/?hl=en"
+                            target="_blank"
+                            rel="noreferrer"
+                            class="mt-4 block text-center text-lg font-bold text-blue transition-opacity hover:opacity-70"
+                          >
+                            Want to watch part two and three?
+                          </a>
+                        )}
+                      </>
+                    ) : (
+                      <img
+                        src={img.src}
+                        width={img.width}
+                        height={img.height}
+                        alt=""
+                        loading="lazy"
+                        class="w-full rounded-2xl object-cover"
+                      />
+                    )
+                  }
+                </ScrollReveal>
+              ))
+            }
+          </div>
+        )
+      }
 
       <ScrollReveal client:load className={`border-t ${dividerColor} py-16`}>
         <a href={`/projects-detail/${next.slug}`} class="group ml-auto flex w-fit flex-col items-end gap-4 sm:flex-row sm:items-center sm:gap-10">
