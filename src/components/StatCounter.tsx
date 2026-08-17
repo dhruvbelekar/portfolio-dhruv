@@ -4,7 +4,7 @@ import { useInView, animate } from "framer-motion";
 type Props = {
   target: number;
   suffix?: string;
-  label: string;
+  label?: string;
   duration?: number;
 };
 
@@ -32,7 +32,7 @@ export default function StatCounter({ target, suffix = "", label, duration = 1.8
         {count}
         {suffix}
       </p>
-      <p className="mt-3 text-sm font-bold tracking-wide text-ink-muted">{label}</p>
+      {label && <p className="mt-3 text-sm font-bold tracking-wide text-ink-muted">{label}</p>}
     </div>
   );
 }
