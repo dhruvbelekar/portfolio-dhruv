@@ -4,6 +4,7 @@ import sharp from "sharp";
 import Layout from "../../layouts/Layout.astro";
 import ScrollReveal from "../../components/ScrollReveal";
 import StatCounter from "../../components/StatCounter";
+import Marquee from "../../components/Marquee";
 import { projects } from "../../data/projects";
 
 export function getStaticPaths() {
@@ -16,6 +17,10 @@ export function getStaticPaths() {
 const { project, next } = Astro.props;
 
 const isBento = project.slug === "frelo";
+const freloMarqueeReels = Array.from(
+  { length: 8 },
+  (_, i) => `/video/projects/frelo/marquee/reel-${String(i + 1).padStart(2, "0")}.mp4`
+);
 const isMp4 = project.slug === "mp4";
 const isAiFilm = project.slug === "ai-film";
 const isPassionProject = project.slug === "passion-project";
@@ -163,30 +168,49 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
 
       {
         isBento ? (
-          <div class="mt-16 grid items-center gap-10 pb-[var(--space-section)] sm:grid-cols-2 sm:gap-16">
-            <ScrollReveal client:load className="mx-auto w-full max-w-sm">
-              <video
-                src="/video/projects/frelo/punit-chawla-reel.mp4"
-                autoplay
-                muted
-                loop
-                playsinline
-                class="aspect-[9/16] w-full rounded-2xl object-cover"
-              />
-              <div class="mt-4 flex items-center gap-3">
-                <img
-                  src="/img/projects/frelo/punit-chawla-avatar.png"
-                  alt="Punit Chawla"
-                  class="h-11 w-11 rounded-full object-cover"
+          <div class="mt-16 pb-[var(--space-section)]">
+            <div class="grid items-center gap-10 sm:grid-cols-2 sm:gap-16">
+              <ScrollReveal client:load className="mx-auto w-full max-w-sm">
+                <video
+                  src="/video/projects/frelo/punit-chawla-reel.mp4"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                  class="aspect-[0.53/1] w-full rounded-2xl object-cover object-right"
                 />
-                <div>
-                  <p class="text-sm font-bold text-ink">Punit Chawla</p>
-                  <p class="text-xs text-ink-muted">@punitchawlaofficial</p>
+                <div class="mt-4 flex items-center justify-center gap-3">
+                  <img
+                    src="/img/projects/frelo/punit-chawla-avatar.png"
+                    alt="Punit Chawla"
+                    class="h-11 w-11 rounded-full object-cover"
+                  />
+                  <div>
+                    <p class="text-sm font-bold text-ink">Punit Chawla</p>
+                    <p class="text-xs text-ink-muted">@punitchawlaofficial</p>
+                  </div>
                 </div>
-              </div>
-            </ScrollReveal>
-            <ScrollReveal client:load delay={0.1}>
-              <StatCounter client:load target={33} suffix="K+" />
+              </ScrollReveal>
+              <ScrollReveal client:load delay={0.1}>
+                <StatCounter client:load target={33} suffix="K+" />
+              </ScrollReveal>
+            </div>
+
+            <ScrollReveal client:load delay={0.15} className="mt-16">
+              <Marquee client:load direction="right" speed={40} gap="1.25rem">
+                {
+                  freloMarqueeReels.map((src) => (
+                    <video
+                      src={src}
+                      autoplay
+                      muted
+                      loop
+                      playsinline
+                      class="h-64 w-auto shrink-0 rounded-xl object-cover sm:h-80"
+                    />
+                  ))
+                }
+              </Marquee>
             </ScrollReveal>
           </div>
         ) : (
