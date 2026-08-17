@@ -159,11 +159,11 @@
     function advance(index: number) {
       if (index >= words.length - 1) {
         renderWord(index);
-        setTimeout(finish, 400);
+        setTimeout(finish, 750);
         return;
       }
       renderWord(index);
-      setTimeout(() => advance(index + 1), index === 0 ? 650 : 200);
+      setTimeout(() => advance(index + 1), index === 0 ? 1000 : 600);
     }
 
     advance(0);
