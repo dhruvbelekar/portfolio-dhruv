@@ -264,7 +264,8 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                   </div>
                 </div>
                 <p class="mt-4 text-center text-xs font-bold tracking-wide text-ink-muted">
-                  Hover the poster for the story
+                  <span class="sm:hidden">Tap the poster for the story</span>
+                  <span class="hidden sm:inline">Hover the poster for the story</span>
                 </p>
               </ScrollReveal>
               <ScrollReveal client:load delay={0.15} className="sm:col-span-2 lg:col-span-1">
@@ -331,7 +332,10 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                   Every speaker went home with a superhero card
                 </p>
                 <p class="mx-auto mt-2 max-w-xl text-sm text-ink-muted">
-                  Hover a card to flip it over and read the thank-you note on the back.
+                  <span class="sm:hidden">Tap a card to flip it over and read the thank-you note on the back.</span>
+                  <span class="hidden sm:inline">
+                    Hover a card to flip it over and read the thank-you note on the back.
+                  </span>
                 </p>
               </ScrollReveal>
 
