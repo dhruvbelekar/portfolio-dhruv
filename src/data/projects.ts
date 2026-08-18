@@ -90,7 +90,7 @@ export const projects: Project[] = [
     timeline: "6 months",
     live: false,
     links: [],
-    galleryCount: 10,
+    galleryCount: 13,
   },
   {
     slug: "passion-project",

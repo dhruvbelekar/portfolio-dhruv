@@ -70,8 +70,8 @@ const thumbSize = coverFitsNatural
   : null;
 
 const mp4GalleryTypes = ["image", "image", "image", "video", "video"];
-// AI Film's gallery is 9 images followed by one hover-for-sound video (index 9)
-const aiFilmVideoIndex = 9;
+// AI Film's gallery is 12 case-study slides followed by one hover-for-sound video (index 12)
+const aiFilmVideoIndex = 12;
 // Passion Project's gallery is 12 images followed by one plain video (index 12)
 const passionProjectVideoIndex = 12;
 // Coke's gallery is 7 process slides followed by the final rendered video (index 7)
@@ -109,7 +109,8 @@ const gallery = await Promise.all(
         hoverSound: true,
       };
     }
-    const src = `/img/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.png`;
+    const ext = isAiFilm ? "webp" : "png";
+    const src = `/img/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.${ext}`;
     const { width, height } = await sharp(path.join(process.cwd(), "public", src)).metadata();
     return { type: "image", src, width, height };
   })
