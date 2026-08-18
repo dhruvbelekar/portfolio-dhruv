@@ -127,11 +127,11 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
 ---
 
 <Layout title={`${project.title} — Dhruv Belekar`}>
-  <section class={`${sectionBg} px-6 pt-16 pb-[var(--space-section)] md:px-10`}>
-    <div class="mx-auto max-w-[1400px]">
-      <ScrollReveal client:load>
-        {
-          isPassionProject ? (
+  <section class={`${sectionBg} pt-16 pb-[var(--space-section)]`}>
+    <ScrollReveal client:load>
+      {
+        isPassionProject ? (
+          <div class="mx-auto max-w-[1400px] px-6 md:px-10">
             <img
               src={project.thumb}
               alt={project.thumbAlt}
@@ -139,24 +139,26 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
               height={thumbSize.height}
               class="mx-auto max-h-[80vh] w-auto rounded-3xl object-contain"
             />
-          ) : coverFitsNatural ? (
-            <img
-              src={project.thumb}
-              alt={project.thumbAlt}
-              width={thumbSize.width}
-              height={thumbSize.height}
-              class="w-full rounded-3xl"
-            />
-          ) : (
-            <img
-              src={project.thumb}
-              alt={project.thumbAlt}
-              class="aspect-[16/9] w-full rounded-3xl object-cover"
-            />
-          )
-        }
-      </ScrollReveal>
+          </div>
+        ) : coverFitsNatural ? (
+          <img
+            src={project.thumb}
+            alt={project.thumbAlt}
+            width={thumbSize.width}
+            height={thumbSize.height}
+            class="w-full"
+          />
+        ) : (
+          <img
+            src={project.thumb}
+            alt={project.thumbAlt}
+            class="aspect-[16/9] w-full object-cover"
+          />
+        )
+      }
+    </ScrollReveal>
 
+    <div class="mx-auto max-w-[1400px] px-6 md:px-10">
       <div class="mt-10 grid gap-10 md:grid-cols-[1fr_auto] md:items-start">
         <ScrollReveal client:load>
           <h1
@@ -384,8 +386,13 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
               </div>
             </div>
           </div>
-        ) : (
-          <div class="mt-16 flex flex-col gap-8 pb-[var(--space-section)]">
+        ) : null
+      }
+    </div>
+
+    {
+      !isBento && (
+        <div class="mt-16 flex flex-col gap-8 pb-[var(--space-section)]">
             {
               gallery.map((img, i) => (
                 <ScrollReveal client:load delay={Math.min(i, 4) * 0.06}>
@@ -399,7 +406,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                           loop
                           playsinline
                           data-hover-sound={img.hoverSound ? "true" : undefined}
-                          class="w-full rounded-2xl"
+                          class="w-full"
                         />
                         {isAiFilm && img.hoverSound && (
                           <a
@@ -419,17 +426,18 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                         height={img.height}
                         alt=""
                         loading="lazy"
-                        class="w-full rounded-2xl object-cover"
+                        class="w-full object-cover"
                       />
                     )
                   }
                 </ScrollReveal>
-              ))
-            }
-          </div>
-        )
-      }
+            ))
+          }
+        </div>
+      )
+    }
 
+    <div class="mx-auto max-w-[1400px] px-6 md:px-10">
       <ScrollReveal client:load className={`border-t ${dividerColor} py-16`}>
         <a href={`/projects-detail/${next.slug}`} class="group ml-auto flex w-fit flex-col items-end gap-4 sm:flex-row sm:items-center sm:gap-10">
           <div class="text-right">
