@@ -73,8 +73,8 @@ export const projects: Project[] = [
       "Strengthening Frelo's digital presence through branding, social media campaigns, content strategy, video production, and a community platform designed to connect freelancers and creators.",
     live: true,
     links: [
-      { label: "frelo.community", href: "https://frelo.community" },
-      { label: "frelo.instagram", href: "https://instagram.com/frelo" },
+      { label: "frelo.community", href: "https://frelo.work/community/mumbai/" },
+      { label: "frelo.instagram", href: "https://www.instagram.com/frelo.work/" },
     ],
     galleryCount: 5,
   },
