@@ -21,6 +21,45 @@ const freloMarqueeReels = Array.from(
   { length: 8 },
   (_, i) => `/video/projects/frelo/marquee/reel-${String(i + 1).padStart(2, "0")}.mp4`
 );
+const gigsTalksBlurb = {
+  label: "Gigs & Talks \u00b7 Presented by Pearl Academy",
+  heading: "Navigating opportunities in Design and Creative Domains in the age of AI",
+  body: "Frelo's first community chapter event, held on campus at Pearl Academy: an in-person evening built as guidance for freelancers, hosted by Vaishakh Sajeevan with speakers from McCann Worldgroup, Fractal Analytics, Lollypop Design, Traya and AiVANTA.",
+  aside:
+    "Part panel, part hangout. The night ran on questions from the room rather than a script, which is why the poster puts the speakers in the frame instead of the agenda.",
+};
+const gigsTalksCards = [
+  {
+    slug: "lokesh-zope",
+    name: "Lokesh Zope",
+    role: "Head of Design, Traya",
+    note: "Lokesh, I think I have known you for a very long time. That is what I felt when I first gave you a call. So welcoming and willing to give back to the community, that is what real hustle is. I guess that is the Mechanical DNA in us :) Thank you for joining us. We are excited to have you again. Welcome to the Frelo family!",
+  },
+  {
+    slug: "rupak-shah",
+    name: "Rupak Shah",
+    role: "Co-Founder, AiVANTA",
+    note: "From our early customers who believed in us to the speaker for our first community chapter event, Frelo and Aivanta have come a long way, and we are really happy to have you with us on this journey. Thank you, dear Rupak, for joining us. To many more collaborations ahead.",
+  },
+  {
+    slug: "ameet-palkar",
+    name: "Ameet Palkar",
+    role: "Design Director, Lollypop Design",
+    note: "Empathy + willingness to share knowledge + A sense of wittiness = Ameet. I have never seen you say no to Frelo. \u201cYes, I will be happy to do it\u201d is what I have heard from you. The passion with which you teach and share your knowledge with people is really great. Wishing you the best always, and we will be happy to see you at the next one by Frelo.",
+  },
+  {
+    slug: "anil-kumar",
+    name: "P. K. Anil Kumar",
+    role: "Director \u2013 Creative Excellence, McCann Worldgroup",
+    note: "One who makes someone laugh is the one who can make them think. You are the person who epitomizes this line, dear Anil Sir. Thank you so much for joining us today. What I felt most nice was the humbleness in you. We will do more collaborations together ahead. I wish to write this note handwritten later. I realized my handwriting is of a Doctor.",
+  },
+  {
+    slug: "shreya-shah",
+    name: "Shreya Shah",
+    role: "Design Director, Fractal Analytics",
+    note: "Calmness and knowledge can go hand in hand. I learned this from you, Shreya. Thank you so much for joining Frelo at its events. You are already a member of the Frelo family, and I am happy that well experienced people like you are supporting our vision to build a future skilled workforce.",
+  },
+];
 const isMp4 = project.slug === "mp4";
 const isAiFilm = project.slug === "ai-film";
 const isPassionProject = project.slug === "passion-project";
@@ -246,6 +285,103 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                 }
               </Marquee>
             </ScrollReveal>
+
+            <div class="mt-24">
+              <ScrollReveal client:load>
+                <div
+                  class="group relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-blue"
+                  tabindex="0"
+                >
+                  <img
+                    src="/img/projects/frelo/gigs-talks-poster.webp"
+                    width={1600}
+                    height={900}
+                    alt="Gigs & Talks poster: a Frelo event presented by Pearl Academy on navigating opportunities in design and creative domains in the age of AI"
+                    loading="lazy"
+                    class="w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 group-focus-within:scale-105"
+                  />
+                  <div class="pointer-events-none absolute inset-0 hidden flex-col justify-end bg-gradient-to-t from-black/95 via-black/70 to-black/20 p-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100 sm:flex sm:p-8 lg:p-10">
+                    <p class="text-xs font-bold tracking-wide text-blue">{gigsTalksBlurb.label}</p>
+                    <p class="mt-2 max-w-2xl text-lg font-black leading-tight text-white lg:text-2xl">
+                      {gigsTalksBlurb.heading}
+                    </p>
+                    <p class="mt-3 max-w-2xl text-xs leading-relaxed text-white/80 lg:text-sm">
+                      {gigsTalksBlurb.body}
+                    </p>
+                    <p class="mt-2 hidden max-w-2xl text-xs leading-relaxed text-white/60 md:block lg:mt-3 lg:text-sm">
+                      {gigsTalksBlurb.aside}
+                    </p>
+                  </div>
+                </div>
+                <div class="mt-5 sm:hidden">
+                  <p class="text-xs font-bold tracking-wide text-blue">{gigsTalksBlurb.label}</p>
+                  <p class="mt-2 text-lg font-black leading-tight text-ink">
+                    {gigsTalksBlurb.heading}
+                  </p>
+                  <p class="mt-3 text-sm leading-relaxed text-ink-muted">{gigsTalksBlurb.body}</p>
+                  <p class="mt-3 text-sm leading-relaxed text-ink-muted">{gigsTalksBlurb.aside}</p>
+                </div>
+              </ScrollReveal>
+
+              <ScrollReveal client:load delay={0.1} className="mt-14 text-center">
+                <p class="text-sm font-bold tracking-wide text-ink">
+                  Every speaker went home with a superhero card
+                </p>
+                <p class="mx-auto mt-2 max-w-xl text-sm text-ink-muted">
+                  Hover a card to flip it over and read the thank-you note on the back.
+                </p>
+              </ScrollReveal>
+
+              <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5 lg:gap-5">
+                {
+                  gigsTalksCards.map((card, i) => (
+                    <ScrollReveal client:load delay={Math.min(i, 4) * 0.08}>
+                      <div class="group [perspective:1400px] focus:outline-none" tabindex="0">
+                        <div class="relative aspect-[760/1079] w-full transition-transform duration-700 ease-out [transform-style:preserve-3d] group-focus-within:[transform:rotateY(180deg)] group-hover:[transform:rotateY(180deg)]">
+                          <div class="absolute inset-0 overflow-hidden rounded-2xl [backface-visibility:hidden]">
+                            <img
+                              src={`/img/projects/frelo/gigs-cards/${card.slug}.webp`}
+                              width={760}
+                              height={1079}
+                              alt={`${card.name} drawn as a superhero on a Frelo thank-you card`}
+                              loading="lazy"
+                              class="h-full w-full object-cover"
+                            />
+                            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-3 pt-10">
+                              <p class="text-xs font-bold leading-tight text-white">{card.name}</p>
+                              <p class="mt-0.5 text-[0.65rem] leading-tight text-white/70">
+                                {card.role}
+                              </p>
+                            </div>
+                          </div>
+                          <div class="absolute inset-0 flex flex-col items-center justify-between rounded-2xl border border-ink/10 bg-white p-4 text-center [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                            <img
+                              src="/img/projects/frelo/gigs-cards/thank-you-lettering.webp"
+                              width={420}
+                              height={131}
+                              alt="Thank you"
+                              loading="lazy"
+                              class="w-[60%]"
+                            />
+                            <p class="text-[clamp(0.58rem,0.42rem+0.36vw,0.78rem)] leading-[1.45] text-ink">
+                              {card.note}
+                            </p>
+                            <img
+                              src="/img/projects/frelo/gigs-cards/frelo-logo.webp"
+                              width={200}
+                              height={79}
+                              alt="Frelo"
+                              loading="lazy"
+                              class="w-[38%]"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </ScrollReveal>
+                  ))
+                }
+              </div>
+            </div>
           </div>
         ) : (
           <div class="mt-16 flex flex-col gap-8 pb-[var(--space-section)]">
