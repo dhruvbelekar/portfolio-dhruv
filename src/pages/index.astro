@@ -107,11 +107,27 @@ import {
 
       <div class="mt-12 grid grid-cols-1 items-start gap-6 sm:grid-cols-[280px_1fr] sm:gap-10 md:grid-cols-[360px_1fr]">
         <ScrollReveal client:load>
-          <img
-            src="/img/about/portrait-illustration.png"
-            alt="Illustrated portrait of Dhruv"
-            class="aspect-square w-full rounded-2xl object-cover"
-          />
+          <div
+            class="group relative aspect-square w-full overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-blue"
+            tabindex="0"
+          >
+            <img
+              src="/img/about/portrait-illustration.png"
+              alt="Illustrated portrait of Dhruv"
+              class="absolute inset-0 h-full w-full object-cover transition-opacity duration-150 ease-out group-hover:opacity-0 group-focus-within:opacity-0"
+            />
+            <img
+              src="/img/about/portrait-illustration-tongue.webp"
+              alt=""
+              aria-hidden="true"
+              class="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100 group-focus-within:opacity-100"
+            />
+            <span
+              class="pointer-events-none absolute inset-x-0 bottom-4 mx-auto w-fit translate-y-2 rounded-full bg-blue px-4 py-1.5 text-sm font-bold text-white opacity-0 transition duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100"
+            >
+              Say hi
+            </span>
+          </div>
         </ScrollReveal>
 
         <ScrollReveal client:load delay={0.1} className="min-w-0">
