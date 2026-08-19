@@ -16,12 +16,24 @@ import { experience } from "../data/projects";
             class="absolute left-0 top-1 h-[calc(100%-0.5rem)] w-[3px] origin-top scale-y-0 rounded-full bg-blue transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-y-100"
           />
           <div
-            class="transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1.5"
+            class="flex items-center gap-4 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1.5 sm:gap-6"
           >
-            <p class="text-ink-muted">{e.role}</p>
-            <p class="font-bold text-ink">
-              <span class="text-blue">{e.company}</span> - {e.dates}
-            </p>
+            {/* Fixed-width bay so the wordmarks, which differ wildly in aspect,
+                still leave every role starting on the same line. */}
+            <span class="flex w-20 shrink-0 items-center sm:w-28">
+              <img
+                src={e.logo}
+                alt={`${e.company} logo`}
+                loading="lazy"
+                class="h-8 w-auto max-w-full object-contain object-left transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110 sm:h-10"
+              />
+            </span>
+            <div>
+              <p class="text-ink-muted">{e.role}</p>
+              <p class="font-bold text-ink">
+                <span class="text-blue">{e.company}</span> - {e.dates}
+              </p>
+            </div>
           </div>
         </li>
       ))

@@ -164,9 +164,19 @@ export const testimonials = [
 ];
 
 export const experience = [
-  { role: "Creative Head", company: "Frelo", dates: "Present" },
-  { role: "Creative Designer", company: "AiVANTA", dates: "Dec 24/May 25" },
-  { role: "Design Intern", company: "Lit Lamps", dates: "Jul 24/Dec 24" },
+  { role: "Creative Head", company: "Frelo", dates: "Present", logo: "/img/logos/logo-4.png" },
+  {
+    role: "Creative Designer",
+    company: "AiVANTA",
+    dates: "Dec 24/May 25",
+    logo: "/img/logos/logo-1.png",
+  },
+  {
+    role: "Design Intern",
+    company: "Lit Lamps",
+    dates: "Jul 24/Dec 24",
+    logo: "/img/logos/logo-5.png",
+  },
 ];
 
 export const skillsRowA = ["UI/UX Design", "Brand Identity", "Visual Design"];
@@ -177,4 +187,5 @@ export const clientLogos = [
   "/img/logos/logo-2.png",
   "/img/logos/logo-3.png",
   "/img/logos/logo-4.png",
+  "/img/logos/logo-5.png",
 ];
