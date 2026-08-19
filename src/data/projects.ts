@@ -35,6 +35,20 @@ export const projects: Project[] = [
     galleryCount: 15,
   },
   {
+    slug: "drive",
+    title: "DRIVE",
+    category: "UI/UX",
+    filterCategory: "UI/UX",
+    thumb: "/img/projects/drive-thumb.webp",
+    thumbAlt: "DRIVE title slide, the steering wheel of an autonomous car",
+    description:
+      "A speculative project asking how visually impaired people might experience driving in an autonomous future. DRIVE is an AI co-driver that pairs a tactile steering and pedal interface with a conversational companion and an environmental soundscape, so the vehicle handles the driving while the person keeps the agency and the feel of the road. Eleven prototypes across three phases took it from laser-cut cardboard to 3D-printed haptics and live electronics.",
+    timeline: "3 months",
+    live: false,
+    links: [],
+    galleryCount: 20,
+  },
+  {
     slug: "aria",
     title: "Aria",
     category: "UI/UX",

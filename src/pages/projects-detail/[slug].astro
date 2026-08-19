@@ -63,9 +63,10 @@ const gigsTalksCards = [
 const isMp4 = project.slug === "mp4";
 const isAiFilm = project.slug === "ai-film";
 const isPassionProject = project.slug === "passion-project";
-// Passion Project's cover is a poster and is shown whole; every other cover
-// runs edge to edge, cropped to 16:9.
-const coverFitsNatural = isPassionProject;
+const isDrive = project.slug === "drive";
+// Passion Project's cover is a poster and Drive's is a deck slide; both are
+// shown whole. Every other cover runs edge to edge, cropped to 16:9.
+const coverFitsNatural = isPassionProject || isDrive;
 const thumbSize = coverFitsNatural
   ? await sharp(path.join(process.cwd(), "public", project.thumb)).metadata()
   : null;
@@ -110,7 +111,7 @@ const gallery = await Promise.all(
         fadeEdges: trailingVideo.fadeEdges,
       };
     }
-    const ext = isAiFilm || isMp4 ? "webp" : "png";
+    const ext = isAiFilm || isMp4 || isDrive ? "webp" : "png";
     const src = `/img/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.${ext}`;
     const { width, height } = await sharp(path.join(process.cwd(), "public", src)).metadata();
     return { type: "image", src, width, height };
