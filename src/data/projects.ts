@@ -60,7 +60,7 @@ export const projects: Project[] = [
     timeline: "1 month",
     live: false,
     links: [],
-    galleryCount: 8,
+    galleryCount: 12,
   },
   {
     slug: "frelo",
