@@ -17,9 +17,9 @@ const social = [
 
 <footer class="overflow-x-hidden border-t border-black/5 px-6 pb-10 pt-6">
   <div class="mx-auto max-w-[1400px]">
-    <a href="mailto:dhruv.belekar@gmail.com" class="block">
+    <a href="mailto:dhruv.belekar@gmail.com" class="group block">
       <h2
-        class="select-none text-center font-bold leading-[1.1] text-blue"
+        class="select-none text-center font-bold leading-[1.1] text-blue transition-colors duration-500 ease-out group-hover:text-ink"
         style="font-family: var(--font-display); font-size: clamp(3rem, 16.5vw, 260px); letter-spacing: -0.05em;"
       >
         Get in touch
@@ -34,13 +34,13 @@ const social = [
       <div class="text-left sm:text-right">
         <a
           href="mailto:dhruv.belekar@gmail.com"
-          class="block text-2xl text-blue transition-opacity hover:opacity-70"
+          class="block w-fit text-2xl text-blue transition-transform duration-300 ease-out hover:-translate-y-0.5 sm:ml-auto"
         >
           Say Hello
         </a>
         <a
           href="mailto:dhruv.belekar@gmail.com"
-          class="text-2xl text-blue transition-opacity hover:opacity-70"
+          class="block w-fit text-2xl text-blue transition-transform duration-300 ease-out hover:-translate-y-0.5 sm:ml-auto"
         >
           dhruv.belekar@gmail.com
         </a>
@@ -61,7 +61,10 @@ const social = [
           {
             navigate.map((item) => (
               <li>
-                <a href={item.href} class="transition-colors hover:text-ink">
+                <a
+                  href={item.href}
+                  class="inline-block transition-[color,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:translate-x-2 hover:text-ink"
+                >
                   {item.label}
                 </a>
               </li>
@@ -76,7 +79,12 @@ const social = [
           {
             social.map((item) => (
               <li>
-                <a href={item.href} target="_blank" rel="noreferrer" class="transition-colors hover:text-ink">
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  class="inline-block transition-[color,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:translate-x-2 hover:text-ink"
+                >
                   {item.label}
                 </a>
               </li>
@@ -87,9 +95,15 @@ const social = [
 
       <a
         href="#top"
-        class="flex items-center gap-2 text-base text-blue transition-colors hover:text-ink sm:justify-self-end"
+        class="group flex items-center gap-2 text-base text-blue transition-colors duration-300 hover:text-ink sm:justify-self-end"
       >
-        Back to Top <span aria-hidden="true">↑</span>
+        Back to Top
+        <span
+          aria-hidden="true"
+          class="inline-block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1"
+        >
+          ↑
+        </span>
       </a>
     </div>
   </div>

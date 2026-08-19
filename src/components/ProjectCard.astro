@@ -15,7 +15,7 @@ const { width, height } = await sharp(path.join(process.cwd(), "public", image))
 ---
 
 <a href={`/projects-detail/${slug}`} class="group block">
-  <div class="aspect-[3/2] w-full overflow-hidden rounded-2xl">
+  <div class="aspect-[3/2] w-full overflow-hidden rounded-2xl transition-shadow duration-500 ease-out group-hover:shadow-[0_18px_40px_rgba(19,67,240,0.12)]">
     <img
       src={image}
       alt={alt}
@@ -25,6 +25,8 @@ const { width, height } = await sharp(path.join(process.cwd(), "public", image))
       class="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:scale-105"
     />
   </div>
-  <h3 class="mt-4 text-lg font-bold text-ink">{title}</h3>
+  <h3 class="mt-4 text-lg font-bold text-ink transition-colors duration-300 group-hover:text-blue">
+    {title}
+  </h3>
   <p class="text-sm text-ink-muted">{category}</p>
 </a>

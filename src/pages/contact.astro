@@ -21,15 +21,17 @@ const links = [
               href={link.href}
               target={link.href.startsWith("http") ? "_blank" : undefined}
               rel={link.href.startsWith("http") ? "noreferrer" : undefined}
-              class="group flex items-center justify-between border-b border-black/5 py-8 transition-colors hover:border-blue"
+              class="group flex items-center justify-between border-b border-black/5 py-8 transition-colors duration-300 hover:border-blue"
             >
               <span
-                class="font-black text-ink transition-colors group-hover:text-blue"
+                class="font-black text-ink transition-[color,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-2 group-hover:text-blue"
                 style="font-family: var(--font-display); font-size: var(--type-heading);"
               >
                 {link.label}
               </span>
-              <span class="text-3xl text-blue opacity-0 transition-opacity group-hover:opacity-100">
+              <span
+                class="-translate-x-3 text-3xl text-blue opacity-0 transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-0 group-hover:opacity-100"
+              >
                 →
               </span>
             </a>

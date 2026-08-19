@@ -10,11 +10,19 @@ import { experience } from "../data/projects";
   <ul class="mx-auto mt-12 max-w-xl space-y-8 text-left text-lg sm:text-xl">
     {
       experience.map((e) => (
-        <li>
-          <p class="text-ink-muted">{e.role}</p>
-          <p class="font-bold text-ink">
-            <span class="text-blue">{e.company}</span> - {e.dates}
-          </p>
+        <li class="group relative pl-5">
+          <span
+            aria-hidden="true"
+            class="absolute left-0 top-1 h-[calc(100%-0.5rem)] w-[3px] origin-top scale-y-0 rounded-full bg-blue transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-y-100"
+          />
+          <div
+            class="transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1.5"
+          >
+            <p class="text-ink-muted">{e.role}</p>
+            <p class="font-bold text-ink">
+              <span class="text-blue">{e.company}</span> - {e.dates}
+            </p>
+          </div>
         </li>
       ))
     }

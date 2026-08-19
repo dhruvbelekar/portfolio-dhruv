@@ -34,7 +34,7 @@ export default function ProjectFilterNav({ categories, itemSelector, sectionSele
           key={option}
           type="button"
           onClick={() => handleSelect(option)}
-          className={`relative shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold tracking-wide transition-colors sm:text-sm ${
+          className={`relative shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold tracking-wide transition-[color,transform] duration-200 active:scale-95 sm:text-sm ${
             active === option ? "text-white" : "text-blue hover:text-ink"
           }`}
         >
