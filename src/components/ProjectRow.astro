@@ -22,14 +22,17 @@ const { width, height } = await sharp(path.join(process.cwd(), "public", image))
   class="group block border-t border-ink/10 py-10 focus:outline-none lg:py-14"
 >
   <div class="grid items-center gap-7 md:grid-cols-[1.15fr_1fr] md:gap-12 lg:gap-20">
-    <div class="overflow-hidden rounded-2xl">
+    {/* Covers run from 16:9 to 3:4. Forcing one crop sliced most of them and
+        matting them left visible bands, so each cover keeps its own shape and
+        is capped by height instead. Portrait covers simply sit narrower. */}
+    <div class="flex justify-center md:justify-start">
       <img
         src={image}
         alt={alt}
         width={width}
         height={height}
         loading="lazy"
-        class="aspect-[4/3] w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] group-focus-visible:scale-[1.05]"
+        class="block h-auto max-h-[420px] w-auto max-w-full rounded-2xl object-contain transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03] group-focus-visible:scale-[1.03] lg:max-h-[500px]"
       />
     </div>
 
