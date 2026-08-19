@@ -32,7 +32,7 @@ export const projects: Project[] = [
       { label: "mahavitaran.featurephone", href: "https://featurephonemahavitaran.figma.site" },
       { label: "mahavitaran.atm", href: "https://atmmahavitaran.figma.site" },
     ],
-    galleryCount: 14,
+    galleryCount: 15,
   },
   {
     slug: "aria",

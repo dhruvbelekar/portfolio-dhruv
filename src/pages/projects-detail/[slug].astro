@@ -63,19 +63,21 @@ const gigsTalksCards = [
 const isMp4 = project.slug === "mp4";
 const isAiFilm = project.slug === "ai-film";
 const isPassionProject = project.slug === "passion-project";
-const isCoke = project.slug === "coke";
 const coverFitsNatural = isMp4 || isPassionProject;
 const thumbSize = coverFitsNatural
   ? await sharp(path.join(process.cwd(), "public", project.thumb)).metadata()
   : null;
 
 const mp4GalleryTypes = ["image", "image", "image", "video", "video"];
-// AI Film's gallery is 12 case-study slides followed by one hover-for-sound video (index 12)
-const aiFilmVideoIndex = 12;
-// Passion Project's gallery is 12 images followed by one plain video (index 12)
-const passionProjectVideoIndex = 12;
-// Coke's gallery is 7 process slides followed by the final rendered video (index 7)
-const cokeVideoIndex = 7;
+// Galleries that close on a video: the image run is followed by a clip at `index`.
+// `hoverSound` unmutes on hover, so it is only for clips that carry audio.
+const trailingVideos: Record<string, { index: number; hoverSound: boolean }> = {
+  "ai-film": { index: 12, hoverSound: true },
+  "passion-project": { index: 12, hoverSound: true },
+  coke: { index: 7, hoverSound: true },
+  mahavitaran: { index: 14, hoverSound: false },
+};
+const trailingVideo = trailingVideos[project.slug];
 
 const gallery = await Promise.all(
   Array.from({ length: project.galleryCount }, (_, i) => i).map(async (i) => {
@@ -88,25 +90,11 @@ const gallery = await Promise.all(
       const { width, height } = await sharp(path.join(process.cwd(), "public", src)).metadata();
       return { type, src, width, height };
     }
-    if (isAiFilm && i === aiFilmVideoIndex) {
+    if (trailingVideo && i === trailingVideo.index) {
       return {
         type: "video",
-        src: `/video/projects/ai-film/gallery-${String(i + 1).padStart(2, "0")}.mp4`,
-        hoverSound: true,
-      };
-    }
-    if (isPassionProject && i === passionProjectVideoIndex) {
-      return {
-        type: "video",
-        src: `/video/projects/passion-project/gallery-${String(i + 1).padStart(2, "0")}.mp4`,
-        hoverSound: true,
-      };
-    }
-    if (isCoke && i === cokeVideoIndex) {
-      return {
-        type: "video",
-        src: `/video/projects/coke/gallery-${String(i + 1).padStart(2, "0")}.mp4`,
-        hoverSound: true,
+        src: `/video/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.mp4`,
+        hoverSound: trailingVideo.hoverSound,
       };
     }
     const ext = isAiFilm ? "webp" : "png";
