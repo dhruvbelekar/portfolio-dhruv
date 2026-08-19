@@ -67,15 +67,23 @@ const coverFitsNatural = isMp4 || isPassionProject;
 const thumbSize = coverFitsNatural
   ? await sharp(path.join(process.cwd(), "public", project.thumb)).metadata()
   : null;
+// A portrait cover run edge to edge would stand thousands of pixels tall, so
+// those stay contained and height-capped instead.
+const coverIsPortrait = thumbSize ? thumbSize.height > thumbSize.width : false;
 
 const mp4GalleryTypes = ["image", "image", "image", "video", "video"];
 // Galleries that close on a video: the image run is followed by a clip at `index`.
 // `hoverSound` unmutes on hover, so it is only for clips that carry audio.
-const trailingVideos: Record<string, { index: number; hoverSound: boolean }> = {
+const trailingVideos: Record<
+  string,
+  { index: number; hoverSound: boolean; maxWidth?: string }
+> = {
   "ai-film": { index: 12, hoverSound: true },
   "passion-project": { index: 12, hoverSound: true },
   coke: { index: 7, hoverSound: true },
-  mahavitaran: { index: 14, hoverSound: false },
+  // The mockup clip is 1288x962; edge to edge it upscales and towers over the
+  // stills around it, so it is capped at its comfortable reading size.
+  mahavitaran: { index: 14, hoverSound: false, maxWidth: "mx-auto w-full max-w-[1000px]" },
 };
 const trailingVideo = trailingVideos[project.slug];
 
@@ -95,6 +103,7 @@ const gallery = await Promise.all(
         type: "video",
         src: `/video/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.mp4`,
         hoverSound: trailingVideo.hoverSound,
+        maxWidth: trailingVideo.maxWidth,
       };
     }
     const ext = isAiFilm ? "webp" : "png";
@@ -118,7 +127,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
   <section class={`${sectionBg} pt-16 pb-[var(--space-section)]`}>
     <ScrollReveal client:load>
       {
-        isPassionProject ? (
+        coverIsPortrait ? (
           <div class="mx-auto max-w-[1400px] px-6 md:px-10">
             <img
               src={project.thumb}
@@ -398,7 +407,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                           loop
                           playsinline
                           data-hover-sound={img.hoverSound ? "true" : undefined}
-                          class="w-full"
+                          class={img.maxWidth ?? "w-full"}
                         />
                         {isAiFilm && img.hoverSound && (
                           <a

@@ -53,8 +53,8 @@ export const projects: Project[] = [
     title: "Mp4 Productions",
     category: "Branding",
     filterCategory: "Visual Design",
-    thumb: "/img/projects/mp4-thumb.png",
-    thumbAlt: "red hat portrait",
+    thumb: "/img/projects/mp4-thumb.webp",
+    thumbAlt: "The .mp4 Productions mark as a polished metal pin on blue knit",
     description:
       "Created in my second year of college, this self-initiated branding project for .mp4 Productions combines my interest in visual identity design with my passion for filmmaking and cinematic storytelling.",
     timeline: "1 month",
