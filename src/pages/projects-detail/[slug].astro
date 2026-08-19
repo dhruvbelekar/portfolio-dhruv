@@ -63,7 +63,9 @@ const gigsTalksCards = [
 const isMp4 = project.slug === "mp4";
 const isAiFilm = project.slug === "ai-film";
 const isPassionProject = project.slug === "passion-project";
-const coverFitsNatural = isMp4 || isPassionProject;
+// Passion Project's cover is a poster and is shown whole; every other cover
+// runs edge to edge, cropped to 16:9.
+const coverFitsNatural = isPassionProject;
 const thumbSize = coverFitsNatural
   ? await sharp(path.join(process.cwd(), "public", project.thumb)).metadata()
   : null;
@@ -72,18 +74,29 @@ const thumbSize = coverFitsNatural
 const coverIsPortrait = thumbSize ? thumbSize.height > thumbSize.width : false;
 
 const mp4GalleryTypes = ["image", "image", "image", "video", "video"];
+// A capped clip stops short of the page edge, so its own left and right edges
+// show as hard borders. Masking the outer tenth of each side fades the footage
+// into the page instead of ending it on a line.
+const sideFade =
+  "linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%)";
+const sideFadeStyle = `-webkit-mask-image: ${sideFade}; mask-image: ${sideFade};`;
 // Galleries that close on a video: the image run is followed by a clip at `index`.
 // `hoverSound` unmutes on hover, so it is only for clips that carry audio.
 const trailingVideos: Record<
   string,
-  { index: number; hoverSound: boolean; maxWidth?: string }
+  { index: number; hoverSound: boolean; maxWidth?: string; fadeEdges?: boolean }
 > = {
   "ai-film": { index: 12, hoverSound: true },
   "passion-project": { index: 12, hoverSound: true },
   coke: { index: 7, hoverSound: true },
   // The mockup clip is 1288x962; edge to edge it upscales and towers over the
   // stills around it, so it is capped at its comfortable reading size.
-  mahavitaran: { index: 14, hoverSound: false, maxWidth: "mx-auto w-full max-w-[1000px]" },
+  mahavitaran: {
+    index: 14,
+    hoverSound: false,
+    maxWidth: "mx-auto w-full max-w-[1000px]",
+    fadeEdges: true,
+  },
 };
 const trailingVideo = trailingVideos[project.slug];
 
@@ -104,6 +117,7 @@ const gallery = await Promise.all(
         src: `/video/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.mp4`,
         hoverSound: trailingVideo.hoverSound,
         maxWidth: trailingVideo.maxWidth,
+        fadeEdges: trailingVideo.fadeEdges,
       };
     }
     const ext = isAiFilm ? "webp" : "png";
@@ -408,6 +422,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                           playsinline
                           data-hover-sound={img.hoverSound ? "true" : undefined}
                           class={img.maxWidth ?? "w-full"}
+                          style={img.fadeEdges ? sideFadeStyle : undefined}
                         />
                         {isAiFilm && img.hoverSound && (
                           <a
