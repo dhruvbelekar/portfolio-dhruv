@@ -73,7 +73,6 @@ const thumbSize = coverFitsNatural
 // those stay contained and height-capped instead.
 const coverIsPortrait = thumbSize ? thumbSize.height > thumbSize.width : false;
 
-const mp4GalleryTypes = ["image", "image", "image", "video", "video"];
 // A capped clip stops short of the page edge, so its own left and right edges
 // show as hard borders. Masking the outer tenth of each side fades the footage
 // into the page instead of ending it on a line.
@@ -102,15 +101,6 @@ const trailingVideo = trailingVideos[project.slug];
 
 const gallery = await Promise.all(
   Array.from({ length: project.galleryCount }, (_, i) => i).map(async (i) => {
-    if (isMp4) {
-      const type = mp4GalleryTypes[i];
-      if (type === "video") {
-        return { type, src: `/video/projects/mp4/gallery-${String(i + 1).padStart(2, "0")}.mp4` };
-      }
-      const src = `/img/projects/mp4/gallery-${String(i + 1).padStart(2, "0")}.png`;
-      const { width, height } = await sharp(path.join(process.cwd(), "public", src)).metadata();
-      return { type, src, width, height };
-    }
     if (trailingVideo && i === trailingVideo.index) {
       return {
         type: "video",
@@ -120,7 +110,7 @@ const gallery = await Promise.all(
         fadeEdges: trailingVideo.fadeEdges,
       };
     }
-    const ext = isAiFilm ? "webp" : "png";
+    const ext = isAiFilm || isMp4 ? "webp" : "png";
     const src = `/img/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.${ext}`;
     const { width, height } = await sharp(path.join(process.cwd(), "public", src)).metadata();
     return { type: "image", src, width, height };
@@ -407,7 +397,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
 
     {
       !isBento && (
-        <div class="mt-16 flex flex-col gap-8 pb-[var(--space-section)]">
+        <div class={`mt-16 flex flex-col pb-[var(--space-section)] ${isMp4 ? "gap-0" : "gap-8"}`}>
             {
               gallery.map((img, i) => (
                 <ScrollReveal client:load delay={Math.min(i, 4) * 0.06}>
@@ -442,7 +432,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                         height={img.height}
                         alt=""
                         loading="lazy"
-                        class="w-full object-cover"
+                        class={`block w-full object-cover ${isMp4 && i > 0 ? "-mt-px" : ""}`}
                       />
                     )
                   }
