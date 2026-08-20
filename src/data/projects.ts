@@ -61,7 +61,7 @@ export const projects: Project[] = [
     timeline: "3 months",
     live: true,
     links: [{ label: "aria.fitness", href: "https://dhruvbelekar.github.io/aria-fitness/" }],
-    galleryCount: 22,
+    galleryCount: 15,
   },
   {
     slug: "mp4",
