@@ -15,7 +15,7 @@ const { width, height } = await sharp(path.join(process.cwd(), "public", image))
 ---
 
 <a href={`/projects-detail/${slug}`} class="group block">
-  <div class="aspect-[3/2] w-full overflow-hidden rounded-2xl transition-shadow duration-500 ease-out group-hover:shadow-[0_18px_40px_rgba(19,67,240,0.12)]">
+  <div class="aspect-[3/2] w-full overflow-hidden rounded-2xl ring-1 ring-blue/0 transition-shadow duration-500 ease-out group-hover:shadow-[0_18px_40px_rgba(19,67,240,0.12)] group-hover:ring-blue/70">
     <img
       src={image}
       alt={alt}
