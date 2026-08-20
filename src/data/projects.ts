@@ -60,7 +60,7 @@ export const projects: Project[] = [
       "ARIA is an AI-powered fitness platform that replaces traditional app navigation with a conversational AI assistant. It combines voice interactions, personalized coaching, activity tracking, nutrition guidance, gesture-based workouts, and expert support to create a simple and engaging fitness experience.",
     timeline: "3 months",
     live: true,
-    links: [{ label: "aria.fitness", href: "https://aria.fitness" }],
+    links: [{ label: "aria.fitness", href: "https://dhruvbelekar.github.io/aria-fitness/" }],
     galleryCount: 21,
   },
   {
