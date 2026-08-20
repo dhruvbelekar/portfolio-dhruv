@@ -15,9 +15,10 @@ interface Props {
 
 const { slug, title, category, image, alt, description, timeline, index } = Astro.props;
 const { width, height } = await sharp(path.join(process.cwd(), "public", image)).metadata();
-// Passion Project's cover is a poster and lost its top and bottom to the shared
-// 4:3 crop, so it is fitted whole. Every other cover keeps the crop.
-const fitWhole = slug === "passion-project";
+// Passion Project's poster and Frelo's circular badge both lose their top and
+// bottom to the shared 4:3 crop, so they are fitted whole. Every other cover
+// keeps the crop.
+const fitWhole = slug === "passion-project" || slug === "frelo";
 ---
 
 <a
