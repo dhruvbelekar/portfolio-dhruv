@@ -82,7 +82,7 @@ export const projects: Project[] = [
     title: "Frelo",
     category: "Brand & Content",
     filterCategory: "Visual Design",
-    thumb: "/img/projects/frelo-thumb.png",
+    thumb: "/img/projects/frelo-thumb.webp",
     thumbAlt: "Elegant red portrait",
     description:
       "Strengthening Frelo's digital presence through branding, social media campaigns, content strategy, video production, and a community platform designed to connect freelancers and creators.",
@@ -91,7 +91,9 @@ export const projects: Project[] = [
       { label: "frelo.community", href: "https://frelo.work/community/mumbai/" },
       { label: "frelo.instagram", href: "https://www.instagram.com/frelo.work/" },
     ],
-    galleryCount: 5,
+    // Frelo renders the bento layout, not the standard gallery, so there is
+    // nothing to count and no page images to read at build time.
+    galleryCount: 0,
   },
   {
     slug: "ai-film",

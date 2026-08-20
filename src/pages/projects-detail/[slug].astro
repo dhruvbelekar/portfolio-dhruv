@@ -220,7 +220,8 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
             <div class="grid items-center gap-10 sm:grid-cols-2 sm:gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.85fr)] lg:gap-10">
               <ScrollReveal client:load className="mx-auto w-full max-w-sm">
                 <video
-                  src="/video/projects/frelo/punit-chawla-reel.mp4"
+                  data-lazy-src="/video/projects/frelo/punit-chawla-reel.mp4"
+                  preload="none"
                   autoplay
                   muted
                   loop
@@ -284,7 +285,8 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                 {
                   freloMarqueeReels.map((src) => (
                     <video
-                      src={src}
+                      data-lazy-src={src}
+                      preload="none"
                       autoplay
                       muted
                       loop
@@ -412,7 +414,8 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                     {img.type === "video" ? (
                       <>
                         <video
-                          src={img.src}
+                          data-lazy-src={img.src}
+                          preload="none"
                           autoplay
                           muted
                           loop
@@ -486,6 +489,32 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
       </ScrollReveal>
     </div>
   </section>
+<script>
+  // Clips hold their source until they are close to the viewport. Frelo alone
+  // ships ~30MB of video; without this every clip downloads on page load.
+  const clips = document.querySelectorAll("video[data-lazy-src]");
+  const load = (v) => {
+    if (v.src) return;
+    v.src = v.dataset.lazySrc;
+    const play = () => v.play().catch(() => {});
+    v.readyState >= 2 ? play() : v.addEventListener("loadeddata", play, { once: true });
+  };
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            load(e.target);
+            io.unobserve(e.target);
+          }
+        }),
+      { rootMargin: "600px 0px" }
+    );
+    clips.forEach((v) => io.observe(v));
+  } else {
+    clips.forEach(load);
+  }
+</script>
 </Layout>
 
 <script>
