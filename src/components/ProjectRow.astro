@@ -23,14 +23,16 @@ const fitWhole = slug === "passion-project" || slug === "frelo";
 
 <a
   href={`/projects-detail/${slug}`}
-  class="group block border-t border-ink/10 py-10 focus:outline-none lg:py-14"
+  class="group relative block border-t border-ink/10 py-10 focus:outline-none lg:py-14"
 >
+  {/* The hover outline is an overlay rather than a border on the row itself:
+      it can then sit inside the row's padding — clear of the divider rule and
+      of the next row — without pushing the content around. */}
+  <span
+    class="pointer-events-none absolute -inset-x-4 inset-y-4 rounded-2xl ring-1 ring-blue/0 transition-[box-shadow] duration-500 ease-out group-hover:ring-blue/70 group-focus-visible:ring-blue/70 md:-inset-x-6 lg:inset-y-6"
+  ></span>
   <div class="grid items-center gap-7 md:grid-cols-[1.15fr_1fr] md:gap-12 lg:gap-20">
-    {/* A hairline blue ring draws itself around the cover on hover, alongside
-        the image push-in. */}
-    <div
-      class="overflow-hidden rounded-2xl ring-1 ring-blue/0 transition-[box-shadow] duration-500 ease-out group-hover:ring-blue/70 group-focus-visible:ring-blue/70"
-    >
+    <div class="overflow-hidden rounded-2xl">
       <img
         src={image}
         alt={alt}
