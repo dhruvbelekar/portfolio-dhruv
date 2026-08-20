@@ -28,6 +28,15 @@ const gigsTalksBlurb = {
   aside:
     "Part panel, part hangout. The night ran on questions from the room rather than a script, which is why the poster puts the speakers in the frame instead of the agenda.",
 };
+// Each chapter badge is drawn in its own colour; the accent is sampled from
+// that artwork so the hover glow and label match the illustration.
+const freloChapters = [
+  { city: "Mumbai", script: "\u092e\u0941\u0902\u092c\u0908", slug: "mumbai", accent: "#1258ea" },
+  { city: "Pune", script: "\u092a\u0941\u0923\u0947", slug: "pune", accent: "#ee7225" },
+  { city: "Delhi", script: "\u0926\u093f\u0932\u094d\u0932\u0940", slug: "delhi", accent: "#3f4e80" },
+  { city: "Bengaluru", script: "\u0cac\u0cc6\u0c82\u0c97\u0cb3\u0cc2\u0cb0\u0cc1", slug: "bengaluru", accent: "#df433f" },
+  { city: "Kochi", script: "\u0d15\u0d4a\u0d1a\u0d4d\u0d1a\u0d3f", slug: "kochi", accent: "#5ca152" },
+];
 const gigsTalksCards = [
   {
     slug: "lokesh-zope",
@@ -396,6 +405,54 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                   ))
                 }
               </div>
+            </div>
+
+            <div class="mt-24">
+              <ScrollReveal client:load>
+                <p class="text-center text-xs font-bold tracking-wide text-blue">
+                  Community chapters
+                </p>
+                <p class="mx-auto mt-3 max-w-xl text-center text-lg font-black leading-tight text-ink sm:text-xl">
+                  Develop logos for each community chapter for each city with an illustrative
+                  style.
+                </p>
+              </ScrollReveal>
+
+              <ul class="mt-12 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-5 lg:gap-x-4">
+                {
+                  freloChapters.map((c, i) => (
+                    <ScrollReveal client:load delay={Math.min(i, 4) * 0.07}>
+                      <li
+                        class="group flex flex-col items-center focus:outline-none"
+                        tabindex="0"
+                        style={`--chapter: ${c.accent};`}
+                      >
+                        {/* The badge is already a circle on white, so the round
+                            frame only has to carry the ring and the glow. */}
+                        <div class="relative aspect-square w-full">
+                          <span
+                            aria-hidden="true"
+                            class="absolute inset-0 rounded-full border-2 border-[var(--chapter)] opacity-0 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 group-hover:opacity-100 group-focus-visible:scale-105 group-focus-visible:opacity-100"
+                          />
+                          <img
+                            src={`/img/projects/frelo/chapters/${c.slug}.webp`}
+                            alt={`Frelo ${c.city} chapter logo, the city drawn in line art around the Frelo mark`}
+                            width={760}
+                            height={760}
+                            loading="lazy"
+                            class="h-full w-full rounded-full object-contain transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1.5 group-hover:scale-[1.04] group-focus-visible:-translate-y-1.5 group-focus-visible:scale-[1.04]"
+                          />
+                        </div>
+
+                        <p class="mt-4 text-sm font-bold text-ink transition-colors duration-300 group-hover:text-[var(--chapter)] group-focus-visible:text-[var(--chapter)]">
+                          {c.city}
+                        </p>
+                        <p class="mt-0.5 text-xs text-ink-muted">{c.script}</p>
+                      </li>
+                    </ScrollReveal>
+                  ))
+                }
+              </ul>
             </div>
           </div>
         ) : null
