@@ -13,6 +13,9 @@ export type Project = {
   live: boolean;
   links: { label: string; href: string }[];
   galleryCount: number;
+  // When set, the case study is served as the PDF itself rather than as
+  // generated page images, and the gallery is skipped.
+  pdf?: string;
 };
 
 export const projects: Project[] = [
@@ -46,7 +49,8 @@ export const projects: Project[] = [
     timeline: "3 months",
     live: false,
     links: [],
-    galleryCount: 20,
+    galleryCount: 0,
+    pdf: "/pdf/drive.pdf",
   },
   {
     slug: "aria",
@@ -74,7 +78,8 @@ export const projects: Project[] = [
     timeline: "1 month",
     live: false,
     links: [],
-    galleryCount: 12,
+    galleryCount: 0,
+    pdf: "/pdf/mp4.pdf",
   },
   {
     slug: "frelo",
