@@ -40,7 +40,8 @@ export const projects: Project[] = [
     category: "UI/UX",
     filterCategory: "UI/UX",
     thumb: "/img/projects/drive-thumb.webp",
-    thumbAlt: "DRIVE title slide, the steering wheel of an autonomous car",
+    thumbAlt:
+      "A driver in dark glasses at the wheel of an autonomous car, the dashboard reading \u201cAI co-driver: in 50 meters, take a left turn\u201d",
     description:
       "A speculative project asking how visually impaired people might experience driving in an autonomous future. DRIVE is an AI co-driver that pairs a tactile steering and pedal interface with a conversational companion and an environmental soundscape, so the vehicle handles the driving while the person keeps the agency and the feel of the road. Eleven prototypes across three phases took it from laser-cut cardboard to 3D-printed haptics and live electronics.",
     timeline: "3 months",
