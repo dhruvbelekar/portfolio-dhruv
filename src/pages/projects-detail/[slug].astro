@@ -397,35 +397,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
     </div>
 
     {
-      project.pdf && (
-        <div class="mt-16 pb-[var(--space-section)]">
-          {/* Served as the PDF itself. Mobile browsers refuse to scroll an
-              embedded PDF, so they get the link instead of a dead frame. */}
-          <object
-            data={`${project.pdf}#toolbar=0&navpanes=0&view=FitH`}
-            type="application/pdf"
-            class="hidden h-[calc(100vh-6rem)] w-full md:block"
-          >
-            <p class="px-6 text-center text-sm text-ink-muted">
-              Your browser cannot display PDFs inline.
-            </p>
-          </object>
-          <div class="px-6 pt-6 text-center md:px-10">
-            <a
-              href={project.pdf}
-              target="_blank"
-              rel="noreferrer"
-              class="inline-block text-sm font-bold text-blue transition-transform duration-300 ease-out hover:-translate-y-0.5"
-            >
-              Open the full case study PDF
-            </a>
-          </div>
-        </div>
-      )
-    }
-
-    {
-      !isBento && !project.pdf && (
+      !isBento && (
         <div class={`mt-16 flex flex-col pb-[var(--space-section)] ${isMp4 ? "gap-0" : "gap-8"}`}>
             {
               gallery.map((img, i) => (
