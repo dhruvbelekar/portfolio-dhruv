@@ -406,10 +406,10 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
           class={`mt-16 flex flex-col pb-[var(--space-section)] ${isSeamless ? "gap-0" : "gap-8"}`}
         >
             {
-              gallery.map((img, i) => (
-                <ScrollReveal client:load delay={Math.min(i, 4) * 0.06}>
-                  {
-                    img.type === "video" ? (
+              gallery.map((img, i) => {
+                const item = (
+                  <>
+                    {img.type === "video" ? (
                       <>
                         <video
                           src={img.src}
@@ -441,10 +441,20 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                         loading="lazy"
                         class={`block w-full object-cover ${isSeamless && i > 0 ? "-mt-px" : ""}`}
                       />
-                    )
-                  }
-                </ScrollReveal>
-            ))
+                    )}
+                  </>
+                );
+                // A seamless gallery must not use the reveal: it holds each item
+                // 24px low until it scrolls in, which opens a gap under the one
+                // above and closes it again as it animates.
+                return isSeamless ? (
+                  item
+                ) : (
+                  <ScrollReveal client:load delay={Math.min(i, 4) * 0.06}>
+                    {item}
+                  </ScrollReveal>
+                );
+              })
           }
         </div>
       )
