@@ -64,6 +64,10 @@ const isMp4 = project.slug === "mp4";
 const isAiFilm = project.slug === "ai-film";
 const isPassionProject = project.slug === "passion-project";
 const isDrive = project.slug === "drive";
+// Mp4 is one continuous artboard and Drive is a deck whose pages carry their
+// own tinted background: in both, a gap between items shows as a white band,
+// so they butt together with a hairline overlap against fractional scaling.
+const isSeamless = isMp4 || isDrive;
 // Passion Project's cover is a poster and Drive's is a deck slide; both are
 // shown whole. Every other cover runs edge to edge, cropped to 16:9.
 const coverFitsNatural = isPassionProject || isDrive;
@@ -398,7 +402,9 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
 
     {
       !isBento && (
-        <div class={`mt-16 flex flex-col pb-[var(--space-section)] ${isMp4 ? "gap-0" : "gap-8"}`}>
+        <div
+          class={`mt-16 flex flex-col pb-[var(--space-section)] ${isSeamless ? "gap-0" : "gap-8"}`}
+        >
             {
               gallery.map((img, i) => (
                 <ScrollReveal client:load delay={Math.min(i, 4) * 0.06}>
@@ -433,7 +439,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                         height={img.height}
                         alt=""
                         loading="lazy"
-                        class={`block w-full object-cover ${isMp4 && i > 0 ? "-mt-px" : ""}`}
+                        class={`block w-full object-cover ${isSeamless && i > 0 ? "-mt-px" : ""}`}
                       />
                     )
                   }
