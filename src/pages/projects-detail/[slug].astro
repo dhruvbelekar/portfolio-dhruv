@@ -73,6 +73,7 @@ const isMp4 = project.slug === "mp4";
 const isAiFilm = project.slug === "ai-film";
 const isPassionProject = project.slug === "passion-project";
 const isDrive = project.slug === "drive";
+const isAria = project.slug === "aria";
 // Mp4 is one continuous artboard and Drive is a deck whose pages carry their
 // own tinted background: in both, a gap between items shows as a white band,
 // so they butt together with a hairline overlap against fractional scaling.
@@ -102,6 +103,8 @@ const trailingVideos: Record<
   "ai-film": { index: 12, hoverSound: true },
   "passion-project": { index: 12, hoverSound: true },
   coke: { index: 7, hoverSound: true },
+  // Aria's deck runs 21 pages and then hands over to the product film.
+  aria: { index: 21, hoverSound: true },
   // The mockup clip is 1288x962; edge to edge it upscales and towers over the
   // stills around it, so it is capped at its comfortable reading size.
   mahavitaran: {
@@ -155,7 +158,7 @@ const gallery = await Promise.all(
         fadeEdges: trailingVideo.fadeEdges,
       };
     }
-    const ext = isAiFilm || isMp4 || isDrive ? "webp" : "png";
+    const ext = isAiFilm || isMp4 || isDrive || isAria ? "webp" : "png";
     const src = `/img/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.${ext}`;
     const { width, height } = await sharp(path.join(process.cwd(), "public", src)).metadata();
     return { type: "image", src, width, height };
