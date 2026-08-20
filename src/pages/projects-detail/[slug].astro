@@ -119,12 +119,25 @@ const trailingVideo = trailingVideos[project.slug];
 // tint on past the cropped edge and the join is invisible. The proportions
 // below are measured off the 2400px slide: the photo sat 5.42% in from each
 // side, with 280px of panel and a 96px white margin under it.
-const slideClips: Record<string, { index: number; clips: { src: string; label: string }[] }> = {
+const slideClips: Record<
+  string,
+  { index: number; clips: { src: string; label: string; volume?: number }[] }
+> = {
   drive: {
     index: 15,
     clips: [
-      { src: "/video/projects/drive/responsive-testing-01.mp4", label: "Pedal rig driving the simulation on the bench" },
-      { src: "/video/projects/drive/responsive-testing-02.mp4", label: "The steering console under test in a car at night" },
+      {
+        src: "/video/projects/drive/responsive-testing-01.mp4",
+        label: "Pedal rig driving the simulation on the bench",
+      },
+      {
+        // Recorded in the car and about 10dB hotter than the bench clip, which
+        // would jump in loudness moving from one to the other. Held back to sit
+        // level with it.
+        src: "/video/projects/drive/responsive-testing-02.mp4",
+        label: "The steering console under test in a car at night",
+        volume: 0.35,
+      },
     ],
   },
 };
@@ -527,6 +540,8 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                                 {slideClip.clips.map((clip) => (
                                   <video
                                     data-lazy-src={clip.src}
+                                    data-hover-sound="true"
+                                    data-volume={clip.volume?.toString()}
                                     width="1920"
                                     height="1080"
                                     preload="none"
@@ -619,7 +634,12 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
 <script>
   document.querySelectorAll<HTMLVideoElement>('video[data-hover-sound="true"]').forEach((video) => {
     video.addEventListener("mouseenter", () => {
+      video.volume = Number(video.dataset.volume ?? 1);
       video.muted = false;
+      video.play().catch(() => {
+        video.muted = true;
+        video.play().catch(() => {});
+      });
     });
     video.addEventListener("mouseleave", () => {
       video.muted = true;
