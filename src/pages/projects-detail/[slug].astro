@@ -113,6 +113,24 @@ const trailingVideos: Record<
 };
 const trailingVideo = trailingVideos[project.slug];
 
+// DRIVE's responsive-testing slide made its point with a still lifted from the
+// footage below, so the still was cropped off the slide and the two clips play
+// where it sat. The deck panel is a flat #FCFBFE, so the wrapper can carry the
+// tint on past the cropped edge and the join is invisible. The proportions
+// below are measured off the 2400px slide: the photo sat 5.42% in from each
+// side, with 280px of panel and a 96px white margin under it.
+const slideClips: Record<string, { index: number; clips: { src: string; label: string }[] }> = {
+  drive: {
+    index: 15,
+    clips: [
+      { src: "/video/projects/drive/responsive-testing-01.mp4", label: "Pedal rig driving the simulation on the bench" },
+      { src: "/video/projects/drive/responsive-testing-02.mp4", label: "The steering console under test in a car at night" },
+    ],
+  },
+};
+const slideClip = slideClips[project.slug];
+const slidePanel = "#FCFBFE";
+
 const gallery = await Promise.all(
   Array.from({ length: project.galleryCount }, (_, i) => i).map(async (i) => {
     if (trailingVideo && i === trailingVideo.index) {
@@ -493,14 +511,38 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                         )}
                       </>
                     ) : (
-                      <img
-                        src={img.src}
-                        width={img.width}
-                        height={img.height}
-                        alt=""
-                        loading="lazy"
-                        class={`block w-full object-cover ${isSeamless && i > 0 ? "-mt-px" : ""}`}
-                      />
+                      <>
+                        <img
+                          src={img.src}
+                          width={img.width}
+                          height={img.height}
+                          alt=""
+                          loading="lazy"
+                          class={`block w-full object-cover ${isSeamless && i > 0 ? "-mt-px" : ""}`}
+                        />
+                        {slideClip && i === slideClip.index && (
+                          <div style="padding-bottom: 4%">
+                            <div style={`background: ${slidePanel}; padding: 0 5.42% 11.67%;`}>
+                              <div class="flex flex-col gap-[1.2%] md:flex-row">
+                                {slideClip.clips.map((clip) => (
+                                  <video
+                                    data-lazy-src={clip.src}
+                                    width="1920"
+                                    height="1080"
+                                    preload="none"
+                                    autoplay
+                                    muted
+                                    loop
+                                    playsinline
+                                    aria-label={clip.label}
+                                    class="h-auto w-full min-w-0 md:flex-1"
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </>
                     )}
                   </>
                 );
