@@ -82,12 +82,10 @@ const isSeamless = isMp4 || isDrive || isAria;
 // Passion Project's cover is a poster and Drive's is a wide still; both are
 // shown whole. Every other cover runs edge to edge, cropped to 16:9.
 const coverFitsNatural = isPassionProject || isDrive || isBento;
-const thumbSize = coverFitsNatural
-  ? await sharp(path.join(process.cwd(), "public", project.thumb)).metadata()
-  : null;
+const thumbSize = await sharp(path.join(process.cwd(), "public", project.thumb)).metadata();
 // A cover that is portrait or square would stand as tall as the page is wide
 // if run edge to edge, so those stay contained and height-capped instead.
-const coverIsTall = thumbSize ? thumbSize.height >= thumbSize.width : false;
+const coverIsTall = coverFitsNatural && thumbSize.height >= thumbSize.width;
 
 // A capped clip stops short of the page edge, so its own left and right edges
 // show as hard borders. Masking the outer tenth of each side fades the footage
@@ -99,18 +97,19 @@ const sideFadeStyle = `-webkit-mask-image: ${sideFade}; mask-image: ${sideFade};
 // `hoverSound` unmutes on hover, so it is only for clips that carry audio.
 const trailingVideos: Record<
   string,
-  { index: number; hoverSound: boolean; maxWidth?: string; fadeEdges?: boolean }
+  { index: number; hoverSound: boolean; width: number; maxWidth?: string; fadeEdges?: boolean }
 > = {
-  "ai-film": { index: 12, hoverSound: true },
-  "passion-project": { index: 12, hoverSound: true },
-  coke: { index: 7, hoverSound: true },
+  "ai-film": { index: 12, hoverSound: true, width: 1280 },
+  "passion-project": { index: 12, hoverSound: true, width: 1278 },
+  coke: { index: 7, hoverSound: true, width: 1280 },
   // Aria's artboard arrives in 14 slices and then hands over to the product film.
-  aria: { index: 14, hoverSound: true },
+  aria: { index: 14, hoverSound: true, width: 1920 },
   // The mockup clip is 1288x962; edge to edge it upscales and towers over the
   // stills around it, so it is capped at its comfortable reading size.
   mahavitaran: {
     index: 14,
     hoverSound: false,
+    width: 1288,
     maxWidth: "mx-auto w-full max-w-[1000px]",
     fadeEdges: true,
   },
@@ -155,6 +154,7 @@ const gallery = await Promise.all(
         type: "video",
         src: `/video/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.mp4`,
         hoverSound: trailingVideo.hoverSound,
+        width: trailingVideo.width,
         maxWidth: trailingVideo.maxWidth,
         fadeEdges: trailingVideo.fadeEdges,
       };
@@ -196,13 +196,17 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
             alt={project.thumbAlt}
             width={thumbSize.width}
             height={thumbSize.height}
-            class="w-full"
+            class="mx-auto w-full"
+            style={`max-width: ${thumbSize.width}px`}
           />
         ) : (
           <img
             src={project.thumb}
             alt={project.thumbAlt}
-            class="aspect-[16/9] w-full object-cover"
+            width={thumbSize.width}
+            height={thumbSize.height}
+            class="mx-auto aspect-[16/9] w-full object-cover"
+            style={`max-width: ${thumbSize.width}px`}
           />
         )
       }
@@ -213,7 +217,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
         <ScrollReveal client:load>
           <h1
             class={`font-black leading-none ${titleColor}`}
-            style="font-family: var(--font-display); font-size: var(--type-heading); font-size: clamp(2.5rem, 1.5rem + 5vw, 5rem);"
+            style="font-family: var(--font-display); font-size: var(--type-heading); font-size: clamp(2.5rem, 1.5rem + var(--shell) * 0.05, 5rem);"
           >
             {project.title}
           </h1>
@@ -422,7 +426,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                               loading="lazy"
                               class="w-[60%]"
                             />
-                            <p class="text-[clamp(0.58rem,0.42rem+0.36vw,0.78rem)] leading-[1.45] text-ink">
+                            <p class="text-[clamp(0.58rem,0.42rem+var(--shell)*0.0036,0.78rem)] leading-[1.45] text-ink">
                               {card.note}
                             </p>
                             <img
@@ -535,7 +539,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                           height={img.height}
                           alt=""
                           loading="lazy"
-                          class={`block w-full object-cover ${isSeamless && i > 0 ? "-mt-px" : ""}`}
+                          class="block w-full object-cover"
                         />
                         {slideClip && i === slideClip.index && (
                           <div style="padding-bottom: 4%">
@@ -565,14 +569,27 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                     )}
                   </>
                 );
+                // Artwork runs edge to edge, which on a monitor wider than the
+                // artwork itself means upscaling it — a 1280px clip stretched
+                // across 3440px is visibly soft. Each item stops at its own
+                // native width and centres beyond that, so the bleed still
+                // reaches the edges on a laptop and never blurs on a monitor.
+                const framed = (
+                  <div
+                    class={`mx-auto w-full ${isSeamless && i > 0 ? "-mt-px" : ""}`}
+                    style={`max-width: ${img.width}px`}
+                  >
+                    {item}
+                  </div>
+                );
                 // A seamless gallery must not use the reveal: it holds each item
                 // 24px low until it scrolls in, which opens a gap under the one
                 // above and closes it again as it animates.
                 return isSeamless ? (
-                  item
+                  framed
                 ) : (
                   <ScrollReveal client:load delay={Math.min(i, 4) * 0.06}>
-                    {item}
+                    {framed}
                   </ScrollReveal>
                 );
               })

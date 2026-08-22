@@ -23,17 +23,28 @@
 
 :root {
   /*
-    Giant section headlines scale with viewport width on the live site
-    (measured ~461px at 1280px viewport for the hero wordmark). Exact
-    clamp formula wasn't independently recoverable from computed pixel
-    values, so these are tuned to land close to the measured sizes at
-    common breakpoints rather than copied from a source stylesheet.
+    Every section is a 1400px column inside 40px gutters, so the layout stops
+    growing at 1480px. Type measured in vw does not: past a laptop it keeps
+    growing while the column it sits in stands still, and on a wide monitor
+    the two visibly come apart. The shell is the width the page actually
+    uses — identical to the viewport up to 1480px, fixed beyond it — and
+    everything below scales off that, so a large monitor gets the laptop
+    layout centred rather than a stretched one.
   */
-  --type-hero: clamp(3.5rem, 2rem + 14vw, 14rem);
-  --type-section: clamp(2.5rem, 1.5rem + 8vw, 9.5rem);
-  --type-heading: clamp(1.75rem, 1.3rem + 2vw, 2.5rem);
+  --shell: min(100vw, 1480px);
 
-  --space-section: clamp(4rem, 3rem + 6vw, 9rem);
+  /*
+    Giant section headlines scale with the shell (measured ~461px at 1280px
+    viewport for the hero wordmark). Exact clamp formula wasn't independently
+    recoverable from computed pixel values, so these are tuned to land close
+    to the measured sizes at common breakpoints rather than copied from a
+    source stylesheet.
+  */
+  --type-hero: clamp(3.5rem, 2rem + var(--shell) * 0.14, 14rem);
+  --type-section: clamp(2.5rem, 1.5rem + var(--shell) * 0.08, 9.5rem);
+  --type-heading: clamp(1.75rem, 1.3rem + var(--shell) * 0.02, 2.5rem);
+
+  --space-section: clamp(4rem, 3rem + var(--shell) * 0.06, 9rem);
 }
 
 html {

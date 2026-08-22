@@ -27,7 +27,7 @@ export default function StatCounter({ target, suffix = "", label, duration = 1.8
     <div ref={ref} className="text-center">
       <p
         className="font-black leading-none text-blue"
-        style={{ fontFamily: "var(--font-display)", fontSize: "clamp(3.5rem, 3rem + 4vw, 6.5rem)" }}
+        style={{ fontFamily: "var(--font-display)", fontSize: "clamp(3.5rem, 3rem + var(--shell) * 0.04, 6.5rem)" }}
       >
         {count}
         {suffix}

@@ -20,7 +20,7 @@ const social = [
     <a href="mailto:dhruv.belekar@gmail.com" class="group block">
       <h2
         class="select-none text-center font-bold leading-[1.1] text-blue transition-colors duration-500 ease-out group-hover:text-ink"
-        style="font-family: var(--font-display); font-size: clamp(3rem, 16.5vw, 260px); letter-spacing: -0.05em;"
+        style="font-family: var(--font-display); font-size: clamp(3rem, var(--shell) * 0.165, 260px); letter-spacing: -0.05em;"
       >
         Get in touch
       </h2>
@@ -50,14 +50,14 @@ const social = [
     <div class="mt-16 grid grid-cols-1 gap-10 border-t border-black/10 pt-10 sm:grid-cols-[2fr_1.3fr_1.3fr_0.5fr] sm:items-start">
       <p
         class="select-none font-bold uppercase leading-[0.9] text-blue"
-        style="font-family: var(--font-display); font-size: clamp(2.5rem, 5.5vw, 80px); letter-spacing: -0.04em;"
+        style="font-family: var(--font-display); font-size: clamp(2.5rem, var(--shell) * 0.055, 80px); letter-spacing: -0.04em;"
       >
         Dhruv<br />Belekar
       </p>
 
       <div>
         <p class="mb-3 text-base text-gray">(Navigate)</p>
-        <ul class="font-bold text-blue" style="font-size: clamp(1.25rem, 2.5vw, 36px); letter-spacing: -0.04em;">
+        <ul class="font-bold text-blue" style="font-size: clamp(1.25rem, var(--shell) * 0.025, 36px); letter-spacing: -0.04em;">
           {
             navigate.map((item) => (
               <li>
@@ -75,7 +75,7 @@ const social = [
 
       <div>
         <p class="mb-3 text-base text-gray">(Social)</p>
-        <ul class="font-bold text-blue" style="font-size: clamp(1.25rem, 2.5vw, 36px); letter-spacing: -0.04em;">
+        <ul class="font-bold text-blue" style="font-size: clamp(1.25rem, var(--shell) * 0.025, 36px); letter-spacing: -0.04em;">
           {
             social.map((item) => (
               <li>
