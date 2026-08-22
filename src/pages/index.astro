@@ -21,46 +21,42 @@ import {
   <IntroLoader />
 
   <!-- Hero -->
-  <section class="flex min-h-[calc(100svh-96px)] flex-col overflow-x-hidden px-6 sm:min-h-[calc(100svh-112px)]">
-    <div class="mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-center pt-6">
-      {/*
-        The mark sits above the wordmark, off its axis so it reads as a sticker
-        rather than a logo lockup. Both faces are stacked and cross-faded, which
-        keeps the swap instant — a second file fetched on first hover would
-        arrive after the pointer had gone. `active` carries it to touch, where
-        there is no hover to trigger.
-      */}
-      <div
-        class="group mx-auto w-[clamp(72px,var(--shell)*0.09,150px)] select-none"
-        style="perspective: 600px;"
-      >
-        <div
-          class="relative -rotate-6 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:rotate-3 group-hover:scale-105 group-active:rotate-3 group-active:scale-105 motion-reduce:transition-none"
-        >
-          <img
-            src="/img/hero/face.webp"
-            width={420}
-            height={420}
-            alt="Dhruv Belekar, drawn in blue line art"
-            fetchpriority="high"
-            class="w-full transition-opacity duration-300 ease-out group-hover:opacity-0 group-active:opacity-0"
-          />
-          <img
-            src="/img/hero/face-tongue.webp"
-            width={420}
-            height={420}
-            alt=""
-            aria-hidden="true"
-            class="absolute inset-0 w-full opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100 group-active:opacity-100"
-          />
-        </div>
-      </div>
-
+  <section class="overflow-x-hidden px-6">
+    <div class="mx-auto flex min-h-[calc(100svh-96px)] w-full max-w-[1400px] flex-col justify-center pt-6 sm:min-h-[calc(100svh-112px)]">
       <h1
-        class="mt-[clamp(0.75rem,var(--shell)*0.02,28px)] select-none text-center font-bold leading-[0.8] text-blue"
+        class="select-none text-center font-bold leading-[0.8] text-blue"
         style="font-family: var(--font-display); font-size: clamp(1.5rem, var(--shell) * 0.135, 380px); letter-spacing: -0.05em;"
       >
-        <span class="block whitespace-nowrap">dhruv belekar</span>
+        <span class="relative inline-block whitespace-nowrap">
+          {/*
+            Both faces ship stacked and cross-faded: fetching the second on first
+            hover would land it after the pointer had gone. `active` carries the
+            swap to touch, where there is no hover.
+          */}
+          <span class="group absolute -left-[0.12em] -top-[0.52em] block w-[0.78em]">
+            <span
+              class="block -rotate-[8deg] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:rotate-[5deg] group-hover:scale-105 group-active:rotate-[5deg] group-active:scale-105 motion-reduce:transition-none"
+            >
+              <img
+                src="/img/hero/face.webp"
+                width={420}
+                height={420}
+                alt="Dhruv Belekar, drawn in blue line art"
+                fetchpriority="high"
+                class="w-full transition-opacity duration-300 ease-out group-hover:opacity-0 group-active:opacity-0"
+              />
+              <img
+                src="/img/hero/face-tongue.webp"
+                width={420}
+                height={420}
+                alt=""
+                aria-hidden="true"
+                class="absolute inset-0 w-full opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100 group-active:opacity-100"
+              />
+            </span>
+          </span>
+          dhruv belekar
+        </span>
       </h1>
       <p
         class="font-bold leading-tight text-gray-400"
