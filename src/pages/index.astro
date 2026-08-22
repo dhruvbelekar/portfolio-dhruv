@@ -22,10 +22,13 @@ import {
 
   <!-- Hero -->
   <section class="overflow-x-hidden px-6">
-    <div class="mx-auto flex min-h-[calc(100svh-96px)] w-full max-w-[1400px] flex-col justify-center pt-6 sm:min-h-[calc(100svh-112px)]">
+    <div
+      class="mx-auto flex min-h-[calc(100svh-96px)] w-full max-w-[1400px] flex-col justify-center pt-6 sm:min-h-[calc(100svh-112px)]"
+      style="--name-font: clamp(1.5rem, var(--shell) * 0.135, 380px); --name-width: calc(var(--name-font) * 5.7);"
+    >
       <h1
         class="select-none text-center font-bold leading-[0.8] text-blue"
-        style="font-family: var(--font-display); font-size: clamp(1.5rem, var(--shell) * 0.135, 380px); letter-spacing: -0.05em;"
+        style="font-family: var(--font-display); font-size: var(--name-font); letter-spacing: -0.05em;"
       >
         <span class="relative inline-block whitespace-nowrap">
           {/*
@@ -59,8 +62,8 @@ import {
         </span>
       </h1>
       <p
-        class="font-bold leading-tight text-gray-400"
-        style="font-family: var(--font-display); font-size: clamp(1.125rem, var(--shell) * 0.028, 40px); text-indent: 42%; margin-top: clamp(1rem, var(--shell) * 0.048, 70px);"
+        class="mx-auto w-full font-bold leading-tight text-gray-400"
+        style="font-family: var(--font-display); font-size: clamp(1.125rem, var(--shell) * 0.028, 40px); text-indent: 42%; margin-top: clamp(1rem, var(--shell) * 0.048, 70px); max-width: var(--name-width);"
       >
         I design <span class="text-blue">digital experiences</span>,{" "}
         create <span class="text-blue">visual stories</span>,{" "}
