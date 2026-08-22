@@ -232,7 +232,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
           <p class={`mt-6 max-w-2xl text-base sm:text-lg ${descriptionColor}`}>{project.description}</p>
         </ScrollReveal>
 
-        <ScrollReveal client:load delay={0.1} className="flex flex-col gap-4 sm:min-w-[220px]">
+        <ScrollReveal client:load delay={0.1} className="flex flex-col gap-6 sm:min-w-[280px]">
           {
             project.timeline && (
               <div>
@@ -241,29 +241,58 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
               </div>
             )
           }
+          {/*
+            These are the only places a visitor can go and use the work, and as
+            a stack of small text links they read as captions — people scrolled
+            straight past them. They are the page's call to action, so they are
+            sized and coloured like one.
+          */}
           {
-            project.live && (
-              <span class="w-fit rounded-full bg-blue/10 px-3 py-1 text-xs font-bold text-blue">
-                Live Project
-              </span>
+            project.links.length > 0 && (
+              <div class={`rounded-2xl border p-4 ${isDark ? "border-white/15 bg-white/5" : "border-blue/15 bg-blue/[0.04]"}`}>
+                <p class={`flex items-center gap-2 text-xs font-bold tracking-wide ${project.live ? "text-blue" : labelColor}`}>
+                  {project.live && (
+                    <span class="relative flex h-2 w-2 shrink-0" aria-hidden="true">
+                      <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue opacity-75 motion-reduce:hidden" />
+                      <span class="relative inline-flex h-2 w-2 rounded-full bg-blue" />
+                    </span>
+                  )}
+                  {project.live ? "Live — try it yourself" : "Links"}
+                </p>
+                <ul class="mt-3 space-y-2">
+                  {project.links.map((link) => (
+                    <li>
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        class="group flex items-center justify-between gap-3 rounded-xl bg-blue px-4 py-3 text-sm font-bold text-paper shadow-[0_6px_18px_rgba(19,67,240,0.22)] transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(19,67,240,0.34)] focus-visible:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue focus-visible:ring-offset-2"
+                      >
+                        <span class="min-w-0 break-words">{link.label}</span>
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                          class="h-4 w-4 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                        >
+                          <path d="M7 17 17 7M8 7h9v9" />
+                        </svg>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )
           }
           {
-            project.links.length > 0 && (
-              <ul class="space-y-1">
-                {project.links.map((link) => (
-                  <li>
-                    <a
-                      href={link.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      class="inline-block text-sm font-bold text-blue transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:translate-x-1.5"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+            project.live && project.links.length === 0 && (
+              <span class="w-fit rounded-full bg-blue/10 px-3 py-1 text-xs font-bold text-blue">
+                Live Project
+              </span>
             )
           }
         </ScrollReveal>
