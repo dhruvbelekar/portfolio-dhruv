@@ -17,10 +17,17 @@ export function getStaticPaths() {
 const { project, next } = Astro.props;
 
 const isBento = project.slug === "frelo";
-const freloMarqueeReels = Array.from(
-  { length: 8 },
-  (_, i) => `/video/projects/frelo/marquee/reel-${String(i + 1).padStart(2, "0")}.mp4`
-);
+// The reels are 607x1080. Without those numbers on the element a video is
+// 300px wide until it loads, so the marquee track measured ~2x too wide and
+// snapped narrower as the clips arrived — worst on a phone, where 25MB of
+// footage takes longest to land. The poster fills the frame in the meantime.
+const freloMarqueeReels = Array.from({ length: 8 }, (_, i) => {
+  const n = String(i + 1).padStart(2, "0");
+  return {
+    src: `/video/projects/frelo/marquee/reel-${n}.mp4`,
+    poster: `/img/projects/frelo/reels/reel-${n}.webp`,
+  };
+});
 const gigsTalksBlurb = {
   label: "Gigs & Talks \u00b7 Presented by Pearl Academy",
   heading: "Navigating opportunities in Design and Creative Domains in the age of AI",
@@ -331,9 +338,12 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
             <ScrollReveal client:load delay={0.15} className="mt-16">
               <Marquee client:load direction="right" speed={40} gap="1.25rem">
                 {
-                  freloMarqueeReels.map((src) => (
+                  freloMarqueeReels.map((reel) => (
                     <video
-                      data-lazy-src={src}
+                      data-lazy-src={reel.src}
+                      poster={reel.poster}
+                      width={607}
+                      height={1080}
                       preload="none"
                       autoplay
                       muted

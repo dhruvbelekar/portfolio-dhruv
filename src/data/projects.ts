@@ -200,9 +200,9 @@ export const skillsRowA = ["UI/UX Design", "Brand Identity", "Visual Design"];
 export const skillsRowB = ["Creative Direction", "Photography", "Filmmaking", "AI"];
 
 export const clientLogos = [
-  "/img/logos/logo-1.png",
-  "/img/logos/logo-2.png",
-  "/img/logos/logo-3.png",
-  "/img/logos/logo-4.png",
-  "/img/logos/logo-5.png",
+  { src: "/img/logos/logo-1.png", width: 653, height: 122 },
+  { src: "/img/logos/logo-2.png", width: 584, height: 339 },
+  { src: "/img/logos/logo-3.png", width: 682, height: 244 },
+  { src: "/img/logos/logo-4.png", width: 2306, height: 785 },
+  { src: "/img/logos/logo-5.png", width: 1173, height: 260 },
 ];

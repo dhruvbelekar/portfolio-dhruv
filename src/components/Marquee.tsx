@@ -25,14 +25,23 @@ export default function Marquee({
       <div
         className="flex w-max motion-reduce:animate-none"
         style={{
-          gap,
           animation: `marquee-${direction} ${speed}s linear infinite`,
         }}
       >
-        <div className="flex shrink-0 items-center" style={{ gap }}>
+        {/*
+          The loop translates the track by -50%, so the copy must sit exactly
+          half a track along. A gap on this flex row would land it half a gap
+          short and the marquee would jump by that much every cycle; each copy
+          carries its own trailing gap instead.
+        */}
+        <div className="flex shrink-0 items-center" style={{ gap, paddingRight: gap }}>
           {children}
         </div>
-        <div className="flex shrink-0 items-center" aria-hidden="true" style={{ gap }}>
+        <div
+          className="flex shrink-0 items-center"
+          aria-hidden="true"
+          style={{ gap, paddingRight: gap }}
+        >
           {children}
         </div>
       </div>
