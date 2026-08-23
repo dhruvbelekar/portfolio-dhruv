@@ -10,44 +10,31 @@ import { experience } from "../data/projects";
     Experience
   </h3>
 
-  {/* A rail rather than a table: the dates run down one line so the roles read
-      as a sequence, and the current one is marked with the same live dot the
-      project pages use. The rail is drawn on the list itself so it stops at the
-      last entry instead of running past it. */}
-  <ol class="mx-auto mt-12 max-w-2xl border-l border-ink/10 pl-6 sm:pl-10">
+  <ul class="mx-auto mt-10 max-w-2xl">
     {
       experience.map((e) => (
-        <li class="group relative pb-10 last:pb-0">
-          <span
-            aria-hidden="true"
-            class="absolute -left-[calc(1.5rem+5px)] top-2 flex h-[9px] w-[9px] sm:-left-[calc(2.5rem+5px)]"
-          >
-            {e.current && (
-              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue opacity-75 motion-reduce:hidden" />
-            )}
-            <span
-              class={`relative inline-flex h-[9px] w-[9px] rounded-full ${e.current ? "bg-blue" : "bg-ink/20 transition-colors duration-300 group-hover:bg-blue"}`}
-            />
-          </span>
+        <li class="group border-b border-ink/10 first:border-t">
+          <div class="grid grid-cols-1 items-center gap-2 px-4 py-6 text-center sm:grid-cols-3 sm:gap-4 sm:py-7">
+            {/* Three equal columns keep the logos, roles and dates on their own
+                vertical lines while the block stays centred under the heading.
+                The logo stands in for the company name, so alt carries it. */}
+            <span class="flex h-7 items-center justify-center">
+              <img
+                src={e.logo}
+                alt={e.company}
+                loading="lazy"
+                class="h-6 w-auto max-w-full object-contain transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 sm:h-7"
+              />
+            </span>
 
-          <p class="text-xs font-bold tracking-wide text-ink-muted">{e.dates}</p>
-
-          <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
-            <h4 class="text-xl font-bold text-ink transition-colors duration-300 group-hover:text-blue sm:text-2xl">
+            <p class="text-base font-bold text-ink transition-colors duration-300 group-hover:text-blue sm:text-lg">
               {e.role}
-            </h4>
-            {/* The logo stands in for the company name, so alt carries it. */}
-            <img
-              src={e.logo}
-              alt={e.company}
-              loading="lazy"
-              class="h-5 w-auto max-w-[120px] object-contain opacity-70 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 group-hover:opacity-100 sm:h-6"
-            />
-          </div>
+            </p>
 
-          {e.note && <p class="mt-2 max-w-md text-sm text-ink-muted sm:text-base">{e.note}</p>}
+            <p class="text-sm text-ink-muted sm:text-base">{e.dates}</p>
+          </div>
         </li>
       ))
     }
-  </ol>
+  </ul>
 </div>

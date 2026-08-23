@@ -181,43 +181,19 @@ export const testimonials = [
 ];
 
 export const experience = [
-  {
-    role: "Creative Head",
-    company: "Frelo",
-    dates: "Present",
-    logo: "/img/logos/logo-4.png",
-    current: true,
-    note: "Branding, social campaigns, content strategy, video, and the community platform.",
-  },
+  { role: "Creative Head", company: "Frelo", dates: "Present", logo: "/img/logos/logo-4.png" },
   {
     role: "Creative Designer",
     company: "AiVANTA",
     dates: "Dec 24/May 25",
     logo: "/img/logos/logo-1.png",
-    note: "",
   },
   {
     role: "Design Intern",
     company: "Lit Lamps",
     dates: "Jul 24/Dec 24",
     logo: "/img/logos/logo-5.png",
-    note: "",
   },
-];
-
-// Pulled from the work itself so the About page cannot drift from it.
-export const aboutStats = [
-  { value: projects.length, label: "Projects" },
-  { value: filterCategories.length, label: "Disciplines" },
-  { value: experience.length, label: "Roles" },
-];
-
-// The lines in the bio that people actually remember, given their own space.
-export const offTheClock = [
-  { title: "Chelsea", note: "The jersey probably gave that away.", icon: "ball" },
-  { title: "Shawarma", note: "Still chasing the city's best.", icon: "food" },
-  { title: "Silver", note: "Wearing way too much of it.", icon: "ring" },
-  { title: "Long drives", note: "The drive is better than the destination.", icon: "wheel" },
 ];
 
 export const skillsRowA = ["UI/UX Design", "Brand Identity", "Visual Design"];
