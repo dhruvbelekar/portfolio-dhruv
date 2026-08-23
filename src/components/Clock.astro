@@ -1,0 +1,19 @@
+---
+// The visitor's local time, ticking. Server-rendered as a placeholder so the
+// nav does not reflow when the first tick lands.
+---
+
+<span class="tabular-nums text-xs tracking-wide text-gray-400">
+  LOCAL / <span data-clock>--:--:--</span>
+</span>
+
+<script>
+  const el = document.querySelector<HTMLElement>("[data-clock]");
+  if (el) {
+    const tick = () => {
+      el.textContent = new Date().toLocaleTimeString("en-GB", { hour12: false });
+    };
+    tick();
+    setInterval(tick, 1000);
+  }
+</script>

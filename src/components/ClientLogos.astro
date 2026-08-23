@@ -1,5 +1,5 @@
 ---
-import Marquee from "./Marquee";
+import Marquee from "./Marquee.astro";
 import { clientLogos } from "../data/projects";
 
 // The strip runs on the home page and About. Bleed is the caller's business:
@@ -13,7 +13,7 @@ const { class: className = "" } = Astro.props;
 ---
 
 <div class={`border-y border-black/5 py-4 ${className}`}>
-  <Marquee client:load speed={100} gap="4rem">
+  <Marquee speed={100} gap="4rem">
     {
       Array(6)
         .fill(clientLogos)

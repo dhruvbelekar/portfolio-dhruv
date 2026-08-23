@@ -1,0 +1,28 @@
+---
+/*
+  Sections fade up as they come into view. This was a framer-motion island per
+  reveal — 50+ of them on the home page, every one of them hydrating React
+  before the page could settle. The animation is CSS; a single observer in
+  Layout hands out the `is-revealed` class, so the whole effect costs no
+  per-instance JavaScript at all.
+*/
+interface Props {
+  class?: string;
+  delay?: number;
+  y?: number;
+  as?: "div" | "section";
+}
+
+const { class: className = "", delay = 0, y = 24, as = "div" } = Astro.props;
+const Tag = as;
+const style = [
+  delay ? `--reveal-delay: ${delay}s` : "",
+  y !== 24 ? `--reveal-y: ${y}px` : "",
+]
+  .filter(Boolean)
+  .join("; ");
+---
+
+<Tag class:list={["reveal", className]} style={style || undefined}>
+  <slot />
+</Tag>

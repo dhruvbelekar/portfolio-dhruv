@@ -1,0 +1,115 @@
+---
+// The floating filter bar over the projects list. The active pill used to be a
+// motion-library shared layout animation; it is now one absolutely positioned
+// span that is measured and moved with a CSS transition, which reads the same
+// and ships no framework.
+interface Props {
+  categories: readonly string[];
+  itemSelector: string;
+  sectionSelector: string;
+}
+
+const { categories, itemSelector, sectionSelector } = Astro.props;
+const options = ["All", ...categories];
+---
+
+<nav
+  data-filter-nav
+  data-item-selector={itemSelector}
+  data-section-selector={sectionSelector}
+  aria-hidden="true"
+  class="pointer-events-none fixed bottom-6 left-1/2 z-40 flex max-w-[92vw] translate-y-4 -translate-x-1/2 items-center gap-1 overflow-x-auto rounded-full border border-black/[0.06] bg-[rgba(245,247,255,0.55)] p-1.5 opacity-0 shadow-[0_2px_8px_rgba(0,0,0,0.06),0_16px_40px_rgba(19,67,240,0.18)] backdrop-blur-xl backdrop-saturate-150 transition-[opacity,transform] duration-300 ease-out [&::-webkit-scrollbar]:hidden"
+  style="scrollbar-width: none"
+>
+  <span
+    data-filter-pill
+    aria-hidden="true"
+    class="pointer-events-none absolute top-1.5 bottom-1.5 left-0 rounded-full bg-blue transition-[transform,width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+    style="width: 0"
+  ></span>
+  {
+    options.map((option, i) => (
+      <button
+        type="button"
+        data-filter-option={option}
+        aria-pressed={i === 0 ? "true" : "false"}
+        class={`relative shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold tracking-wide transition-[color,transform] duration-200 active:scale-95 sm:text-sm ${
+          i === 0 ? "text-white" : "text-blue hover:text-ink"
+        }`}
+      >
+        <span class="relative">{option}</span>
+      </button>
+    ))
+  }
+</nav>
+
+<script>
+  const nav = document.querySelector<HTMLElement>("[data-filter-nav]");
+  const pill = nav?.querySelector<HTMLElement>("[data-filter-pill]");
+
+  if (nav && pill) {
+    const buttons = [...nav.querySelectorAll<HTMLButtonElement>("[data-filter-option]")];
+    const itemSelector = nav.dataset.itemSelector ?? "";
+    const section = document.querySelector<HTMLElement>(nav.dataset.sectionSelector ?? "");
+    let active = "All";
+
+    const movePill = (animate = true) => {
+      const button = buttons.find((b) => b.dataset.filterOption === active);
+      if (!button) return;
+      if (!animate) pill.style.transitionDuration = "0s";
+      pill.style.width = `${button.offsetWidth}px`;
+      pill.style.transform = `translateX(${button.offsetLeft}px)`;
+      if (!animate) {
+        // Flush the jump before transitions come back, so the first paint does
+        // not slide the pill in from the left edge.
+        void pill.offsetWidth;
+        pill.style.transitionDuration = "";
+      }
+    };
+
+    const select = (option: string) => {
+      active = option;
+      buttons.forEach((b) => {
+        const on = b.dataset.filterOption === option;
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+        b.classList.toggle("text-white", on);
+        b.classList.toggle("text-blue", !on);
+        b.classList.toggle("hover:text-ink", !on);
+      });
+      movePill();
+      document.querySelectorAll(itemSelector).forEach((item) => {
+        const category = item.getAttribute("data-project-category");
+        item.toggleAttribute("hidden", !(option === "All" || category === option));
+      });
+    };
+
+    buttons.forEach((button) =>
+      button.addEventListener("click", () => {
+        select(button.dataset.filterOption ?? "All");
+        section?.scrollIntoView({ behavior: "smooth", block: "start" });
+      })
+    );
+
+    // The bar is fixed to the bottom of the window, so left alone it follows you
+    // past the projects and sits on top of the footer, swallowing the taps meant
+    // for the Contact link. It belongs on screen only while there is something
+    // to filter.
+    const measure = () => {
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      const inProjects = rect.top < window.innerHeight && rect.bottom > 0;
+      nav.classList.toggle("opacity-0", !inProjects);
+      nav.classList.toggle("translate-y-4", !inProjects);
+      nav.classList.toggle("pointer-events-none", !inProjects);
+      nav.setAttribute("aria-hidden", inProjects ? "false" : "true");
+    };
+
+    movePill(false);
+    measure();
+    window.addEventListener("scroll", measure, { passive: true });
+    window.addEventListener("resize", () => {
+      movePill(false);
+      measure();
+    });
+  }
+</script>

@@ -2,7 +2,7 @@
 import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
-import Cursor from "../components/Cursor";
+import Cursor from "../components/Cursor.astro";
 
 interface Props {
   title?: string;
@@ -22,7 +22,20 @@ const {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" href="/favicon-source.png" type="image/png" />
+    {/*
+      Every headline on the site is set in this one file, and a font referenced
+      from a stylesheet is only discovered once that stylesheet has parsed.
+      Preloading starts it with the CSS instead of after it.
+    */}
+    <link
+      rel="preload"
+      href="/fonts/inter-latin-opsz-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta property="og:type" content="website" />
@@ -33,13 +46,86 @@ const {
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+    {/* The reveals start hidden and are released by script; without one, the page is the content. */}
+    <noscript>
+      <style>
+        .reveal {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      </style>
+    </noscript>
   </head>
   <body id="top">
-    <Cursor client:load />
+    <Cursor />
     <Nav />
     <main>
       <slot />
     </main>
     <Footer />
+
+    <script>
+      // One observer for every reveal on the page, in place of the framer-motion
+      // island each of them used to be.
+      const reveals = document.querySelectorAll<HTMLElement>(".reveal");
+
+      if (!("IntersectionObserver" in window)) {
+        document.documentElement.classList.add("no-reveal");
+      } else {
+        let observerReported = false;
+        const io = new IntersectionObserver(
+          (entries) => {
+            observerReported = true;
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add("is-revealed");
+              io.unobserve(entry.target);
+            });
+          },
+          { rootMargin: "-10% 0px" }
+        );
+
+        // Anything already on screen is released by measuring its own box. A
+        // page loaded in a background tab gets no intersection callbacks at
+        // all, so its first screen would otherwise sit blank until the visitor
+        // switched to it — hence the same sweep again on load and on the tab
+        // coming forward.
+        const sweep = () => {
+          reveals.forEach((el) => {
+            if (el.classList.contains("is-revealed")) return;
+            const rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+              el.classList.add("is-revealed");
+              io.unobserve(el);
+            }
+          });
+        };
+
+        reveals.forEach((el) => io.observe(el));
+        sweep();
+        window.addEventListener("load", sweep, { once: true });
+        window.addEventListener("pageshow", sweep);
+        // A viewport that only gets its real height after first paint (an
+        // embedded or restored window) would leave the sweep with nothing to
+        // measure against, so it runs again once there is a size to compare to.
+        window.addEventListener("resize", sweep, { passive: true });
+        document.addEventListener("visibilitychange", () => {
+          if (!document.hidden) sweep();
+        });
+
+        // Last resort. The observer does the work in every real browser, so
+        // this listener measures nothing unless the first scroll arrives with
+        // no observer callback ever having run — an unrevealed page is worse
+        // than a scroll handler.
+        const onScroll = () => {
+          if (observerReported) {
+            window.removeEventListener("scroll", onScroll);
+            return;
+          }
+          sweep();
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+      }
+    </script>
   </body>
 </html>

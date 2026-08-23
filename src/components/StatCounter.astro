@@ -1,0 +1,82 @@
+---
+// Counts up to `target` the first time it is scrolled into view. The easing is
+// the same cubic the reveals use, run over rAF rather than through a motion
+// library.
+interface Props {
+  target: number;
+  suffix?: string;
+  label?: string;
+  duration?: number;
+}
+
+const { target, suffix = "", label, duration = 1.8 } = Astro.props;
+---
+
+<div class="text-center" data-stat data-target={target} data-duration={duration}>
+  <p
+    class="font-black leading-none text-blue"
+    style="font-family: var(--font-display); font-size: clamp(3.5rem, 3rem + var(--shell) * 0.04, 6.5rem);"
+  >
+    <span data-stat-value>0</span>{suffix}
+  </p>
+  {label && <p class="mt-3 text-sm font-bold tracking-wide text-ink-muted">{label}</p>}
+</div>
+
+<script>
+  const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+
+  document.querySelectorAll<HTMLElement>("[data-stat]").forEach((el) => {
+    const value = el.querySelector<HTMLElement>("[data-stat-value]");
+    const target = Number(el.dataset.target ?? 0);
+    const duration = Number(el.dataset.duration ?? 1.8) * 1000;
+    if (!value) return;
+
+    const run = () => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        value.textContent = String(target);
+        return;
+      }
+      const start = performance.now();
+      const step = (now: number) => {
+        const t = Math.min(1, (now - start) / duration);
+        value.textContent = String(Math.round(easeOut(t) * target));
+        if (t < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+      // Frames stop in a background tab, which would strand the number partway
+      // up. Timers do not, so the final value is written either way.
+      setTimeout(() => {
+        value.textContent = String(target);
+      }, duration + 100);
+    };
+
+    if (!("IntersectionObserver" in window)) {
+      run();
+      return;
+    }
+
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      io.disconnect();
+      window.removeEventListener("scroll", check);
+      run();
+    };
+    // Same guard the reveals carry: a number frozen at zero is worse than one
+    // that counts up a beat late, so the viewport is also measured directly.
+    const check = () => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) start();
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => entry.isIntersecting && start()),
+      { rootMargin: "-10% 0px" }
+    );
+    io.observe(el);
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("load", check, { once: true });
+  });
+</script>

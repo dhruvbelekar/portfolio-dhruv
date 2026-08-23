@@ -1,5 +1,5 @@
 ---
-import Clock from "./Clock";
+import Clock from "./Clock.astro";
 
 const links = [
   { href: "/#projects", label: "PROJECTS" },
@@ -13,7 +13,7 @@ const links = [
   <nav class="mx-auto grid max-w-[1400px] grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-5 sm:gap-4 sm:px-6 md:px-10">
     <a href="/" aria-label="Home" class="shrink-0 justify-self-start text-blue">
       <img
-        src="/icons/logo-mark.png"
+        src="/icons/logo-mark.webp"
         alt=""
         class="h-14 w-14 rounded-lg transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-rotate-6 hover:scale-105 active:scale-95 sm:h-18 sm:w-18"
       />
@@ -39,7 +39,7 @@ const links = [
       }
     </ul>
     <div class="hidden justify-self-end sm:block">
-      <Clock client:load />
+      <Clock />
     </div>
   </nav>
 </header>

@@ -1,0 +1,41 @@
+---
+/**
+ * Seamless infinite marquee: the track is duplicated once and translated
+ * -50%, matching the duplicated-DOM technique observed on the live site's
+ * skills ticker, testimonials, and client-logo strip.
+ *
+ * The animation is pure CSS, so this is markup only — it used to ship as a
+ * React island purely to render two copies of its children.
+ */
+interface Props {
+  direction?: "left" | "right";
+  speed?: number; // seconds for one full loop
+  class?: string;
+  gap?: string;
+}
+
+const { direction = "left", speed = 30, class: className = "", gap = "2rem" } = Astro.props;
+const track = await Astro.slots.render("default");
+const trackStyle = `gap: ${gap}; padding-right: ${gap}`;
+---
+
+<div class:list={["group relative overflow-hidden", className]}>
+  <div
+    class="flex w-max motion-reduce:animate-none"
+    style={`animation: marquee-${direction} ${speed}s linear infinite`}
+  >
+    {/*
+      The loop translates the track by -50%, so the copy must sit exactly
+      half a track along. A gap on this flex row would land it half a gap
+      short and the marquee would jump by that much every cycle; each copy
+      carries its own trailing gap instead.
+    */}
+    <div class="flex shrink-0 items-center" style={trackStyle} set:html={track} />
+    <div
+      class="flex shrink-0 items-center"
+      aria-hidden="true"
+      style={trackStyle}
+      set:html={track}
+    />
+  </div>
+</div>

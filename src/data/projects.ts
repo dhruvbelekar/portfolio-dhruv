@@ -21,7 +21,7 @@ export const projects: Project[] = [
     title: "Mahavitaran",
     category: "UI/UX",
     filterCategory: "UI/UX",
-    thumb: "/img/projects/mahavitaran-thumb.png",
+    thumb: "/img/projects/mahavitaran-thumb.webp",
     thumbAlt: "Serene Portrait flowers",
     description:
       "Mahavitaran is a UI/UX redesign project that aims to make electricity services simpler and more accessible. Through user research, personas, and journey mapping, we identified key user problems and designed a seamless experience using a mobile app, WhatsApp, AI support, kiosks, and feature phones.",
@@ -100,7 +100,7 @@ export const projects: Project[] = [
     title: "AI Film",
     category: "AI Filmmaking",
     filterCategory: "Film",
-    thumb: "/img/projects/ai-film-thumb.png",
+    thumb: "/img/projects/ai-film-thumb.webp",
     thumbAlt: "The New World, AI-generated short film title card",
     description:
       "An experimental short film created using generative AI, where I worked across the entire process — from developing the concept and creating visuals to generating scenes, voice, and editing the final film. I used tools like Runway, Midjourney, Kling, LumaLabs, and ElevenLabs to bring the story to life, combining AI-generated content with traditional editing. The final film reached 10,000+ views on Instagram.",
@@ -114,7 +114,7 @@ export const projects: Project[] = [
     title: "Passion Project",
     category: "Personal Project",
     filterCategory: "Film",
-    thumb: "/img/projects/passion-project-thumb.png",
+    thumb: "/img/projects/passion-project-thumb.webp",
     thumbAlt: "8th August, a personal collage-style short film poster",
     description:
       "A personal passion project documenting my journey from childhood to the present and my growing love for filmmaking, editing, and capturing everyday moments. I explored my memories, experiences, and interests through a collage-style animation, bringing together photographs, videos, graphics, and personal moments to tell my story. The project is a visual reflection of how documenting life became a part of how I see and express the world.",
@@ -127,7 +127,7 @@ export const projects: Project[] = [
     title: "OPE",
     category: "Photography",
     filterCategory: "Photography",
-    thumb: "/img/projects/ope-thumb.png",
+    thumb: "/img/projects/ope-thumb.webp",
     thumbAlt: "OPE Global Jam Mumbai event branding",
     description:
       "Photography coverage for OPE's Global Jam event in Mumbai, capturing the energy, people, activities, and key moments throughout the event. I focused on documenting the overall experience through candid moments, event details, and interactions, creating a visual record that reflected the atmosphere and spirit of the global design community.",
@@ -140,7 +140,7 @@ export const projects: Project[] = [
     title: "Coca-Cola Ad",
     category: "3D Animation",
     filterCategory: "Film",
-    thumb: "/img/projects/coke-thumb.png",
+    thumb: "/img/projects/coke-thumb.webp",
     thumbAlt: "3D-rendered Coca-Cola can, close-up with condensation",
     description:
       "A visual advertisement created in Blender to explore a more dynamic and cinematic approach. I focused on camera movement, lighting, animation, and editing to create an engaging visual piece that reflects my creative style.",
@@ -156,43 +156,43 @@ export const testimonials = [
     role: "Founder, Frelo",
     quote:
       "Dhruv played a key role in building Frelo's brand through our website, social media, reels, and creative content, helping us grow our community.",
-    avatar: "/img/testimonials/vaishakh-sajeevan.png",
+    avatar: "/img/testimonials/vaishakh-sajeevan.webp",
   },
   {
     name: "Nikhil Kulkarni",
     role: "Founder, Docville",
     quote: "The AI-generated UGC videos were creative, engaging, and delivered exactly what we were looking for.",
-    avatar: "/img/testimonials/nikhil-kulkarni.png",
+    avatar: "/img/testimonials/nikhil-kulkarni.webp",
   },
   {
     name: "Rupak Shah",
     role: "Co-founder, AiVANTA",
     quote:
       "Over three months, Dhruv used Runway, Midjourney, Kling, and ElevenLabs to create an AI film with strong visual storytelling.",
-    avatar: "/img/testimonials/rupak-shah.jpeg",
+    avatar: "/img/testimonials/rupak-shah.webp",
   },
   {
     name: "Ankit Savla",
     role: "Founder, OPE Innovation Lab",
     quote:
       "It was great working with Dhruv. He captured the event beautifully and made sure every important moment was documented.",
-    avatar: "/img/testimonials/ankit-savla.png",
+    avatar: "/img/testimonials/ankit-savla.webp",
   },
 ];
 
 export const experience = [
-  { role: "Creative Head", company: "Frelo", dates: "Present", logo: "/img/logos/logo-4.png" },
+  { role: "Creative Head", company: "Frelo", dates: "Present", logo: "/img/logos/logo-4.webp" },
   {
     role: "Creative Designer",
     company: "AiVANTA",
     dates: "Dec 24/May 25",
-    logo: "/img/logos/logo-1.png",
+    logo: "/img/logos/logo-1.webp",
   },
   {
     role: "Design Intern",
     company: "Lit Lamps",
     dates: "Jul 24/Dec 24",
-    logo: "/img/logos/logo-5.png",
+    logo: "/img/logos/logo-5.webp",
   },
 ];
 
@@ -200,9 +200,9 @@ export const skillsRowA = ["UI/UX Design", "Brand Identity", "Visual Design"];
 export const skillsRowB = ["Creative Direction", "Photography", "Filmmaking", "AI"];
 
 export const clientLogos = [
-  { src: "/img/logos/logo-1.png", width: 653, height: 122 },
-  { src: "/img/logos/logo-2.png", width: 584, height: 339 },
-  { src: "/img/logos/logo-3.png", width: 682, height: 244 },
-  { src: "/img/logos/logo-4.png", width: 2306, height: 785 },
-  { src: "/img/logos/logo-5.png", width: 1173, height: 260 },
+  { src: "/img/logos/logo-1.webp", width: 653, height: 122 },
+  { src: "/img/logos/logo-2.webp", width: 584, height: 339 },
+  { src: "/img/logos/logo-3.webp", width: 682, height: 244 },
+  { src: "/img/logos/logo-4.webp", width: 2306, height: 785 },
+  { src: "/img/logos/logo-5.webp", width: 1173, height: 260 },
 ];

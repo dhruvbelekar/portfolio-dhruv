@@ -39,6 +39,7 @@ const fitWhole = slug === "passion-project" || slug === "frelo";
         width={width}
         height={height}
         loading="lazy"
+        decoding="async"
         class={`aspect-[4/3] w-full transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] group-focus-visible:scale-[1.05] ${fitWhole ? "object-contain" : "object-cover"}`}
       />
     </div>

@@ -5,3 +5,10 @@ dist/
 .claude/
 .vercel
 *.mov
+
+# Working files dropped in the project root — source recordings, exports and
+# PDFs that are not part of the site. Some are iCloud placeholders with no
+# local data, which git cannot scan.
+/*.mp4
+/*.pdf
+/*.png
