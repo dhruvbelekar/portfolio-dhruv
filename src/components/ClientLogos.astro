@@ -1,0 +1,33 @@
+---
+import Marquee from "./Marquee";
+import { clientLogos } from "../data/projects";
+
+// The strip runs on the home page and About. Bleed is the caller's business:
+// on the home page it sits inside a padded section and has to break out of it,
+// on About it is already at the top level.
+interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+---
+
+<div class={`border-y border-black/5 py-4 ${className}`}>
+  <Marquee client:load speed={100} gap="4rem">
+    {
+      Array(6)
+        .fill(clientLogos)
+        .flat()
+        .map((logo, i) => (
+          <img
+            key={i}
+            src={logo.src}
+            width={logo.width}
+            height={logo.height}
+            alt=""
+            class="h-8 w-auto object-contain transition-transform duration-500 ease-out hover:scale-110 sm:h-10"
+          />
+        ))
+    }
+  </Marquee>
+</div>

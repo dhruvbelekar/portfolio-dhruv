@@ -4,6 +4,8 @@ import ScrollReveal from "../components/ScrollReveal";
 import Marquee from "../components/Marquee";
 import BioCopy from "../components/BioCopy.astro";
 import ExperienceSection from "../components/ExperienceSection.astro";
+import ClientLogos from "../components/ClientLogos.astro";
+import TestimonialsSection from "../components/TestimonialsSection.astro";
 import { skillsRowA, skillsRowB } from "../data/projects";
 ---
 
@@ -77,6 +79,8 @@ import { skillsRowA, skillsRowB } from "../data/projects";
     </Marquee>
   </div>
 
+  <ClientLogos class="mt-10" />
+
   <section class="px-6 md:px-10">
     <div class="mx-auto max-w-[1400px]">
       <ScrollReveal client:load className="mt-12">
@@ -84,4 +88,6 @@ import { skillsRowA, skillsRowB } from "../data/projects";
       </ScrollReveal>
     </div>
   </section>
+
+  <TestimonialsSection />
 </Layout>

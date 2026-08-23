@@ -7,14 +7,9 @@ import ProjectRow from "../components/ProjectRow.astro";
 import ProjectFilterNav from "../components/ProjectFilterNav";
 import BioCopy from "../components/BioCopy.astro";
 import ExperienceSection from "../components/ExperienceSection.astro";
-import {
-  projects,
-  filterCategories,
-  testimonials,
-  skillsRowA,
-  skillsRowB,
-  clientLogos,
-} from "../data/projects";
+import ClientLogos from "../components/ClientLogos.astro";
+import TestimonialsSection from "../components/TestimonialsSection.astro";
+import { projects, filterCategories, skillsRowA, skillsRowB } from "../data/projects";
 ---
 
 <Layout>
@@ -72,25 +67,7 @@ import {
       </p>
     </div>
 
-    <div class="-mx-6 mb-6 border-y border-black/5 py-4">
-      <Marquee client:load speed={100} gap="4rem">
-        {
-          Array(6)
-            .fill(clientLogos)
-            .flat()
-            .map((logo, i) => (
-              <img
-                key={i}
-                src={logo.src}
-                width={logo.width}
-                height={logo.height}
-                alt=""
-                class="h-8 w-auto object-contain transition-transform duration-500 ease-out hover:scale-110 sm:h-10"
-              />
-            ))
-        }
-      </Marquee>
-    </div>
+    <ClientLogos class="-mx-6 mb-6" />
   </section>
 
   <!-- Projects -->
@@ -218,81 +195,5 @@ import {
     </div>
   </section>
 
-  <!-- Testimonials heading -->
-  <section class="px-6 pt-16 md:px-10">
-    <div class="mx-auto max-w-[1400px]">
-      <ScrollReveal client:load>
-        <h2
-          class="select-none text-center font-black leading-[0.9] text-blue"
-          style="font-family: var(--font-display); font-size: var(--type-section);"
-        >
-          Testimonials
-        </h2>
-      </ScrollReveal>
-    </div>
-  </section>
-
-  <!-- Testimonial cards -->
-  <section class="px-6 pb-16 pt-10 md:px-10">
-    <div class="mx-auto max-w-[1400px]">
-      <div class="flex flex-col gap-2">
-        <Marquee client:load speed={65} gap="1rem">
-          {
-            Array(4)
-              .fill([testimonials[2], testimonials[3]])
-              .flat()
-              .map((t, i) => (
-                <div
-                  key={i}
-                  class="group flex h-[185px] w-[320px] shrink-0 flex-col rounded-2xl p-6 transition-[transform,box-shadow,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 hover:bg-white hover:shadow-[0_18px_40px_rgba(19,67,240,0.10)]"
-                >
-                  <div class="flex items-center gap-3">
-                    <img
-                      src={t.avatar}
-                      alt=""
-                      class="h-10 w-10 shrink-0 rounded-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110"
-                    />
-                    <div>
-                      <p class="font-bold text-ink transition-colors duration-300 group-hover:text-blue">
-                        {t.name}
-                      </p>
-                      <p class="text-sm text-ink-muted">{t.role}</p>
-                    </div>
-                  </div>
-                  <p class="mt-4 line-clamp-4 text-sm text-ink-muted">{t.quote}</p>
-                </div>
-              ))
-          }
-        </Marquee>
-        <Marquee client:load speed={72} gap="1rem" direction="right">
-          {
-            Array(4)
-              .fill([testimonials[0], testimonials[1]])
-              .flat()
-              .map((t, i) => (
-                <div
-                  key={i}
-                  class="group flex h-[185px] w-[320px] shrink-0 flex-col rounded-2xl p-6 transition-[transform,box-shadow,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 hover:bg-white hover:shadow-[0_18px_40px_rgba(19,67,240,0.10)]"
-                >
-                  <div class="flex items-center gap-3">
-                    <img
-                      src={t.avatar}
-                      alt=""
-                      class="h-10 w-10 shrink-0 rounded-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110"
-                    />
-                    <div>
-                      <p class="font-bold text-ink transition-colors duration-300 group-hover:text-blue">
-                        {t.name}
-                      </p>
-                      <p class="text-sm text-ink-muted">{t.role}</p>
-                    </div>
-                  </div>
-                  <p class="mt-4 line-clamp-4 text-sm text-ink-muted">{t.quote}</p>
-                </div>
-              ))
-          }
-        </Marquee>
-      </div>
-    </div>
-  </section>
+  <TestimonialsSection />
 </Layout>
