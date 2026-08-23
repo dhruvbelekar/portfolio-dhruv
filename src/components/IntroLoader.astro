@@ -94,14 +94,11 @@
 
 <script>
   (function () {
-    const STORAGE_KEY = "intro-seen";
     const loader = document.getElementById("intro-loader");
     const textEl = document.getElementById("intro-text");
     if (!loader || !textEl) return;
 
-    const skipIntro =
-      sessionStorage.getItem(STORAGE_KEY) ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const skipIntro = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (skipIntro) {
       loader.remove();
@@ -151,7 +148,6 @@
 
     function finish() {
       loader!.classList.add("intro-loader--exiting");
-      sessionStorage.setItem(STORAGE_KEY, "1");
       document.body.style.overflow = "";
       setTimeout(() => loader!.remove(), 1000);
     }
