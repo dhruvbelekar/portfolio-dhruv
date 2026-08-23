@@ -105,7 +105,14 @@ const sideFadeStyle = `-webkit-mask-image: ${sideFade}; mask-image: ${sideFade};
 // audio — a silent track would make it a dead gesture.
 const trailingVideos: Record<
   string,
-  { index: number; hoverSound: boolean; width: number; maxWidth?: string; fadeEdges?: boolean }[]
+  {
+    index: number;
+    hoverSound: boolean;
+    width: number;
+    maxWidth?: string;
+    fadeEdges?: boolean;
+    bleed?: boolean;
+  }[]
 > = {
   "ai-film": [{ index: 8, hoverSound: true, width: 1280 }],
   "passion-project": [{ index: 12, hoverSound: true, width: 1278 }],
@@ -115,7 +122,7 @@ const trailingVideos: Record<
   // carries no audio track at all, so it does not take the hover.
   aria: [
     { index: 14, hoverSound: true, width: 1920 },
-    { index: 15, hoverSound: false, width: 1250 },
+    { index: 15, hoverSound: false, width: 1250, bleed: true },
   ],
   // The mockup clip is 1288x962; edge to edge it upscales and towers over the
   // stills around it, so it is capped at its comfortable reading size.
@@ -171,6 +178,7 @@ const gallery = await Promise.all(
         src: `/video/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.mp4`,
         hoverSound: trailingVideo.hoverSound,
         width: trailingVideo.width,
+        bleed: trailingVideo.bleed,
         maxWidth: trailingVideo.maxWidth,
         fadeEdges: trailingVideo.fadeEdges,
       };
@@ -622,10 +630,11 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                 // across 3440px is visibly soft. Each item stops at its own
                 // native width and centres beyond that, so the bleed still
                 // reaches the edges on a laptop and never blurs on a monitor.
+                // `bleed` waives that for a clip meant to run full width.
                 const framed = (
                   <div
                     class={`mx-auto w-full ${isSeamless && i > 0 ? "-mt-px" : ""}`}
-                    style={`max-width: ${img.width}px`}
+                    style={img.bleed ? undefined : `max-width: ${img.width}px`}
                   >
                     {item}
                   </div>
