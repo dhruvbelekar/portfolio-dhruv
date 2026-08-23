@@ -100,28 +100,36 @@ const coverIsTall = coverFitsNatural && thumbSize.height >= thumbSize.width;
 const sideFade =
   "linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%)";
 const sideFadeStyle = `-webkit-mask-image: ${sideFade}; mask-image: ${sideFade};`;
-// Galleries that close on a video: the image run is followed by a clip at `index`.
-// `hoverSound` unmutes on hover, so it is only for clips that carry audio.
+// Galleries that close on video: the image run is followed by a clip at each
+// `index`. `hoverSound` unmutes on hover, so it is only for clips that carry
+// audio — a silent track would make it a dead gesture.
 const trailingVideos: Record<
   string,
-  { index: number; hoverSound: boolean; width: number; maxWidth?: string; fadeEdges?: boolean }
+  { index: number; hoverSound: boolean; width: number; maxWidth?: string; fadeEdges?: boolean }[]
 > = {
-  "ai-film": { index: 8, hoverSound: true, width: 1280 },
-  "passion-project": { index: 12, hoverSound: true, width: 1278 },
-  coke: { index: 7, hoverSound: true, width: 1280 },
-  // Aria's artboard arrives in 14 slices and then hands over to the product film.
-  aria: { index: 14, hoverSound: true, width: 1920 },
+  "ai-film": [{ index: 8, hoverSound: true, width: 1280 }],
+  "passion-project": [{ index: 12, hoverSound: true, width: 1278 }],
+  coke: [{ index: 7, hoverSound: true, width: 1280 }],
+  // Aria's artboard arrives in 14 slices, then hands over to the product film
+  // and a recording of the fitness game running in the browser. The recording
+  // carries no audio track at all, so it does not take the hover.
+  aria: [
+    { index: 14, hoverSound: true, width: 1920 },
+    { index: 15, hoverSound: false, width: 1250 },
+  ],
   // The mockup clip is 1288x962; edge to edge it upscales and towers over the
   // stills around it, so it is capped at its comfortable reading size.
-  mahavitaran: {
-    index: 14,
-    hoverSound: false,
-    width: 1288,
-    maxWidth: "mx-auto w-full max-w-[1000px]",
-    fadeEdges: true,
-  },
+  mahavitaran: [
+    {
+      index: 14,
+      hoverSound: false,
+      width: 1288,
+      maxWidth: "mx-auto w-full max-w-[1000px]",
+      fadeEdges: true,
+    },
+  ],
 };
-const trailingVideo = trailingVideos[project.slug];
+const projectVideos = trailingVideos[project.slug] ?? [];
 
 // DRIVE's responsive-testing slide made its point with a still lifted from the
 // footage below, so the still was cropped off the slide and the two clips play
@@ -156,7 +164,8 @@ const slidePanel = "#FCFBFE";
 
 const gallery = await Promise.all(
   Array.from({ length: project.galleryCount }, (_, i) => i).map(async (i) => {
-    if (trailingVideo && i === trailingVideo.index) {
+    const trailingVideo = projectVideos.find((clip) => clip.index === i);
+    if (trailingVideo) {
       return {
         type: "video",
         src: `/video/projects/${project.slug}/gallery-${String(i + 1).padStart(2, "0")}.mp4`,
