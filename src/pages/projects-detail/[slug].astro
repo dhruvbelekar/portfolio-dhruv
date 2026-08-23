@@ -81,11 +81,11 @@ const isAiFilm = project.slug === "ai-film";
 const isPassionProject = project.slug === "passion-project";
 const isDrive = project.slug === "drive";
 const isAria = project.slug === "aria";
-// Mp4 and Aria are each one continuous artboard, and Drive is a deck whose
-// pages carry their own tinted background: in all three, a gap between items
-// shows as a white band, so they butt together with a hairline overlap against
-// fractional scaling.
-const isSeamless = isMp4 || isDrive || isAria;
+// Mp4, Aria and AI Film are each one continuous artboard, and Drive is a deck
+// whose pages carry their own background: in all of them, a gap between items
+// shows as a band of page behind, so they butt together with a hairline overlap
+// against fractional scaling.
+const isSeamless = isMp4 || isDrive || isAria || isAiFilm;
 // Passion Project's cover is a poster and Drive's is a wide still; both are
 // shown whole. Every other cover runs edge to edge, cropped to 16:9.
 const coverFitsNatural = isPassionProject || isDrive || isBento;
@@ -106,7 +106,7 @@ const trailingVideos: Record<
   string,
   { index: number; hoverSound: boolean; width: number; maxWidth?: string; fadeEdges?: boolean }
 > = {
-  "ai-film": { index: 12, hoverSound: true, width: 1280 },
+  "ai-film": { index: 8, hoverSound: true, width: 1280 },
   "passion-project": { index: 12, hoverSound: true, width: 1278 },
   coke: { index: 7, hoverSound: true, width: 1280 },
   // Aria's artboard arrives in 14 slices and then hands over to the product film.
