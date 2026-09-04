@@ -5,7 +5,10 @@ const links = [
   { href: "/#projects", label: "PROJECTS" },
   { href: "/about", label: "ABOUT" },
   { href: "/contact", label: "CONTACT" },
-  { href: "/dhruv-belekar-resume.pdf", label: "RESUME", external: true },
+  // Browsers that opened the resume under the old 24-hour cache rule keep
+  // serving their stale copy from that URL. The version marker gives them a
+  // key they have never seen, so the click always fetches the current file.
+  { href: "/dhruv-belekar-resume.pdf?v=2", label: "RESUME", external: true },
 ];
 ---
 
