@@ -15,6 +15,11 @@ const {
   description = "I design digital experiences, create visual stories and bring ideas to life through design and film.",
   ogImage = "/og/og-home-sidequest.png",
 } = Astro.props;
+
+// LinkedIn, WhatsApp and Slack drop a relative og:image without complaint, and
+// the share card comes back blank. Resolving against `site` makes them absolute.
+const ogImageUrl = new URL(ogImage, Astro.site);
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
@@ -38,14 +43,16 @@ const {
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:image" content={ogImageUrl} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image" content={ogImageUrl} />
     {/* The reveals start hidden and are released by script; without one, the page is the content. */}
     <noscript>
       <style>
