@@ -73,6 +73,28 @@
 }
 
 /*
+  Lenis keeps the real scroll position on the window and plays each wheel notch
+  out over frames. It needs the page to stop constraining its own height, and
+  the native smooth path off so the two are not animating the same scroll.
+*/
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/*
   `scroll-behavior: smooth` used to sit here. Chrome honours it for wheel input
   too, and a mouse sends one big discrete tick at a time — each one restarts the
   animation before the last has landed, so the page lurches and lags behind the

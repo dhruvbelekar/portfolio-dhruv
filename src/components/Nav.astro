@@ -12,7 +12,14 @@ const links = [
 ];
 ---
 
-<header class="sticky top-0 z-50 bg-white/90 backdrop-blur-sm">
+{/*
+  The header sat on `backdrop-blur-sm`, which made the browser re-blur the
+  full width of whatever was passing behind it on every scrolled frame. Over a
+  background that is already 90% opaque white the blur had almost nothing left
+  to show, so it cost a repaint a frame to be invisible. Put `backdrop-blur-sm`
+  back if the difference turns out to be visible after all.
+*/}
+<header class="sticky top-0 z-50 bg-white/90">
   <nav class="mx-auto grid max-w-[1400px] grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-5 sm:gap-4 sm:px-6 md:px-10">
     <a href="/" aria-label="Home" class="shrink-0 justify-self-start text-blue">
       <img

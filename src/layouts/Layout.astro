@@ -72,11 +72,45 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     <Footer />
 
     <script>
-      // Anchor links glided because `scroll-behavior: smooth` was set on `html`,
-      // which also handed Chrome every wheel tick to animate. Driving the scroll
-      // from here keeps the glide on the links that want it and leaves plain
-      // scrolling untouched.
+      import Lenis from "lenis";
+
+      // Smooth scrolling for the whole page. A wheel notch is one large jump,
+      // and the browser applies it in a single step; Lenis takes the notch and
+      // plays it out across frames instead, which is what makes a mouse feel
+      // like a trackpad. Touch is left alone — the OS already does this better
+      // than script can, and hijacking it only adds lag to a direct gesture.
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const coarse = window.matchMedia("(pointer: coarse)");
+
+      let lenis: Lenis | null = null;
+
+      const startLenis = () => {
+        if (lenis || reduced.matches || coarse.matches) return;
+        lenis = new Lenis({
+          duration: 0.9,
+          // Eases out hard at the start and settles slowly, so a single notch
+          // moves immediately rather than creeping away from the wheel.
+          easing: (t: number) => 1 - Math.pow(1 - t, 3),
+          smoothWheel: true,
+          syncTouch: false,
+        });
+
+        const raf = (time: number) => {
+          if (!lenis) return;
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+      };
+
+      const stopLenis = () => {
+        lenis?.destroy();
+        lenis = null;
+      };
+
+      startLenis();
+      // Someone turning motion down mid-session gets the plain scroller back.
+      reduced.addEventListener("change", () => (reduced.matches ? stopLenis() : startLenis()));
 
       document.addEventListener("click", (event) => {
         if (
@@ -106,15 +140,30 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
           return;
         }
 
-        const target = document.querySelector(url.hash);
+        const target = document.querySelector<HTMLElement>(url.hash);
         if (!target) return;
 
         event.preventDefault();
-        target.scrollIntoView({
-          behavior: reduced.matches ? "auto" : "smooth",
-          block: "start",
-        });
+        // Lenis owns the scroll position while it is running, so an anchor has
+        // to be handed to it rather than scrolled around it.
+        if (lenis) {
+          lenis.scrollTo(target);
+        } else {
+          target.scrollIntoView({
+            behavior: reduced.matches ? "auto" : "smooth",
+            block: "start",
+          });
+        }
         history.pushState(null, "", url.hash);
+      });
+
+      // The filter bar scrolls the projects section into view on click, which
+      // needs the same treatment.
+      window.addEventListener("lenis:scroll-to", (event) => {
+        const target = (event as CustomEvent<HTMLElement>).detail;
+        if (!target) return;
+        if (lenis) lenis.scrollTo(target);
+        else target.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     </script>
 

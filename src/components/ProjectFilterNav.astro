@@ -86,7 +86,11 @@ const options = ["All", ...categories];
     buttons.forEach((button) =>
       button.addEventListener("click", () => {
         select(button.dataset.filterOption ?? "All");
-        section?.scrollIntoView({ behavior: "smooth", block: "start" });
+        // Handed to the layout, which is the only place that knows whether
+        // Lenis is driving the scroll on this visit.
+        if (section) {
+          window.dispatchEvent(new CustomEvent("lenis:scroll-to", { detail: section }));
+        }
       })
     );
 
