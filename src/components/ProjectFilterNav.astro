@@ -94,19 +94,37 @@ const options = ["All", ...categories];
     // past the projects and sits on top of the footer, swallowing the taps meant
     // for the Contact link. It belongs on screen only while there is something
     // to filter.
+    let shown: boolean | null = null;
     const measure = () => {
       if (!section) return;
       const rect = section.getBoundingClientRect();
       const inProjects = rect.top < window.innerHeight && rect.bottom > 0;
+      // Rewriting the same three classes on every scroll invalidated style for
+      // no visible change. The bar only has two states, so only the crossings
+      // are worth touching the DOM for.
+      if (inProjects === shown) return;
+      shown = inProjects;
       nav.classList.toggle("opacity-0", !inProjects);
       nav.classList.toggle("translate-y-4", !inProjects);
       nav.classList.toggle("pointer-events-none", !inProjects);
       nav.setAttribute("aria-hidden", inProjects ? "false" : "true");
     };
 
+    // A wheel arrives as a burst of scroll events, and measuring the section
+    // reads layout each time. Once per frame is as often as the result can
+    // reach the screen.
+    let queued = 0;
+    const onScroll = () => {
+      if (queued) return;
+      queued = requestAnimationFrame(() => {
+        queued = 0;
+        measure();
+      });
+    };
+
     movePill(false);
     measure();
-    window.addEventListener("scroll", measure, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", () => {
       movePill(false);
       measure();

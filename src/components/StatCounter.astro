@@ -60,7 +60,7 @@ const { target, suffix = "", label, duration = 1.8 } = Astro.props;
       if (started) return;
       started = true;
       io.disconnect();
-      window.removeEventListener("scroll", check);
+      window.removeEventListener("scroll", onScroll);
       run();
     };
     // Same guard the reveals carry: a number frozen at zero is worse than one
@@ -74,9 +74,21 @@ const { target, suffix = "", label, duration = 1.8 } = Astro.props;
       (entries) => entries.forEach((entry) => entry.isIntersecting && start()),
       { rootMargin: "-10% 0px" }
     );
+    // Same reason as the filter bar: a wheel fires scroll events far faster
+    // than the screen updates, and each one reads layout. One read per frame,
+    // and the listener drops itself the moment the counter starts.
+    let queued = 0;
+    const onScroll = () => {
+      if (queued) return;
+      queued = requestAnimationFrame(() => {
+        queued = 0;
+        check();
+      });
+    };
+
     io.observe(el);
     check();
-    window.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("load", check, { once: true });
   });
 </script>

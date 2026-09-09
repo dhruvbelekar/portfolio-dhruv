@@ -72,9 +72,15 @@
   --space-section: clamp(4rem, 3rem + var(--shell) * 0.06, 9rem);
 }
 
-html {
-  scroll-behavior: smooth;
-}
+/*
+  `scroll-behavior: smooth` used to sit here. Chrome honours it for wheel input
+  too, and a mouse sends one big discrete tick at a time — each one restarts the
+  animation before the last has landed, so the page lurches and lags behind the
+  wheel. A trackpad's fine-grained deltas are treated as a precision gesture and
+  skip that path entirely, which is why only the mouse felt broken. Anchor links
+  get their glide from the handler in Layout instead, where it runs when
+  something is actually navigating and never while someone is just scrolling.
+*/
 
 body {
   background: var(--color-paper);
