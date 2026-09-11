@@ -61,11 +61,22 @@
     z-index: 1;
     padding: 0 1.5rem;
     /*
+      One cell, and the greeting and the face are both placed in it, so the
+      face takes the spot the words were standing in rather than arriving
+      underneath them and shifting the whole block up.
+    */
+    display: grid;
+    place-items: center;
+    /*
       The exit used to drop this to zero with nothing to ease it, so the
-      greeting blinked out a beat before the panels moved. Fading it lets the
-      mascot and the word leave together, under the panels on their way up.
+      greeting blinked out a beat before the panels moved. Fading it lets
+      whatever is on screen leave under the panels on their way up.
     */
     transition: opacity 0.45s ease;
+  }
+
+  .intro-content > * {
+    grid-area: 1 / 1;
   }
 
   .intro-text {
@@ -76,7 +87,17 @@
     letter-spacing: -0.03em;
     text-align: center;
     line-height: 1;
-    transition: opacity 0.3s ease;
+    transition:
+      opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Hands the spot over to the face, on the curve the face arrives on. */
+  .intro-text.is-out {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.96);
+    filter: blur(8px);
   }
 
   .intro-text span {
@@ -90,10 +111,9 @@
   */
   .intro-logo {
     display: block;
-    width: clamp(3.5rem, 2.25rem + 5vw, 6.5rem);
+    width: clamp(5rem, 3rem + 9vw, 9.5rem);
     height: auto;
-    margin: clamp(1rem, 2vw, 1.75rem) auto 0;
-    border-radius: 0.875rem;
+    border-radius: 1rem;
     opacity: 0;
     transform: translateY(12px) scale(0.84);
     filter: blur(10px);
@@ -201,11 +221,15 @@
     function advance(index: number) {
       if (index >= words.length - 1) {
         renderWord(index);
-        // The face lands just behind the last greeting, holds with it long
-        // enough to be read as the sign-off, and is still on screen when the
-        // panels start up — so the two fade out as one.
-        setTimeout(() => logoEl?.classList.add("is-in"), 320);
-        setTimeout(finish, 1250);
+        // The last greeting gets a beat on its own, then hands the spot over:
+        // the word blurs out as the face blurs in, both in the same place, so
+        // it reads as one thing becoming another rather than two arrivals.
+        setTimeout(() => {
+          textEl!.classList.add("is-out");
+          logoEl?.classList.add("is-in");
+        }, 600);
+        // Long enough for the face to land and be held before the panels go.
+        setTimeout(finish, 1600);
         return;
       }
       renderWord(index);
