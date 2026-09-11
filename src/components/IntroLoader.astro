@@ -9,28 +9,17 @@
   <div class="intro-content">
     <h1 id="intro-text" class="intro-text" lang="en">Hello.</h1>
     {/*
-      Both faces are in the markup from the first paint rather than created
-      when their turn comes, so they are fetched and decoded long before the
-      greetings run out and neither pops in a frame late. They are the matched
-      pair from the hero — same crop, same position, only the expression
-      differs — which is what lets the wink land without the head moving.
+      In the markup from the first paint rather than created when its turn
+      comes, so the browser has already fetched and decoded it by the time the
+      greetings are done and it never pops in a frame late.
     */}
     <img
       id="intro-logo"
-      class="intro-face intro-face--greet"
-      src="/img/hero/face.webp"
+      class="intro-logo"
+      src="/icons/logo-mark.webp"
       alt=""
-      width="420"
-      height="400"
-      decoding="async"
-    />
-    <img
-      id="intro-logo-wink"
-      class="intro-face intro-face--wink"
-      src="/img/hero/face-tongue.webp"
-      alt=""
-      width="420"
-      height="400"
+      width="256"
+      height="256"
       decoding="async"
     />
   </div>
@@ -116,19 +105,15 @@
     will-change: transform, filter, opacity;
   }
 
-  /* Both faces are sized and placed identically — only the face changes. */
-  .intro-face {
-    display: block;
-    width: clamp(5.5rem, 3.25rem + 10vw, 10.5rem);
-    height: auto;
-  }
-
   /*
-    The first one arrives the way the letters do — out of a blur, from just
-    below — so the last greeting and the face read as one movement rather than
-    two effects.
+    Arrives the way the letters do — out of a blur, from just below — so the
+    last greeting and the face read as one movement rather than two effects.
   */
-  .intro-face--greet {
+  .intro-logo {
+    display: block;
+    width: clamp(5rem, 3rem + 9vw, 9.5rem);
+    height: auto;
+    border-radius: 1rem;
     opacity: 0;
     transform: translateY(12px) scale(0.84);
     filter: blur(10px);
@@ -138,30 +123,10 @@
       filter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .intro-face--greet.is-in {
+  .intro-logo.is-in {
     opacity: 1;
     transform: translateY(0) scale(1);
     filter: blur(0);
-  }
-
-  /*
-    The wink is a change of expression, not a second arrival, so it swaps on a
-    short cut rather than easing in. Long enough not to flicker, short enough
-    that the two drawings are never both half-there long enough to ghost.
-    This has to sit after `.is-in` — same specificity, and the swap wins.
-  */
-  .intro-face--wink {
-    opacity: 0;
-    transition: opacity 0.16s ease;
-  }
-
-  .intro-face--wink.is-in {
-    opacity: 1;
-  }
-
-  .intro-face--greet.is-winking {
-    opacity: 0;
-    transition: opacity 0.16s ease;
   }
 
   .intro-loader.intro-loader--exiting .intro-content {
@@ -197,7 +162,6 @@
     const loader = document.getElementById("intro-loader");
     const textEl = document.getElementById("intro-text");
     const logoEl = document.getElementById("intro-logo");
-    const winkEl = document.getElementById("intro-logo-wink");
     if (!loader || !textEl) return;
 
     const skipIntro = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -263,15 +227,9 @@
         setTimeout(() => {
           textEl!.classList.add("is-out");
           logoEl?.classList.add("is-in");
-        }, 550);
-        // Held straight just long enough to be taken as the sign-off, then it
-        // pulls a face — the beat that makes it read as a character rather
-        // than a logo parked on screen.
-        setTimeout(() => {
-          logoEl?.classList.add("is-winking");
-          winkEl?.classList.add("is-in");
-        }, 1200);
-        setTimeout(finish, 1850);
+        }, 600);
+        // Long enough for the face to land and be held before the panels go.
+        setTimeout(finish, 1600);
         return;
       }
       renderWord(index);
