@@ -8,6 +8,20 @@
   <div class="intro-panel"></div>
   <div class="intro-content">
     <h1 id="intro-text" class="intro-text" lang="en">Hello.</h1>
+    {/*
+      In the markup from the first paint rather than created when its turn
+      comes, so the browser has already fetched and decoded it by the time the
+      greetings are done and it never pops in a frame late.
+    */}
+    <img
+      id="intro-logo"
+      class="intro-logo"
+      src="/icons/logo-mark.webp"
+      alt=""
+      width="256"
+      height="256"
+      decoding="async"
+    />
   </div>
 </div>
 
@@ -46,6 +60,12 @@
     position: relative;
     z-index: 1;
     padding: 0 1.5rem;
+    /*
+      The exit used to drop this to zero with nothing to ease it, so the
+      greeting blinked out a beat before the panels moved. Fading it lets the
+      mascot and the word leave together, under the panels on their way up.
+    */
+    transition: opacity 0.45s ease;
   }
 
   .intro-text {
@@ -62,6 +82,31 @@
   .intro-text span {
     display: inline-block;
     will-change: transform, filter, opacity;
+  }
+
+  /*
+    Arrives the way the letters do — out of a blur, from just below — so the
+    last greeting and the face read as one movement rather than two effects.
+  */
+  .intro-logo {
+    display: block;
+    width: clamp(3.5rem, 2.25rem + 5vw, 6.5rem);
+    height: auto;
+    margin: clamp(1rem, 2vw, 1.75rem) auto 0;
+    border-radius: 0.875rem;
+    opacity: 0;
+    transform: translateY(12px) scale(0.84);
+    filter: blur(10px);
+    transition:
+      opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .intro-logo.is-in {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 
   .intro-loader.intro-loader--exiting .intro-content {
@@ -96,6 +141,7 @@
   (function () {
     const loader = document.getElementById("intro-loader");
     const textEl = document.getElementById("intro-text");
+    const logoEl = document.getElementById("intro-logo");
     if (!loader || !textEl) return;
 
     const skipIntro = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -155,7 +201,11 @@
     function advance(index: number) {
       if (index >= words.length - 1) {
         renderWord(index);
-        setTimeout(finish, 750);
+        // The face lands just behind the last greeting, holds with it long
+        // enough to be read as the sign-off, and is still on screen when the
+        // panels start up — so the two fade out as one.
+        setTimeout(() => logoEl?.classList.add("is-in"), 320);
+        setTimeout(finish, 1250);
         return;
       }
       renderWord(index);
