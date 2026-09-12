@@ -1,0 +1,65 @@
+---
+/*
+  The nav's right-hand slot. It used to tick the visitor's own local time,
+  which told them the one thing they could already see on their own clock.
+  This says the thing someone landing on a portfolio actually wants to know,
+  on every page, without having to go looking for it.
+
+  Change this line to change the badge. Nothing else needs touching:
+    "AVAILABLE FOR WORK"  ·  "OPEN TO INTERNSHIPS"
+    "TAKING FREELANCE"    ·  "AVAILABLE — JAN 2027"
+*/
+const STATUS = "AVAILABLE FOR WORK";
+---
+
+<a
+  href="/contact"
+  class="group inline-flex items-center gap-2 text-xs font-bold tracking-wide text-blue transition-colors duration-300 hover:text-ink"
+>
+  <span class="availability-dot" aria-hidden="true"></span>
+  {STATUS}
+</a>
+
+<style>
+  .availability-dot {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+    width: 7px;
+    height: 7px;
+    border-radius: 9999px;
+    background: currentColor;
+  }
+
+  /*
+    The halo is its own box behind the dot rather than a growing box-shadow,
+    so the pulse animates transform and opacity and never asks for a repaint.
+    It inherits the link's colour, so it follows the text on hover.
+  */
+  .availability-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: currentColor;
+    animation: availability-pulse 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  }
+
+  @keyframes availability-pulse {
+    0% {
+      opacity: 0.55;
+      transform: scale(1);
+    }
+    70%,
+    100% {
+      opacity: 0;
+      transform: scale(2.8);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .availability-dot::after {
+      animation: none;
+    }
+  }
+</style>
