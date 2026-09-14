@@ -34,13 +34,13 @@ const social = [
       <div class="text-left sm:text-right">
         <a
           href="mailto:dhruv.belekar@gmail.com"
-          class="block w-fit text-2xl text-blue transition-transform duration-300 ease-out hover:-translate-y-0.5 sm:ml-auto"
+          class="block w-fit text-2xl text-blue transition-colors duration-500 ease-out hover:text-ink sm:ml-auto"
         >
           Say Hello
         </a>
         <a
           href="mailto:dhruv.belekar@gmail.com"
-          class="block w-fit text-2xl text-blue transition-transform duration-300 ease-out hover:-translate-y-0.5 sm:ml-auto"
+          class="block w-fit text-2xl text-blue transition-colors duration-500 ease-out hover:text-ink sm:ml-auto"
         >
           dhruv.belekar@gmail.com
         </a>
@@ -49,10 +49,29 @@ const social = [
 
     <div class="mt-16 grid grid-cols-1 gap-10 border-t border-black/10 pt-10 sm:grid-cols-[2fr_1.3fr_1.3fr_0.5fr] sm:items-start">
       <p
-        class="select-none font-bold uppercase leading-[0.9] text-blue"
+        class="w-fit select-none font-bold uppercase leading-[0.9] text-blue"
         style="font-family: var(--font-display); font-size: clamp(2.5rem, var(--shell) * 0.055, 80px); letter-spacing: -0.04em;"
       >
-        Dhruv<br />Belekar
+        {/*
+          DHRUV is two letters shorter than BELEKAR, which leaves a gap at the
+          end of the first line; the mascot sits in it. The block shrinks to
+          BELEKAR's width so the face can end flush with the R at any size, and
+          it is sized in em so it scales with the name — that gap measures about
+          0.9em at every breakpoint, which 0.8em plus a hairline fits inside.
+        */}
+        <span class="flex items-center justify-between gap-[0.08em]">
+          Dhruv
+          <img
+            src="/icons/logo-mark.webp"
+            alt=""
+            width="256"
+            height="256"
+            loading="lazy"
+            decoding="async"
+            class="h-[0.8em] w-auto"
+          />
+        </span>
+        Belekar
       </p>
 
       <div>
@@ -63,7 +82,7 @@ const social = [
               <li>
                 <a
                   href={item.href}
-                  class="inline-block transition-[color,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:translate-x-2 hover:text-ink"
+                  class="inline-block transition-colors duration-500 ease-out hover:text-ink"
                 >
                   {item.label}
                 </a>
@@ -83,7 +102,7 @@ const social = [
                   href={item.href}
                   target="_blank"
                   rel="noreferrer"
-                  class="inline-block transition-[color,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:translate-x-2 hover:text-ink"
+                  class="inline-block transition-colors duration-500 ease-out hover:text-ink"
                 >
                   {item.label}
                 </a>
