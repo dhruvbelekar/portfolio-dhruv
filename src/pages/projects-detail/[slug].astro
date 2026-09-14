@@ -112,8 +112,10 @@ const isAria = project.slug === "aria";
 // against fractional scaling.
 const isSeamless = isMp4 || isDrive || isAria || isAiFilm;
 // Passion Project's cover is a poster and Drive's is a wide still; both are
-// shown whole. Every other cover runs edge to edge, cropped to 16:9.
-const coverFitsNatural = isPassionProject || isDrive || isBento;
+// shown whole. Aria's is a laptop mockup framed at 3:2 — a 16:9 crop took the
+// top of the screen and the base of the laptop off with it. Every other cover
+// runs edge to edge, cropped to 16:9.
+const coverFitsNatural = isPassionProject || isDrive || isAria || isBento;
 const thumbSize = await sharp(path.join(process.cwd(), "public", project.thumb)).metadata();
 // A cover that is portrait or square would stand as tall as the page is wide
 // if run edge to edge, so those stay contained and height-capped instead.
