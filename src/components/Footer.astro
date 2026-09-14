@@ -54,10 +54,14 @@ const social = [
       >
         {/*
           DHRUV is two letters shorter than BELEKAR, which leaves a gap at the
-          end of the first line; the mascot sits in it. The block shrinks to
-          BELEKAR's width so the face can end flush with the R at any size, and
-          it is sized in em so it scales with the name — that gap measures about
-          0.9em at every breakpoint, which 0.8em plus a hairline fits inside.
+          end of the first line; the mascot sits in it. Centred in that gap it
+          could not grow past 1em without its chin landing on BELEKAR's A and R,
+          so it stands on DHRUV's baseline the way a letter would and grows
+          upward instead — it then keeps the same clearance above BELEKAR as the
+          two lines keep from each other, at any size. The negative margins stop
+          it adding height to the line and the lift puts its chin on the
+          baseline. Sized in em so the fit holds at every breakpoint; past about
+          1.2em it crowds the divider above on desktop.
         */}
         <span class="flex items-center justify-between gap-[0.08em]">
           Dhruv
@@ -68,7 +72,7 @@ const social = [
             height="256"
             loading="lazy"
             decoding="async"
-            class="h-[0.8em] w-auto"
+            class="relative -top-[0.187em] -my-[0.1em] h-[1.1em] w-auto"
           />
         </span>
         Belekar
