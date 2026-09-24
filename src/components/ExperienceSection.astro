@@ -2,9 +2,8 @@
 import { experience } from "../data/projects";
 
 /*
-  Oldest first. The rest of the site lists the roles newest first, which is
-  right for a CV, but a timeline read left to right has to start where the
-  work started.
+  Oldest first. The data is stored newest first, which is right for a CV, but
+  a timeline read left to right has to start where the work started.
 */
 const milestones = [...experience].reverse();
 ---
@@ -13,25 +12,15 @@ const milestones = [...experience].reverse();
   <div class="exp-stage" data-exp-stage>
     <div class="exp-track" data-exp-track>
       <header class="exp-panel">
-        <p class="exp-eyebrow">(Experience)</p>
-        {/*
-          Two headings, one of which is always hidden. The sideways line is only
-          true where the track actually runs; a phone gets the list, so it gets
-          the plain word instead of copy describing something it is not doing.
-        */}
-        <h3 class="exp-title">
-          <span class="exp-title-plain">Experience</span>
-          <span class="exp-title-run">Three roles,<br />one sideways scroll.</span>
-        </h3>
-        <p class="exp-lede">
-          Keep scrolling — the section holds still and the years move past instead.
-        </p>
+        {/* Two words, two spans: the run wants them stacked, the list wants
+            them on one line with the space between them still there. */}
+        <h3 class="exp-title"><span>My</span> <span>Experience</span></h3>
       </header>
 
       <ol class="exp-items">
-        {/* The rail lives inside the row so it can stretch the whole run of
-            milestones, and the fill is driven from the same progress that
-            moves the track. */}
+        {/* The rail sits inside the row so it can stretch the whole run of
+            roles, and its fill is driven by the same scroll that moves the
+            track. */}
         <span class="exp-rail" data-exp-rail aria-hidden="true">
           <span class="exp-rail-fill" data-exp-fill />
         </span>
@@ -51,15 +40,21 @@ const milestones = [...experience].reverse();
                 />
                 <p class="exp-dates">{e.dates}</p>
                 <p class="exp-role">{e.role}</p>
+                <p class="exp-meta">{e.meta}</p>
+                <ul class="exp-points">
+                  {e.points.map((point) => (
+                    <li>{point}</li>
+                  ))}
+                </ul>
               </article>
             </li>
           ))
         }
-      </ol>
 
-      <footer class="exp-panel exp-close">
-        <p class="exp-lede">From a first design internship to leading the work.</p>
-      </footer>
+        {/* Somewhere for the last role to travel to, so it is read in the
+            middle of the window rather than pinned against its right edge. */}
+        <li class="exp-tail" aria-hidden="true" />
+      </ol>
     </div>
   </div>
 </section>
@@ -68,7 +63,7 @@ const milestones = [...experience].reverse();
   /*
     The list below is the real section: it is what ships in the markup, what a
     phone gets, what reduced motion gets and what anyone without JS gets. The
-    pinned horizontal run is added on top by script, and every rule for it is
+    pinned sideways run is added on top by script, and every rule for it is
     scoped under `.is-pinned` so none of it can strand the content.
   */
   .exp {
@@ -77,37 +72,17 @@ const milestones = [...experience].reverse();
 
   .exp-track {
     margin: 0 auto;
-    max-width: 42rem;
-  }
-
-  .exp-panel {
-    text-align: center;
-  }
-
-  .exp-eyebrow {
-    color: var(--color-gray, #8a8a8a);
-    font-size: 0.95rem;
+    max-width: 44rem;
   }
 
   .exp-title {
-    margin-top: 0.5rem;
     color: var(--color-blue);
     font-family: var(--font-display);
-    font-size: clamp(1.75rem, 1.25rem + 2.5vw, 3rem);
+    font-size: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
     font-weight: 900;
     letter-spacing: -0.03em;
-    line-height: 1.05;
-  }
-
-  .exp-title-run,
-  .exp-lede {
-    display: none;
-  }
-
-  .exp-lede {
-    margin: 0.75rem auto 0;
-    max-width: 32rem;
-    color: var(--color-gray, #8a8a8a);
+    line-height: 1;
+    text-align: center;
   }
 
   .exp-items {
@@ -118,6 +93,7 @@ const milestones = [...experience].reverse();
 
   .exp-item {
     border-bottom: 1px solid rgb(0 0 0 / 0.08);
+    padding: 1.75rem 0;
   }
   .exp-item:first-of-type {
     border-top: 1px solid rgb(0 0 0 / 0.08);
@@ -125,51 +101,67 @@ const milestones = [...experience].reverse();
 
   .exp-rail,
   .exp-dot,
-  .exp-stem {
+  .exp-stem,
+  .exp-tail {
     display: none;
-  }
-
-  .exp-card {
-    display: grid;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1.5rem 1rem;
-    text-align: center;
   }
 
   .exp-logo {
     height: 1.75rem;
     width: auto;
-    max-width: 100%;
-    margin: 0 auto;
+    max-width: 10rem;
     object-fit: contain;
+    object-position: left center;
   }
 
   .exp-dates {
-    color: var(--color-gray, #8a8a8a);
-    font-size: 0.9rem;
+    margin-top: 0.85rem;
+    color: var(--color-blue);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
 
   .exp-role {
+    margin-top: 0.3rem;
     color: var(--color-ink);
+    font-family: var(--font-display);
+    font-size: 1.25rem;
     font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
   }
 
-  .exp-close {
-    margin-top: 2.5rem;
+  .exp-meta {
+    margin-top: 0.15rem;
+    color: var(--color-gray, #8a8a8a);
+    font-size: 0.85rem;
   }
 
-  @media (min-width: 640px) {
-    .exp-card {
-      grid-template-columns: 1fr 1fr 1fr;
-      text-align: left;
-    }
-    .exp-logo {
-      margin: 0;
-    }
+  .exp-points {
+    margin: 0.85rem 0 0;
+    padding: 0;
+    list-style: none;
+    color: var(--color-gray, #8a8a8a);
+    font-size: 0.9rem;
+    line-height: 1.5;
   }
 
-  /* ---- pinned horizontal run, switched on by script ---- */
+  .exp-points li {
+    position: relative;
+    padding-left: 0.9rem;
+  }
+  .exp-points li + li {
+    margin-top: 0.3rem;
+  }
+  .exp-points li::before {
+    position: absolute;
+    left: 0;
+    content: "—";
+  }
+
+  /* ---- pinned sideways run, switched on by script ---- */
 
   .exp.is-pinned {
     padding: 0;
@@ -194,33 +186,25 @@ const milestones = [...experience].reverse();
 
   .exp.is-pinned .exp-panel {
     flex: 0 0 auto;
-    width: min(88vw, 38rem);
+    width: min(70vw, 26rem);
     padding: 0 clamp(2rem, 6vw, 6rem);
+  }
+
+  .exp.is-pinned .exp-title {
     text-align: left;
   }
-  .exp.is-pinned .exp-title-plain {
-    display: none;
-  }
-  .exp.is-pinned .exp-title-run {
-    display: inline;
-  }
-  .exp.is-pinned .exp-lede {
+  .exp.is-pinned .exp-title span {
     display: block;
-    margin-left: 0;
-  }
-  .exp.is-pinned .exp-close {
-    margin-top: 0;
   }
 
   .exp.is-pinned .exp-items {
     position: relative;
     display: flex;
-    height: 60vh;
+    height: 74vh;
     align-items: center;
     margin: 0;
-    padding-right: clamp(2rem, 6vw, 6rem);
     /* A run-up before the first dot, so the rail is already travelling by the
-       time a milestone reaches the middle of the window. */
+       time a role reaches the middle of the window. */
     padding-left: clamp(3rem, 8vw, 9rem);
   }
 
@@ -244,15 +228,21 @@ const milestones = [...experience].reverse();
 
   .exp.is-pinned .exp-item {
     position: relative;
-    flex: 0 0 auto;
     /*
-      Wide on purpose. Narrow columns fit all three milestones on screen at
-      once, which leaves nothing to arrive — at this width about two and a half
-      are in view and each one travels in on its own.
+      Wide on purpose. Narrow columns fit the whole run on screen at once,
+      which leaves nothing to arrive.
     */
-    width: clamp(17rem, 38vw, 32rem);
+    width: clamp(19rem, 34vw, 30rem);
     height: 100%;
+    flex: 0 0 auto;
     border: 0;
+    padding: 0;
+  }
+
+  .exp.is-pinned .exp-tail {
+    display: block;
+    width: 40vw;
+    flex: 0 0 auto;
   }
 
   .exp.is-pinned .exp-dot {
@@ -272,13 +262,13 @@ const milestones = [...experience].reverse();
       transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  /* Drawn rather than faded, so each milestone reaches up to its own card. */
+  /* Drawn rather than faded, so each role reaches up to its own card. */
   .exp.is-pinned .exp-stem {
     position: absolute;
     left: 0;
     display: block;
     width: 1px;
-    height: 3.25rem;
+    height: 2.75rem;
     background: rgb(0 0 0 / 0.18);
     transform: scaleY(0);
     transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.06s;
@@ -295,46 +285,23 @@ const milestones = [...experience].reverse();
   .exp.is-pinned .exp-card {
     position: absolute;
     left: 0;
-    width: min(calc(100% - 2rem), 22rem);
-    display: block;
-    padding: 0;
-    text-align: left;
+    width: min(calc(100% - 2rem), 24rem);
     opacity: 0;
     transition:
       opacity 0.5s ease 0.12s,
       transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.12s;
   }
   .exp.is-pinned .is-above .exp-card {
-    bottom: calc(50% + 3.25rem);
+    bottom: calc(50% + 2.75rem);
     transform: translateY(0.75rem);
   }
   .exp.is-pinned .is-below .exp-card {
-    top: calc(50% + 3.25rem);
+    top: calc(50% + 2.75rem);
     transform: translateY(-0.75rem);
   }
 
-  /*
-    The logo is the milestone's headline — these are all wordmarks, so setting
-    the company name beside it would only say the same thing twice.
-  */
   .exp.is-pinned .exp-logo {
-    height: 2.25rem;
-    margin: 0 0 1rem;
-  }
-
-  .exp.is-pinned .exp-dates {
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  .exp.is-pinned .exp-role {
-    margin-top: 0.35rem;
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
+    height: 2rem;
   }
 
   .exp.is-pinned .exp-item.is-in .exp-dot {
@@ -359,9 +326,9 @@ const milestones = [...experience].reverse();
   const items = [...document.querySelectorAll<HTMLElement>("[data-exp-item]")];
 
   if (section && stage && track && fill && rail && items.length) {
-    // Pinning takes the section out of the normal flow of the page for as long
-    // as it is on screen, which is a lot to do to a phone for a list of three
-    // jobs — and on touch it fights the scroll it is riding on.
+    // Pinning takes the section out of the flow of the page for as long as it
+    // is on screen, which is a lot to do to a phone for a list of jobs — and on
+    // touch it fights the scroll it is riding on.
     const wide = window.matchMedia("(min-width: 768px)");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -382,10 +349,13 @@ const milestones = [...experience].reverse();
         The rail is drawn to the edge of the window, not to the fraction of the
         run that has been scrolled. Scaling it by progress alone measures it
         against the whole track — most of which is off to the left — so the
-        drawn end trails a long way behind the milestone being read.
+        drawn end trails a long way behind the role being read.
       */
       const railBox = rail.getBoundingClientRect();
-      const drawn = Math.min(Math.max(stage.getBoundingClientRect().right - railBox.left, 0), railBox.width);
+      const drawn = Math.min(
+        Math.max(stage.getBoundingClientRect().right - railBox.left, 0),
+        railBox.width
+      );
       fill.style.transform = `scaleX(${railBox.width ? drawn / railBox.width : 0})`;
     };
 
@@ -394,13 +364,12 @@ const milestones = [...experience].reverse();
     };
 
     /*
-      The page has to grow by exactly as much as the track has left to travel,
-      so the sideways run finishes precisely as the section lets go — any less
-      and it is still moving when it unpins, any more and it sits there stuck.
-    */
-    /*
-      Giving the section its height makes the page taller, which can bring the
-      scrollbar in, which narrows the stage and changes the answer. So this
+      The page has to grow by exactly what the track has left to travel, so the
+      run finishes as the section lets go — any less and it is still moving when
+      it unpins, any more and it sits there stuck.
+
+      Giving the section that height also makes the page taller, which can bring
+      the scrollbar in, which narrows the stage and changes the answer. So this
       settles rather than measures once: it re-runs on any size change and does
       nothing when the number has not moved, which stops it chasing itself.
     */
@@ -421,8 +390,8 @@ const milestones = [...experience].reverse();
       section.classList.add("is-pinned");
       measure();
       if (!io) {
-        // Rooted on the stage, so a milestone is "in" when it has travelled
-        // into the window rather than when the page scrolled past it.
+        // Rooted on the stage, so a role is "in" once it has travelled into the
+        // window rather than when the page scrolled past it.
         io = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {

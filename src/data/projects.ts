@@ -181,18 +181,52 @@ export const testimonials = [
 ];
 
 export const experience = [
-  { role: "Creative Head", company: "Frelo", dates: "Present", logo: "/img/logos/logo-4.webp" },
   {
-    role: "Creative Designer",
-    company: "AiVANTA",
-    dates: "Dec 24/May 25",
-    logo: "/img/logos/logo-1.webp",
+    company: "Frelo",
+    role: "Creative Head",
+    meta: "Full-time",
+    dates: "Nov 2025 — Present",
+    logo: "/img/logos/logo-4.webp",
+    points: [
+      "Directed creative for all video and visual content across campaigns.",
+      "Created marketing collateral that boosted brand visibility and recall.",
+      "Ideated and executed content for events, partnerships and community milestones.",
+    ],
   },
   {
-    role: "Design Intern",
+    company: "Frelo",
+    role: "Creative Intern",
+    meta: "Internship",
+    dates: "Sep 2025 — Oct 2025",
+    logo: "/img/logos/logo-4.webp",
+    points: [
+      "Produced short and long-form video edits for social and brand storytelling.",
+      "Designed graphics across campaign and community posts.",
+    ],
+  },
+  {
+    company: "AiVANTA",
+    role: "Creative Designer",
+    meta: "Internship · Mumbai, Hybrid",
+    dates: "Dec 2024 — May 2025",
+    logo: "/img/logos/logo-1.webp",
+    points: [
+      "Contributed to AI-powered short films, from concept development to final production.",
+      "Worked extensively with Runway, Kling, LumaLabs, ElevenLabs and Midjourney.",
+      "Gained hands-on experience producing AI-generated audio-visual content end to end.",
+    ],
+  },
+  {
     company: "Lit Lamps",
-    dates: "Jul 24/Dec 24",
+    role: "Design Intern",
+    meta: "Internship · Mumbai, On-site",
+    dates: "Jul 2024 — Dec 2024",
     logo: "/img/logos/logo-5.webp",
+    points: [
+      "Created engaging visuals of the lamps, aligning with the brand's aesthetic.",
+      "Collaborated with the team to deliver a company video reflecting the brand's vision.",
+      "Redesigned the packaging for the lamps.",
+    ],
   },
 ];
 
