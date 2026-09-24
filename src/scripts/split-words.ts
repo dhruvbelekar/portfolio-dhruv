@@ -36,3 +36,38 @@ export function splitWords(root: HTMLElement, className: string): HTMLElement[] 
   }
   return words;
 }
+
+/*
+  The same walk one level down: every character in its own span, so a line can
+  be animated letter by letter.
+
+  Whitespace is put back as a plain text node rather than wrapped, so the gap
+  between words is still an ordinary space and nothing has to be faked with a
+  non-breaking one.
+*/
+export function splitChars(root: HTMLElement, className: string): HTMLElement[] {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const texts: Text[] = [];
+  let node: Node | null;
+  while ((node = walker.nextNode())) {
+    if (node.textContent && node.textContent.trim()) texts.push(node as Text);
+  }
+
+  const chars: HTMLElement[] = [];
+  for (const text of texts) {
+    const frag = document.createDocumentFragment();
+    for (const ch of text.textContent!) {
+      if (!ch.trim()) {
+        frag.appendChild(document.createTextNode(ch));
+        continue;
+      }
+      const span = document.createElement("span");
+      span.className = className;
+      span.textContent = ch;
+      frag.appendChild(span);
+      chars.push(span);
+    }
+    text.replaceWith(frag);
+  }
+  return chars;
+}

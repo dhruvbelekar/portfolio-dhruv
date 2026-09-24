@@ -158,7 +158,7 @@
 </style>
 
 <script>
-  import { splitWords } from "../scripts/split-words";
+  import { splitChars, splitWords } from "../scripts/split-words";
 
   (function () {
     const loader = document.getElementById("intro-loader");
@@ -186,49 +186,120 @@
     */
     const heroName = document.querySelector<HTMLElement>("[data-hero-name]");
     const heroCopy = document.querySelector<HTMLElement>("[data-hero-copy]");
+    /*
+      The face is perched on the "k" but arrives on its own, after both lines
+      have landed, so it is held out of the letters it sits above.
+    */
+    const heroFace = document.querySelector<HTMLElement>("[data-hero-face]");
+    const nameChars = heroName ? splitChars(heroName, "hero-char") : [];
     const copyWords = heroCopy ? splitWords(heroCopy, "hero-word") : [];
 
-    // Wiped in from the left rather than faded: the name is the one thing on
-    // the page big enough to read as being written.
-    /*
-      The insets run past the top and bottom of the box on purpose. The mascot
-      is perched above the line box, so a clip that stopped at the box edge
-      would take the top of its hair off as the wipe went by; this way the
-      wipe simply uncovers it along with the "k" it sits on.
-    */
-    if (heroName) heroName.style.clipPath = "inset(-60% 100% -25% 0)";
-    copyWords.forEach((word) => (word.style.opacity = "0"));
+    // A heading that is now twelve spans would be spelled out letter by letter
+    // by a screen reader, so it is named once instead.
+    if (heroName && nameChars.length) {
+      heroName.setAttribute("aria-label", heroName.textContent!.trim());
+    }
 
-    const NAME_DELAY = 200;
-    const NAME_WIPE = 600;
-    const COPY_DELAY = 480;
-    const COPY_STEP = 16;
+    /*
+      The name arrives the way the greeting did: each letter out of its own
+      blur, from just below, one after the next. The offsets are in `em` so the
+      blur stays the same fraction of the letter at every size — the name runs
+      from 24px to 380px, and a fixed radius would be a smudge at one end and
+      invisible at the other.
+    */
+    nameChars.forEach((ch) => {
+      ch.style.display = "inline-block";
+      ch.style.opacity = "0";
+      ch.style.transform = "translateY(0.08em)";
+      ch.style.filter = "blur(0.08em)";
+      ch.style.willChange = "opacity, transform, filter";
+    });
+    copyWords.forEach((word) => (word.style.opacity = "0"));
+    if (heroFace) {
+      heroFace.style.opacity = "0";
+      heroFace.style.transform = "translateY(25%) scale(0.72)";
+      heroFace.style.filter = "blur(0.06em)";
+    }
+
+    /*
+      Three beats, not one: the name, then the line under it, then the face.
+      Everything is timed from the moment the panels start to rise, and the
+      first beat waits for them to clear the screen — the point is a white page
+      that fills, so nothing may be caught arriving behind a panel.
+    */
+    const NAME_DELAY = 820;
+    const NAME_STEP = 26;
+    const NAME_DURATION = 520;
+    const COPY_DELAY = 1380;
+    const COPY_STEP = 12;
+    const COPY_DURATION = 380;
+    const FACE_DELAY = 1980;
+    const FACE_DURATION = 560;
 
     function revealHero() {
-      if (heroName) {
-        setTimeout(() => {
-          heroName.style.transition = `clip-path ${NAME_WIPE}ms cubic-bezier(0.16, 1, 0.3, 1)`;
-          heroName.style.clipPath = "inset(-60% 0% -25% 0)";
-          // Cleared once it has run: the mascot is perched above the line box
-          // and any inset at all would cut its hair off. This has to be gone
-          // before the flight hands over.
-          setTimeout(() => {
-            heroName.style.clipPath = "";
-            heroName.style.transition = "";
-          }, NAME_WIPE + 20);
-        }, NAME_DELAY);
-      }
+      nameChars.forEach((ch, i) => {
+        const at = NAME_DELAY + i * NAME_STEP;
+        ch.style.transition =
+          `opacity ${NAME_DURATION}ms ease ${at}ms, ` +
+          `transform ${NAME_DURATION}ms ease ${at}ms, ` +
+          `filter ${NAME_DURATION}ms ease ${at}ms`;
+      });
 
       copyWords.forEach((word, i) => {
-        word.style.transition = `opacity 420ms ease ${COPY_DELAY + i * COPY_STEP}ms`;
+        word.style.transition = `opacity ${COPY_DURATION}ms ease ${COPY_DELAY + i * COPY_STEP}ms`;
       });
-      requestAnimationFrame(() => {
-        copyWords.forEach((word) => (word.style.opacity = "1"));
+
+      // Overshoots a little on the way in, which is the difference between the
+      // face landing and the face popping.
+      if (heroFace) {
+        heroFace.style.transition =
+          `opacity ${FACE_DURATION}ms ease ${FACE_DELAY}ms, ` +
+          `transform ${FACE_DURATION}ms cubic-bezier(0.34, 1.45, 0.64, 1) ${FACE_DELAY}ms, ` +
+          `filter ${FACE_DURATION}ms ease ${FACE_DELAY}ms`;
+      }
+
+      /*
+        The usual frame callback between arming the transitions and releasing
+        them is not used here, and deliberately: a tab opened in the background
+        is never given one until it is looked at, and the clean-up below — on a
+        timer, which does keep running — would then land first and strip the
+        transitions before they had started. The hidden state was written when
+        the script first ran and has been painted many times since, so reading
+        a layout value is enough to fix it as the frame to move off.
+      */
+      void heroName?.offsetWidth;
+
+      nameChars.forEach((ch) => {
+        ch.style.opacity = "1";
+        ch.style.transform = "translateY(0)";
+        ch.style.filter = "blur(0)";
       });
-      setTimeout(
-        () => copyWords.forEach((word) => (word.style.transition = "")),
-        COPY_DELAY + copyWords.length * COPY_STEP + 500
-      );
+      copyWords.forEach((word) => (word.style.opacity = "1"));
+      if (heroFace) {
+        heroFace.style.opacity = "1";
+        heroFace.style.transform = "translateY(0) scale(1)";
+        heroFace.style.filter = "blur(0)";
+      }
+
+      /*
+        Everything the reveal wrote is taken back off once it has run. The face
+        tilts on hover from its own class, and an inline transform left behind
+        would be the one thing standing in the way of it.
+      */
+      setTimeout(() => {
+        nameChars.forEach((ch) => {
+          ch.style.transition = "";
+          ch.style.transform = "";
+          ch.style.filter = "";
+          ch.style.willChange = "";
+        });
+        copyWords.forEach((word) => (word.style.transition = ""));
+        if (heroFace) {
+          heroFace.style.transition = "";
+          heroFace.style.transform = "";
+          heroFace.style.filter = "";
+        }
+      }, FACE_DELAY + FACE_DURATION + 100);
     }
 
     const words = [
@@ -271,8 +342,8 @@
     }
 
     function finish() {
-      // Before the exiting class, while the loader's face still has a box to
-      // be measured from.
+      // Armed before the exiting class so the hero's own clock starts on the
+      // same frame the panels do.
       revealHero();
       loader!.classList.add("intro-loader--exiting");
       document.body.style.overflow = "";
