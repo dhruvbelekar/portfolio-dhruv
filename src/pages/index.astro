@@ -6,6 +6,7 @@ import Marquee from "../components/Marquee.astro";
 import ProjectRow from "../components/ProjectRow.astro";
 import ProjectFilterNav from "../components/ProjectFilterNav.astro";
 import BioCopy from "../components/BioCopy.astro";
+import MagicText from "../components/MagicText.astro";
 import ExperienceSection from "../components/ExperienceSection.astro";
 import ClientLogos from "../components/ClientLogos.astro";
 import TestimonialsSection from "../components/TestimonialsSection.astro";
@@ -150,9 +151,14 @@ import { projects, filterCategories, skillsRowA, skillsRowB } from "../data/proj
           </div>
         </ScrollReveal>
 
-        <ScrollReveal delay={0.1} class="min-w-0">
+        {/*
+          No ScrollReveal around the bio: the words lighting up one by one is
+          the reveal, and fading the whole block in underneath it just made the
+          same copy fade twice.
+        */}
+        <MagicText class="min-w-0">
           <BioCopy />
-        </ScrollReveal>
+        </MagicText>
       </div>
 
     </div>
