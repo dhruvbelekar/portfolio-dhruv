@@ -77,13 +77,16 @@ const { class: className = "" } = Astro.props;
         const travel = rect.height + vh * 0.25;
         const progress = Math.min(1, Math.max(0, (vh * 0.85 - rect.top) / travel));
         const n = b.words.length;
+        // Each word fades across RAMP words' worth of progress rather than its
+        // own slice alone: at this length a slice is about nine pixels of
+        // scroll, which snaps a word from dim to lit and reads as a hard edge
+        // travelling down the copy. The starts are spread over RAMP - 1 extra
+        // slots so the last word still finishes exactly as progress reaches 1
+        // — divide the slices alone and the tail of the copy runs out of
+        // scroll mid-fade and sits there at half brightness.
+        const units = n + RAMP - 1;
         for (let i = 0; i < n; i++) {
-          // Each word fades across RAMP words' worth of progress rather than
-          // its own slice alone. At this length a slice is about nine pixels
-          // of scroll, which snaps a word from dim to lit and reads as a hard
-          // edge travelling down the copy; overlapping the fades softens that
-          // into a gradient without slowing the wipe down.
-          const t = Math.min(1, Math.max(0, ((progress - i / n) * n) / RAMP));
+          const t = Math.min(1, Math.max(0, (progress * units - i) / RAMP));
           // Rounded so a frame that moves nothing visible writes no style at
           // all; only the few words at the frontier touch the DOM.
           const o = Math.round((DIM + (1 - DIM) * t) * 100) / 100;
