@@ -194,13 +194,13 @@ import { projects, filterCategories, skillsRowA, skillsRowB } from "../data/proj
     </Marquee>
   </div>
 
-  <section class="px-6 md:px-10">
-    <div class="mx-auto max-w-[1400px]">
-      <ScrollReveal class="mt-12">
-        <ExperienceSection />
-      </ScrollReveal>
-    </div>
-  </section>
+  {/*
+    Full bleed and outside the usual shell: the section pins itself and runs a
+    track the width of the window, which a 1400px column with padding would
+    crop. The reveal wrapper goes too — the milestones arrive on their own as
+    the track brings them in.
+  */}
+  <ExperienceSection />
 
   <TestimonialsSection />
 </Layout>
