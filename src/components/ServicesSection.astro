@@ -68,11 +68,7 @@ const lettered = services.map((service) => {
               {/* Touch has no hover, so on a phone each service simply carries
                   its own picture instead of pointing at a shared one. */}
               <div class="svc-inline">
-                {service.image ? (
-                  <img src={service.image} alt="" loading="lazy" decoding="async" />
-                ) : (
-                  <span class="svc-placeholder">{service.name}</span>
-                )}
+                <img src={service.image} alt="" loading="lazy" decoding="async" />
               </div>
             </li>
           ))
@@ -83,11 +79,7 @@ const lettered = services.map((service) => {
         {
           lettered.map((service, i) => (
             <figure class:list={["svc-figure", i === 0 && "is-active"]} data-svc-figure data-index={i}>
-              {service.image ? (
-                <img src={service.image} alt="" loading="lazy" decoding="async" />
-              ) : (
-                <span class="svc-placeholder">{service.name}</span>
-              )}
+              <img src={service.image} alt="" loading="lazy" decoding="async" />
             </figure>
           ))
         }
@@ -216,28 +208,8 @@ const lettered = services.map((service) => {
     object-fit: cover;
   }
 
-  .svc-inline img,
-  .svc-inline .svc-placeholder {
+  .svc-inline img {
     aspect-ratio: 4 / 3;
-  }
-
-  /* Stands in until the artwork lands, so the section reads as finished
-     rather than broken while the pictures are still coming. */
-  .svc-placeholder {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    border-radius: 1rem;
-    background: rgb(19 67 240 / 0.06);
-    color: var(--color-blue);
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-align: center;
-    text-transform: uppercase;
   }
 
   .svc-preview {

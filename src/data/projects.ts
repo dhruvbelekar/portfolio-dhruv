@@ -229,18 +229,17 @@ export const skillsRowB = ["Creative Direction", "Photography", "Filmmaking", "A
 
 /*
   The same list the skills ticker carried, standing still so each one can be
-  read and shown. `image` is left null until the artwork arrives: the panel
-  draws a placeholder rather than a broken frame, so nothing is missing on the
-  page in the meantime.
+  read and shown. Each one points at the cover of the project that makes the
+  case for it, so a name and the work behind it are looked at together.
 */
 export const services = [
-  { name: "UI/UX Design", image: null as string | null },
-  { name: "Brand Identity", image: null as string | null },
-  { name: "Visual Design", image: null as string | null },
-  { name: "Creative Direction", image: null as string | null },
-  { name: "Photography", image: null as string | null },
-  { name: "Filmmaking", image: null as string | null },
-  { name: "AI", image: null as string | null },
+  { name: "UI/UX Design", image: "/img/projects/mahavitaran-thumb.webp" },
+  { name: "Experience Design", image: "/img/projects/drive-thumb.webp" },
+  { name: "Brand Identity", image: "/img/projects/mp4-thumb.webp" },
+  { name: "Visual Design", image: "/img/projects/frelo-thumb.webp" },
+  { name: "Photography", image: "/img/projects/ope-thumb.webp" },
+  { name: "Filmmaking", image: "/img/projects/passion-project-thumb.webp" },
+  { name: "AI", image: "/img/projects/ai-film-thumb.webp" },
 ];
 
 export const clientLogos = [
