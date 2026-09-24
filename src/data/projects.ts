@@ -187,7 +187,8 @@ export const experience = [
     // One stop, not two: the promotion is the interesting part, and the same
     // logo twice in a row read as a mistake rather than a step up.
     promotedFrom: "Creative Intern",
-    meta: "Promoted Nov 2025 · Full-time",
+    promotion: "Promoted Nov 2025",
+    meta: "Full-time",
     dates: "Sep 2025 — Present",
     logo: "/img/logos/logo-4.webp",
     points: [

@@ -53,6 +53,7 @@ const milestones = [...experience].reverse();
                   )}
                   {e.role}
                 </p>
+                {e.promotion && <p class="exp-promotion">{e.promotion}</p>}
                 <p class="exp-meta">{e.meta}</p>
                 <ul class="exp-points">
                   {e.points.map((point) => (
@@ -167,8 +168,22 @@ const milestones = [...experience].reverse();
     white-space: nowrap;
   }
 
+  /* Getting promoted is the achievement on this card, not a footnote to it. */
+  .exp-promotion {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    background: rgb(19 67 240 / 0.09);
+    color: var(--color-blue);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
   .exp-meta {
-    margin-top: 0.15rem;
+    margin-top: 0.4rem;
     color: var(--color-ink-muted);
     font-size: 0.85rem;
   }
@@ -189,7 +204,9 @@ const milestones = [...experience].reverse();
 
   .exp-points li {
     position: relative;
-    padding-left: 0.9rem;
+    /* The dash is an em wide; at 0.9rem of indent the text started flush
+       against it with no gap at all. */
+    padding-left: 1.5rem;
   }
   .exp-points li + li {
     margin-top: 0.3rem;
@@ -231,12 +248,22 @@ const milestones = [...experience].reverse();
   }
 
   .exp.is-pinned .exp-panel {
+    position: relative;
     flex: 0 0 auto;
     width: min(70vw, 26rem);
     padding: 0 clamp(2rem, 6vw, 6rem);
+    align-self: stretch;
   }
 
+  /*
+    Lifted to sit on top of the rail, level with the cards that hang above it.
+    Centred, the line ran straight through the middle of the words.
+  */
   .exp.is-pinned .exp-title {
+    position: absolute;
+    left: clamp(2rem, 6vw, 6rem);
+    right: clamp(2rem, 6vw, 6rem);
+    bottom: calc(50% + 2.25rem);
     text-align: left;
   }
   .exp.is-pinned .exp-title span {
@@ -314,7 +341,7 @@ const milestones = [...experience].reverse();
     left: 0;
     display: block;
     width: 1px;
-    height: 2.75rem;
+    height: 2.25rem;
     background: rgb(0 0 0 / 0.18);
     transform: scaleY(0);
     transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.06s;
@@ -331,23 +358,55 @@ const milestones = [...experience].reverse();
   .exp.is-pinned .exp-card {
     position: absolute;
     left: 0;
-    width: min(calc(100% - 2rem), 24rem);
+    /*
+      Wider than it looks like it needs to be. The four-bullet card wrapped to
+      eight lines at 24rem, which made it tall enough to run up behind the
+      header; the same words take six lines here.
+    */
+    width: min(calc(100% - 1.5rem), 27rem);
     opacity: 0;
     transition:
       opacity 0.5s ease 0.12s,
       transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.12s;
   }
   .exp.is-pinned .is-above .exp-card {
-    bottom: calc(50% + 2.75rem);
+    bottom: calc(50% + 2.25rem);
     transform: translateY(0.75rem);
   }
   .exp.is-pinned .is-below .exp-card {
-    top: calc(50% + 2.75rem);
+    top: calc(50% + 2.25rem);
     transform: translateY(-0.75rem);
   }
 
   .exp.is-pinned .exp-logo {
-    height: 2rem;
+    height: 1.75rem;
+  }
+
+  /*
+    A laptop window leaves little room above the line, and the tallest card —
+    four bullets — ran up under the header on one. Below this height the card
+    tightens rather than overflowing into the nav.
+  */
+  @media (max-height: 900px) {
+    /* The rail drops further down a short window, which is where the room
+       above it has to come from. */
+    .exp.is-pinned .exp-stage {
+      padding-top: clamp(7rem, 12vw, 10rem);
+    }
+    .exp.is-pinned .exp-logo {
+      height: 1.5rem;
+      margin-bottom: 0.7rem;
+    }
+    .exp.is-pinned .exp-role {
+      font-size: 1.1rem;
+    }
+    .exp.is-pinned .exp-points {
+      font-size: 0.84rem;
+      line-height: 1.45;
+    }
+    .exp.is-pinned .exp-promotion {
+      margin-top: 0.35rem;
+    }
   }
 
   .exp.is-pinned .exp-item.is-in .exp-dot {
@@ -397,17 +456,14 @@ const milestones = [...experience].reverse();
         against the whole track — most of which is off to the left — so the
         drawn end trails a long way behind the role being read.
       */
-      const railBox = rail.getBoundingClientRect();
-      const stageBox = stage.getBoundingClientRect();
       /*
-        Drawn to a little past the middle of the window rather than to its right
-        edge: the rail now runs the length of the track, so filling it to the
-        edge would leave every visible inch of it already blue and nothing left
-        to draw. This keeps the drawn end near whatever is being read.
+        Scaled straight from progress. Because the rail is as long as the track
+        and travels with it, that puts the drawn end at the left of the window
+        when the run starts and walks it across to the right as the run ends —
+        so the line begins grey and fills as it is scrolled, rather than
+        arriving already blue.
       */
-      const readingLine = stageBox.left + stageBox.width * 0.55;
-      const drawn = Math.min(Math.max(readingLine - railBox.left, 0), railBox.width);
-      fill.style.transform = `scaleX(${railBox.width ? drawn / railBox.width : 0})`;
+      fill.style.transform = `scaleX(${progress})`;
     };
 
     const request = () => {
