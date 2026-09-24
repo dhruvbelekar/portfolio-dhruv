@@ -1,0 +1,273 @@
+---
+import { services } from "../data/projects";
+---
+
+<section class="svc" data-svc>
+  <div class="svc-inner">
+    <p class="svc-eyebrow">(Services)</p>
+
+    <div class="svc-body">
+      <ul class="svc-list">
+        {
+          services.map((service, i) => (
+            <li class:list={["svc-row", i === 0 && "is-active"]} data-svc-row data-index={i}>
+              {/*
+                A button, not a div with a mouse listener: this is the control
+                that changes the panel, so it can be tabbed to and it answers
+                a keyboard the same way it answers a pointer.
+              */}
+              <button class="svc-trigger" type="button" aria-controls="svc-preview">
+                <span class="svc-num">{String(i + 1).padStart(2, "0")}</span>
+                <span class="svc-name">{service.name}</span>
+                <span class="svc-arrow" aria-hidden="true">
+                  →
+                </span>
+              </button>
+
+              {/* Touch has no hover, so on a phone each service simply carries
+                  its own picture instead of pointing at a shared one. */}
+              <div class="svc-inline">
+                {service.image ? (
+                  <img src={service.image} alt="" loading="lazy" decoding="async" />
+                ) : (
+                  <span class="svc-placeholder">{service.name}</span>
+                )}
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="svc-preview" id="svc-preview" data-svc-preview aria-hidden="true">
+        {
+          services.map((service, i) => (
+            <figure class:list={["svc-figure", i === 0 && "is-active"]} data-svc-figure data-index={i}>
+              {service.image ? (
+                <img src={service.image} alt="" loading="lazy" decoding="async" />
+              ) : (
+                <span class="svc-placeholder">{service.name}</span>
+              )}
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .svc {
+    padding: var(--space-section) 1.5rem;
+  }
+
+  .svc-inner {
+    margin: 0 auto;
+    max-width: 1400px;
+  }
+
+  .svc-eyebrow {
+    color: var(--color-ink-muted);
+    font-size: 0.95rem;
+  }
+
+  .svc-list {
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .svc-row {
+    border-bottom: 1px solid rgb(0 0 0 / 0.08);
+  }
+  .svc-row:first-child {
+    border-top: 1px solid rgb(0 0 0 / 0.08);
+  }
+
+  .svc-trigger {
+    display: grid;
+    width: 100%;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 0;
+    background: none;
+    border: 0;
+    text-align: left;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+  }
+
+  .svc-num {
+    color: var(--color-ink-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  .svc-name {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 1rem + 3.4vw, 4rem);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    text-transform: uppercase;
+    /*
+      Full strength here. Greying the list only makes sense where one of them
+      can be singled out by a pointer; on a phone it would just be seven
+      headings nobody can read.
+    */
+    color: var(--color-ink);
+    transition:
+      color 0.4s ease,
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .svc-arrow {
+    color: var(--color-blue);
+    font-size: 1.25rem;
+    opacity: 0;
+    transform: translateX(-0.5rem);
+    transition:
+      opacity 0.35s ease,
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .svc-inline {
+    padding-bottom: 1.25rem;
+  }
+
+  .svc-inline img,
+  .svc-figure img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 1rem;
+    object-fit: cover;
+  }
+
+  .svc-inline img,
+  .svc-inline .svc-placeholder {
+    aspect-ratio: 4 / 3;
+  }
+
+  /* Stands in until the artwork lands, so the section reads as finished
+     rather than broken while the pictures are still coming. */
+  .svc-placeholder {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    border-radius: 1rem;
+    background: rgb(19 67 240 / 0.06);
+    color: var(--color-blue);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .svc-preview {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .svc-body {
+      display: grid;
+      grid-template-columns: 1fr minmax(16rem, 26rem);
+      align-items: start;
+      gap: clamp(2rem, 5vw, 5rem);
+    }
+
+    .svc-list {
+      margin-top: 0;
+    }
+
+    .svc-inline {
+      display: none;
+    }
+
+    .svc-trigger {
+      padding: 1.4rem 0;
+    }
+
+    .svc-preview {
+      position: sticky;
+      top: 7rem;
+      display: block;
+      aspect-ratio: 3 / 4;
+      width: 100%;
+    }
+
+    /* Every picture is stacked in the same frame and cross-faded, so the panel
+       never collapses to nothing between two services. */
+    .svc-figure {
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      opacity: 0;
+      transform: scale(1.03);
+      transition:
+        opacity 0.55s ease,
+        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .svc-figure.is-active {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* Grey until it is the one being looked at — the whole list at full
+       strength is what makes a wall of names impossible to scan. */
+    .svc-name {
+      color: var(--color-gray);
+    }
+
+    .svc-row.is-active .svc-name {
+      color: var(--color-ink);
+      transform: translateX(0.75rem);
+    }
+
+    .svc-row.is-active .svc-arrow {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .svc-name,
+    .svc-arrow,
+    .svc-figure {
+      transition-duration: 0.001ms;
+    }
+    .svc-row.is-active .svc-name {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  const rows = [...document.querySelectorAll<HTMLElement>("[data-svc-row]")];
+  const figures = [...document.querySelectorAll<HTMLElement>("[data-svc-figure]")];
+
+  if (rows.length && figures.length) {
+    let active = 0;
+
+    const show = (index: number) => {
+      if (index === active) return;
+      active = index;
+      rows.forEach((row, i) => row.classList.toggle("is-active", i === index));
+      figures.forEach((figure, i) => figure.classList.toggle("is-active", i === index));
+    };
+
+    rows.forEach((row, i) => {
+      // Pointer and keyboard both land here; the last one looked at stays up
+      // rather than snapping back, so the panel is never empty.
+      row.addEventListener("pointerenter", () => show(i));
+      row.addEventListener("focusin", () => show(i));
+    });
+  }
+</script>

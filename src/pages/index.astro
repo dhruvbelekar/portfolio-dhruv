@@ -2,15 +2,15 @@
 import Layout from "../layouts/Layout.astro";
 import IntroLoader from "../components/IntroLoader.astro";
 import ScrollReveal from "../components/ScrollReveal.astro";
-import Marquee from "../components/Marquee.astro";
 import ProjectRow from "../components/ProjectRow.astro";
 import ProjectFilterNav from "../components/ProjectFilterNav.astro";
 import BioCopy from "../components/BioCopy.astro";
 import MagicText from "../components/MagicText.astro";
 import ExperienceSection from "../components/ExperienceSection.astro";
+import ServicesSection from "../components/ServicesSection.astro";
 import ClientLogos from "../components/ClientLogos.astro";
 import TestimonialsSection from "../components/TestimonialsSection.astro";
-import { projects, filterCategories, skillsRowA, skillsRowB } from "../data/projects";
+import { projects, filterCategories } from "../data/projects";
 ---
 
 <Layout>
@@ -166,33 +166,12 @@ import { projects, filterCategories, skillsRowA, skillsRowB } from "../data/proj
     </div>
   </section>
 
-  <!-- Skills marquee (full-bleed, edge to edge) -->
-  <div class="mt-10 space-y-2 py-2 text-2xl font-bold tracking-[-0.05em] text-blue sm:text-3xl">
-    <Marquee speed={90}>
-      {
-        Array(8)
-          .fill(skillsRowA)
-          .flat()
-          .map((s, i) => (
-            <span key={i} class="whitespace-nowrap">
-              {s} <span class="text-gray-300">✦</span>
-            </span>
-          ))
-      }
-    </Marquee>
-    <Marquee speed={105} direction="right">
-      {
-        Array(8)
-          .fill(skillsRowB)
-          .flat()
-          .map((s, i) => (
-            <span key={i} class="whitespace-nowrap">
-              {s} <span class="text-gray-300">✦</span>
-            </span>
-          ))
-      }
-    </Marquee>
-  </div>
+  {/*
+    The skills used to stream past in two tickers, which meant none of them
+    could be read for longer than a second and none of them could be shown.
+    They stand still now, and each one has a picture.
+  */}
+  <ServicesSection />
 
   {/*
     Full bleed and outside the usual shell: the section pins itself and runs a

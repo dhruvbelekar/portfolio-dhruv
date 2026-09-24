@@ -227,6 +227,22 @@ export const experience = [
 export const skillsRowA = ["UI/UX Design", "Brand Identity", "Visual Design"];
 export const skillsRowB = ["Creative Direction", "Photography", "Filmmaking", "AI"];
 
+/*
+  The same list the skills ticker carried, standing still so each one can be
+  read and shown. `image` is left null until the artwork arrives: the panel
+  draws a placeholder rather than a broken frame, so nothing is missing on the
+  page in the meantime.
+*/
+export const services = [
+  { name: "UI/UX Design", image: null as string | null },
+  { name: "Brand Identity", image: null as string | null },
+  { name: "Visual Design", image: null as string | null },
+  { name: "Creative Direction", image: null as string | null },
+  { name: "Photography", image: null as string | null },
+  { name: "Filmmaking", image: null as string | null },
+  { name: "AI", image: null as string | null },
+];
+
 export const clientLogos = [
   { src: "/img/logos/logo-1.webp", width: 653, height: 122 },
   { src: "/img/logos/logo-2.webp", width: 584, height: 339 },
