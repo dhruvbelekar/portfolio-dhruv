@@ -23,6 +23,7 @@ import { projects, filterCategories, skillsRowA, skillsRowB } from "../data/proj
       style="--name-font: clamp(1.5rem, var(--shell) * 0.135, 380px); --name-width: calc(var(--name-font) * 5.7);"
     >
       <h1
+        data-hero-name
         class="select-none text-center font-bold leading-[0.8] text-blue"
         style="font-family: var(--font-display); font-size: var(--name-font); letter-spacing: -0.05em;"
       >
@@ -32,7 +33,7 @@ import { projects, filterCategories, skillsRowA, skillsRowB } from "../data/proj
             hover would land it after the pointer had gone. `active` carries the
             swap to touch, where there is no hover.
           */}
-          <span class="group absolute left-[4.475em] -top-[0.375em] block w-[0.70em]">
+          <span data-hero-mascot class="group absolute left-[4.475em] -top-[0.375em] block w-[0.70em]">
             <span
               class="block rotate-[8deg] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-rotate-[5deg] group-hover:scale-105 group-active:-rotate-[5deg] group-active:scale-105 motion-reduce:transition-none"
             >
@@ -58,6 +59,7 @@ import { projects, filterCategories, skillsRowA, skillsRowB } from "../data/proj
         </span>
       </h1>
       <p
+        data-hero-copy
         class="mx-auto w-full font-bold leading-tight text-gray-400"
         style="font-family: var(--font-display); font-size: clamp(1.125rem, var(--shell) * 0.028, 40px); text-indent: 42%; margin-top: clamp(1rem, var(--shell) * 0.048, 70px); max-width: var(--name-width);"
       >

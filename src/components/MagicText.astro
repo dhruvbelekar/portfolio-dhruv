@@ -16,6 +16,8 @@ const { class: className = "" } = Astro.props;
 <div data-magic-text class={className}><slot /></div>
 
 <script>
+  import { splitWords } from "../scripts/split-words";
+
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
   const blocks = [...document.querySelectorAll<HTMLElement>("[data-magic-text]")];
 
@@ -27,33 +29,8 @@ const { class: className = "" } = Astro.props;
   type Block = { el: HTMLElement; words: HTMLElement[]; last: number[]; live: boolean };
 
   const split = (root: HTMLElement) => {
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-    const texts: Text[] = [];
-    let node: Node | null;
-    while ((node = walker.nextNode())) {
-      if (node.textContent && node.textContent.trim()) texts.push(node as Text);
-    }
-
-    const words: HTMLElement[] = [];
-    for (const text of texts) {
-      const frag = document.createDocumentFragment();
-      // Whitespace is put back as its own node so wrapping, spacing and
-      // selection behave exactly as they did before the split.
-      for (const piece of text.textContent!.split(/(\s+)/)) {
-        if (!piece) continue;
-        if (!piece.trim()) {
-          frag.appendChild(document.createTextNode(piece));
-          continue;
-        }
-        const span = document.createElement("span");
-        span.className = "magic-word";
-        span.textContent = piece;
-        span.style.opacity = String(DIM);
-        frag.appendChild(span);
-        words.push(span);
-      }
-      text.replaceWith(frag);
-    }
+    const words = splitWords(root, "magic-word");
+    words.forEach((w) => (w.style.opacity = String(DIM)));
     return words;
   };
 
