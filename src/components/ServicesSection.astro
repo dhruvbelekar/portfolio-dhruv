@@ -1,5 +1,22 @@
 ---
 import { services } from "../data/projects";
+
+/*
+  Split at build time into words, and words into letters, each carrying its
+  place in the line. Every letter is its own little window holding the grey
+  face and the ink face stacked, and the stagger is what makes the swap sweep
+  across the word instead of flipping all at once.
+
+  Words stay whole so the line can still wrap between them rather than
+  mid-word.
+*/
+const lettered = services.map((service) => {
+  let i = 0;
+  return {
+    ...service,
+    words: service.name.split(" ").map((word) => [...word].map((ch) => ({ ch, i: i++ }))),
+  };
+});
 ---
 
 <section class="svc" data-svc>
@@ -9,16 +26,40 @@ import { services } from "../data/projects";
     <div class="svc-body">
       <ul class="svc-list">
         {
-          services.map((service, i) => (
+          lettered.map((service, i) => (
             <li class:list={["svc-row", i === 0 && "is-active"]} data-svc-row data-index={i}>
               {/*
                 A button, not a div with a mouse listener: this is the control
                 that changes the panel, so it can be tabbed to and it answers
                 a keyboard the same way it answers a pointer.
               */}
-              <button class="svc-trigger" type="button" aria-controls="svc-preview">
-                <span class="svc-num">{String(i + 1).padStart(2, "0")}</span>
-                <span class="svc-name">{service.name}</span>
+              {/* The letters are scenery; the button says what it is. */}
+              <button
+                class="svc-trigger"
+                type="button"
+                aria-controls="svc-preview"
+                aria-label={service.name}
+              >
+                <span class="svc-num" aria-hidden="true">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span class="svc-name" aria-hidden="true">
+                  {service.words.map((word, w) => (
+                    <>
+                      <span class="svc-word">
+                        {word.map(({ ch, i: pos }) => (
+                          <span class="svc-char" style={`--i:${pos}`}>
+                            <span class="svc-roll">
+                              <span class="svc-face">{ch}</span>
+                              <span class="svc-face svc-face--on">{ch}</span>
+                            </span>
+                          </span>
+                        ))}
+                      </span>
+                      {w < service.words.length - 1 ? " " : ""}
+                    </>
+                  ))}
+                </span>
                 <span class="svc-arrow" aria-hidden="true">
                   →
                 </span>
@@ -40,7 +81,7 @@ import { services } from "../data/projects";
 
       <div class="svc-preview" id="svc-preview" data-svc-preview aria-hidden="true">
         {
-          services.map((service, i) => (
+          lettered.map((service, i) => (
             <figure class:list={["svc-figure", i === 0 && "is-active"]} data-svc-figure data-index={i}>
               {service.image ? (
                 <img src={service.image} alt="" loading="lazy" decoding="async" />
@@ -118,9 +159,37 @@ import { services } from "../data/projects";
       headings nobody can read.
     */
     color: var(--color-ink);
-    transition:
-      color 0.4s ease,
-      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .svc-word {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  /*
+    Each letter is a window one line tall with two faces stacked inside it.
+    The height has to be stated: without it the box simply grows to hold both
+    faces and there is nothing for the overflow to clip, which shows the ink
+    copy sitting under the grey one instead of hiding it.
+  */
+  .svc-char {
+    display: inline-block;
+    height: 1.05em;
+    height: 1lh;
+    overflow: hidden;
+    vertical-align: top;
+  }
+
+  .svc-roll {
+    display: block;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    /* The beat per letter. Small enough to read as one gesture sweeping
+       across the word rather than as letters taking turns. */
+    transition-delay: calc(var(--i) * 18ms);
+  }
+
+  .svc-face {
+    display: block;
   }
 
   .svc-arrow {
@@ -222,13 +291,18 @@ import { services } from "../data/projects";
 
     /* Grey until it is the one being looked at — the whole list at full
        strength is what makes a wall of names impossible to scan. */
-    .svc-name {
+    .svc-face {
       color: var(--color-gray);
     }
 
-    .svc-row.is-active .svc-name {
+    .svc-face--on {
       color: var(--color-ink);
-      transform: translateX(0.75rem);
+    }
+
+    /* Half the stack is exactly one face, so the ink one lands where the grey
+       one was rather than near it. */
+    .svc-row.is-active .svc-roll {
+      transform: translateY(-50%);
     }
 
     .svc-row.is-active .svc-arrow {
@@ -238,13 +312,13 @@ import { services } from "../data/projects";
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .svc-name,
+    .svc-roll,
     .svc-arrow,
     .svc-figure {
       transition-duration: 0.001ms;
     }
-    .svc-row.is-active .svc-name {
-      transform: none;
+    .svc-roll {
+      transition-delay: 0ms;
     }
   }
 </style>
