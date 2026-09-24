@@ -17,14 +17,16 @@ const milestones = [...experience].reverse();
         <h3 class="exp-title"><span>My</span> <span>Experience</span></h3>
       </header>
 
-      <ol class="exp-items">
-        {/* The rail sits inside the row so it can stretch the whole run of
-            roles, and its fill is driven by the same scroll that moves the
-            track. */}
-        <span class="exp-rail" data-exp-rail aria-hidden="true">
-          <span class="exp-rail-fill" data-exp-fill />
-        </span>
+      {/*
+        The rail spans the whole track rather than just the run of roles, so it
+        is already crossing the window when the section takes hold instead of
+        appearing out of nowhere beside the title.
+      */}
+      <span class="exp-rail" data-exp-rail aria-hidden="true">
+        <span class="exp-rail-fill" data-exp-fill />
+      </span>
 
+      <ol class="exp-items">
         {
           milestones.map((e, i) => (
             <li class:list={["exp-item", i % 2 === 0 ? "is-above" : "is-below"]} data-exp-item>
@@ -39,7 +41,18 @@ const milestones = [...experience].reverse();
                   decoding="async"
                 />
                 <p class="exp-dates">{e.dates}</p>
-                <p class="exp-role">{e.role}</p>
+                <p class="exp-role">
+                  {e.promotedFrom && (
+                    <>
+                      <span class="exp-prev">{e.promotedFrom}</span>
+                      <span class="exp-arrow" aria-hidden="true">
+                        →
+                      </span>
+                      <span class="exp-sr">promoted to</span>
+                    </>
+                  )}
+                  {e.role}
+                </p>
                 <p class="exp-meta">{e.meta}</p>
                 <ul class="exp-points">
                   {e.points.map((point) => (
@@ -133,9 +146,30 @@ const milestones = [...experience].reverse();
     line-height: 1.15;
   }
 
+  .exp-prev {
+    color: var(--color-ink-muted);
+    font-weight: 400;
+  }
+
+  .exp-arrow {
+    margin: 0 0.4em;
+    color: var(--color-blue);
+  }
+
+  /* The arrow carries the meaning visually; this carries it to a reader. */
+  .exp-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
   .exp-meta {
     margin-top: 0.15rem;
-    color: var(--color-gray, #8a8a8a);
+    color: var(--color-ink-muted);
     font-size: 0.85rem;
   }
 
@@ -143,9 +177,14 @@ const milestones = [...experience].reverse();
     margin: 0.85rem 0 0;
     padding: 0;
     list-style: none;
-    color: var(--color-gray, #8a8a8a);
+    /*
+      Not --color-gray: that token is #b3b3b3, a hairline tone for timestamps,
+      and it left this copy too faint to read. --color-ink-muted is the one the
+      rest of the site uses for secondary text people actually read.
+    */
+    color: var(--color-ink-muted);
     font-size: 0.9rem;
-    line-height: 1.5;
+    line-height: 1.55;
   }
 
   .exp-points li {
@@ -174,9 +213,16 @@ const milestones = [...experience].reverse();
     height: 100vh;
     align-items: center;
     overflow: hidden;
+    /*
+      The rail sits in the middle of whatever is left below the header. Centred
+      on the whole window instead, the tallest card above the line runs up
+      behind the nav and loses its logo to it.
+    */
+    padding-top: clamp(4.5rem, 7vw, 7rem);
   }
 
   .exp.is-pinned .exp-track {
+    position: relative;
     display: flex;
     max-width: none;
     align-items: center;
@@ -215,7 +261,7 @@ const milestones = [...experience].reverse();
     left: 0;
     display: block;
     height: 1px;
-    background: rgb(0 0 0 / 0.1);
+    background: rgb(0 0 0 / 0.12);
   }
 
   .exp-rail-fill {
@@ -352,10 +398,15 @@ const milestones = [...experience].reverse();
         drawn end trails a long way behind the role being read.
       */
       const railBox = rail.getBoundingClientRect();
-      const drawn = Math.min(
-        Math.max(stage.getBoundingClientRect().right - railBox.left, 0),
-        railBox.width
-      );
+      const stageBox = stage.getBoundingClientRect();
+      /*
+        Drawn to a little past the middle of the window rather than to its right
+        edge: the rail now runs the length of the track, so filling it to the
+        edge would leave every visible inch of it already blue and nothing left
+        to draw. This keeps the drawn end near whatever is being read.
+      */
+      const readingLine = stageBox.left + stageBox.width * 0.55;
+      const drawn = Math.min(Math.max(readingLine - railBox.left, 0), railBox.width);
       fill.style.transform = `scaleX(${railBox.width ? drawn / railBox.width : 0})`;
     };
 

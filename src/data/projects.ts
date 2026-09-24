@@ -184,24 +184,17 @@ export const experience = [
   {
     company: "Frelo",
     role: "Creative Head",
-    meta: "Full-time",
-    dates: "Nov 2025 — Present",
+    // One stop, not two: the promotion is the interesting part, and the same
+    // logo twice in a row read as a mistake rather than a step up.
+    promotedFrom: "Creative Intern",
+    meta: "Promoted Nov 2025 · Full-time",
+    dates: "Sep 2025 — Present",
     logo: "/img/logos/logo-4.webp",
     points: [
       "Directed creative for all video and visual content across campaigns.",
+      "Produced short and long-form video edits and designed graphics for social and brand storytelling.",
       "Created marketing collateral that boosted brand visibility and recall.",
       "Ideated and executed content for events, partnerships and community milestones.",
-    ],
-  },
-  {
-    company: "Frelo",
-    role: "Creative Intern",
-    meta: "Internship",
-    dates: "Sep 2025 — Oct 2025",
-    logo: "/img/logos/logo-4.webp",
-    points: [
-      "Produced short and long-form video edits for social and brand storytelling.",
-      "Designed graphics across campaign and community posts.",
     ],
   },
   {
