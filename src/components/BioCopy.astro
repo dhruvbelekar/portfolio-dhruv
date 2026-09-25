@@ -1,4 +1,28 @@
 ---
+import HoverPeek from "./HoverPeek.astro";
+
+/*
+  Some of the highlighted words have a picture behind them: point at one and a
+  card floats out beside it.
+
+  The four words about the work point straight at the project they came out of,
+  in /public/img/projects, rather than at copies — one cover, one file, and a
+  card that follows the project if its cover is ever replaced. The words about
+  everything else have photographs of their own in
+  /public/img/about/highlights: chelsea, max, gym, trip, silver, drive.
+
+  A card only goes on a word with something worth looking at behind it. The rest
+  of the highlights — "F1 race", "food", "people remember" — keep the colour and
+  stay plain, because a card that arrives empty is worse than no card. Any
+  picture that fails to load falls back to a plate carrying the word, so a
+  missing file never leaves a hole.
+
+  The `{" "}` before three of the highlights is load-bearing. A line that ends
+  in a space and hands over to a tag on the next line loses that space in the
+  compiler, which welded "a" to "brand", "much" to "silver" and "because" to
+  "the drive" in the rendered copy. Written out, the space survives.
+*/
+
 interface Props {
   class?: string;
 }
@@ -17,15 +41,68 @@ const { class: className = "" } = Astro.props;
       pretty well so far.</span>
     </p>
     <p>
-      One day I'm designing an app. The next I'm shooting a <span class="text-blue">film,</span> building a
-      <span class="text-blue">brand,</span> or editing a <span class="text-blue">video.</span> I stopped
+      One day I'm designing an <span class="text-blue"><HoverPeek
+        title="Mahavitaran"
+        note="An electricity board, made usable."
+        image="/img/projects/mahavitaran-thumb.webp"
+        ratio="0.8"
+      >app</HoverPeek>.</span> The next I'm shooting a <span class="text-blue"><HoverPeek
+        title="Passion Project"
+        note="Camera in hand, plan optional."
+        image="/img/projects/passion-project-thumb.webp"
+        ratio="0.77"
+      >film</HoverPeek>,</span> building a{" "}
+      <span class="text-blue"><HoverPeek
+        title="Mp4 Productions"
+        note="Marks, type, and the rules around them."
+        image="/img/projects/mp4-thumb.webp"
+        ratio="1.84"
+      >brand</HoverPeek>,</span> or editing a <span class="text-blue"><HoverPeek
+        title="The New World"
+        note="An AI short, cut end to end."
+        image="/img/projects/ai-film-thumb.webp"
+        ratio="0.8"
+      >video</HoverPeek>.</span> I stopped
       trying to explain it. <span class="text-blue">I just call it making things.</span>
     </p>
     <p>
-      Outside work, I'm usually watching <span class="text-blue">Chelsea, (the jersey probably gave that
-      away)</span> chasing the city's best <span class="text-blue">shawarma,</span> wearing way too much
-      <span class="text-blue">silver,</span> or taking the long route home because
-      <span class="text-blue">the drive is better than the destination.</span>
+      Outside work, I'm usually watching <span class="text-blue"><HoverPeek
+        title="Chelsea"
+        note="Blue every weekend, win or lose."
+        image="/img/about/highlights/chelsea.webp"
+        ratio="1.6"
+        fit="contain"
+      >Chelsea</HoverPeek>, (the jersey probably gave that
+      away)</span>, catching an <span class="text-blue">F1 race</span> and rooting for{" "}
+      <span class="text-blue"><HoverPeek
+        title="Max Verstappen"
+        note="Red Bull, race after race."
+        image="/img/about/highlights/max.webp"
+        ratio="0.75"
+      >Max Verstappen</HoverPeek>,</span> chasing the city's best <span class="text-blue">food,</span> <span class="text-blue"><HoverPeek
+        title="The gym"
+        note="Showing up is most of it."
+        image="/img/about/highlights/gym.webp"
+        ratio="0.75"
+      >working out</HoverPeek></span> and pretending I have my routine figured out,{" "}
+      <span class="text-blue"><HoverPeek
+        title="The next trip"
+        note="There is always one being planned."
+        image="/img/about/highlights/trip.webp"
+        ratio="1.6"
+      >planning my next trip</HoverPeek>,</span> wearing way too much{" "}
+      <span class="text-blue"><HoverPeek
+        title="Too much silver"
+        note="Rings, chains, no apologies."
+        image="/img/about/highlights/silver.webp"
+        ratio="0.75"
+      >silver</HoverPeek>,</span> or taking the long route home because{" "}
+      <span class="text-blue"><HoverPeek
+        title="The long route"
+        note="Better than the destination, every time."
+        image="/img/about/highlights/drive.webp"
+        ratio="0.75"
+      >the drive</HoverPeek> is better than the destination.</span>
     </p>
     <p>
       I'm just trying to make things that <span class="text-blue">people remember.</span> If my work makes

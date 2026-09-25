@@ -1,0 +1,448 @@
+---
+/*
+  A word in the bio that has a picture behind it: hovering it floats a small
+  card next to the word showing what the word is talking about.
+
+  The card itself is not in this markup. One is built on first hover and parked
+  on the body, so however many of these the copy carries, the page holds a
+  single card, a single pair of listeners and a single frame loop — and the
+  card, being a child of the body, is free of the bio grid's stacking and
+  overflow and can sit over the copy wherever the word happens to fall.
+
+  `image` may point at a file that is not on disk yet. A picture that fails to
+  load falls back to a plate carrying the word, so dropping the real photo in
+  later is the whole job — nothing here has to change with it.
+*/
+interface Props {
+  /* Heading on the card. */
+  title: string;
+  /* One line under the heading, describing the picture. */
+  note?: string;
+  /* Path in /public. Leave it off and the fallback plate stands in. */
+  image?: string;
+  /* `object-position`, for a photo whose subject is off-centre. */
+  focus?: string;
+  /*
+    The picture's own shape, as a CSS aspect-ratio. The photographs behind these
+    words are a mix of portrait and landscape, and one shape for all of them
+    would mean cropping most of them to a band. Each card takes the shape of the
+    picture it is holding instead, which is also why this is declared here
+    rather than measured: the card is sized before the image has loaded, so it
+    arrives at its final size instead of resizing under the pointer.
+  */
+  ratio?: string;
+  /* `contain` for a logo, which a crop would take a bite out of. */
+  fit?: "cover" | "contain";
+  class?: string;
+}
+
+const {
+  title,
+  note = "",
+  image = "",
+  focus = "",
+  ratio = "",
+  fit = "",
+  class: className = "",
+} = Astro.props;
+---
+
+{/*
+  No newline between the tag and the slot: the underline is painted on this
+  span's own box, so a stray space either side would be underlined too.
+*/}
+<span
+  class:list={["bio-peek", "cursor-hover", className]}
+  data-peek
+  data-peek-title={title}
+  data-peek-note={note}
+  data-peek-image={image}
+  data-peek-focus={focus}
+  data-peek-ratio={ratio}
+  data-peek-fit={fit}><slot /></span>
+
+<style is:global>
+  /*
+    Two rules stacked under the word: a hairline that is always there, so the
+    word reads as something worth pointing at before anyone has pointed at it,
+    and a heavier one over the top that wipes in from the left on hover. Sizing
+    the second from 0% is what makes it a wipe rather than a fade.
+
+    Both are painted as backgrounds rather than borders or `text-decoration`
+    because only a background can be sized — and the hairline is dimmed by
+    colouring its own layer, so the word above keeps its full contrast while
+    the rule under it stays quiet.
+  */
+  .bio-peek {
+    background-image:
+      linear-gradient(to right, currentColor, currentColor),
+      linear-gradient(
+        to right,
+        color-mix(in srgb, currentColor 28%, transparent),
+        color-mix(in srgb, currentColor 28%, transparent)
+      );
+    background-repeat: no-repeat;
+    background-position:
+      0 100%,
+      0 100%;
+    background-size:
+      0% 0.06em,
+      100% 0.03em;
+    transition: background-size 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    /*
+      A phrase that wraps is two inline boxes, not one. Cloned, each line gets
+      its own pair of rules; sliced, the background is stretched across one
+      invisible box and the wipe lands in the wrong place on every line but the
+      first.
+    */
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  .bio-peek:hover {
+    background-size:
+      100% 0.06em,
+      100% 0.03em;
+  }
+
+  /* The card. Fixed and translated by script; the layer carries the position
+     and the card inside it carries the arrival, so the two never fight over
+     one transform. */
+  .bio-peek-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 150;
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  .bio-peek-card {
+    width: min(280px, calc(100vw - 2rem));
+    padding: 0.625rem;
+    border-radius: 1.125rem;
+    /*
+      Nearly solid rather than glass: the card lands on top of the copy, and at
+      the transparency the blur alone allowed, the sentence underneath was still
+      legible straight through the title. The blur is kept for the edge, where
+      the little that does come through goes soft instead of sharp.
+    */
+    background: color-mix(in srgb, var(--color-paper) 96%, transparent);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid color-mix(in srgb, var(--color-ink) 8%, transparent);
+    box-shadow:
+      0 24px 60px -24px color-mix(in srgb, var(--color-ink) 45%, transparent),
+      0 2px 10px -6px color-mix(in srgb, var(--color-ink) 30%, transparent);
+    opacity: 0;
+    transform: translateY(10px) scale(0.94);
+    transform-origin: 50% 0;
+    transition:
+      opacity 0.26s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Flipped above the word, it should arrive from below rather than drop
+     through the word it belongs to. */
+  .bio-peek-layer.is-above .bio-peek-card {
+    transform: translateY(-10px) scale(0.94);
+    transform-origin: 50% 100%;
+  }
+
+  .bio-peek-layer.is-open .bio-peek-card {
+    opacity: 1;
+    transform: none;
+  }
+
+  .bio-peek-media {
+    position: relative;
+    aspect-ratio: var(--peek-ratio, 16 / 10);
+    overflow: hidden;
+    border-radius: 0.75rem;
+    /*
+      A portrait photograph at card width would be over 300px tall before the
+      title is added. Capped, the tallest cards stop short of taking the window
+      hostage on a laptop; the crop that costs is taken by object-fit.
+    */
+    max-height: min(340px, 42vh);
+    background: color-mix(in srgb, var(--color-blue) 7%, var(--color-paper));
+  }
+
+  .bio-peek-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: var(--peek-fit, cover);
+    display: block;
+  }
+
+  /* The plate is not a photograph and has no shape of its own to keep. */
+  .bio-peek-layer.is-bare .bio-peek-media {
+    aspect-ratio: 16 / 10;
+  }
+
+  /* The plate that stands in until the photograph exists. */
+  .bio-peek-stand {
+    position: absolute;
+    inset: 0;
+    display: none;
+    place-items: center;
+    padding: 0 0.75rem;
+    text-align: center;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 0.875rem;
+    letter-spacing: -0.03em;
+    color: color-mix(in srgb, var(--color-blue) 55%, transparent);
+  }
+
+  /*
+    `is-bare` is a word with no picture behind it; `is-waiting` is one whose
+    picture has not arrived yet. Both show the plate — the card must never open
+    onto an empty frame — but only the first takes the plate's own shape. A word
+    that knows what shape its picture is keeps that shape while it loads, so the
+    card does not resize under the pointer when the image lands.
+  */
+  .bio-peek-layer.is-bare .bio-peek-media img,
+  .bio-peek-layer.is-waiting .bio-peek-media img {
+    display: none;
+  }
+
+  .bio-peek-layer.is-bare .bio-peek-stand,
+  .bio-peek-layer.is-waiting .bio-peek-stand {
+    display: grid;
+  }
+
+  .bio-peek-title {
+    margin: 0.625rem 0 0;
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+    color: var(--color-ink);
+  }
+
+  .bio-peek-note {
+    margin: 0.25rem 0 0.125rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    color: var(--color-ink-muted);
+  }
+
+  /*
+    The bio dims a word at a time as it scrolls past, writing the opacity
+    inline. A word being pointed at should be lit whatever the scroll says, and
+    an inline style can only be answered with `!important`.
+  */
+  .bio-peek:hover .magic-word {
+    opacity: 1 !important;
+  }
+</style>
+
+<script>
+  /*
+    One card, moved and refilled. It follows the pointer sideways on an eased
+    lerp and stays pinned under the word vertically — the reference this was
+    built from reads as the card hanging off the word rather than riding the
+    cursor, and easing only the axis the cursor actually travels along keeps
+    that without making it feel stuck to the pointer.
+  */
+  const GAP = 14; // between the word and the card
+  const EDGE = 16; // and between the card and the window
+  const EASE = 0.2;
+
+  const triggers = document.querySelectorAll<HTMLElement>("[data-peek]");
+
+  if (triggers.length) {
+    const fine = window.matchMedia("(pointer: fine)");
+    /*
+      The stylesheet flattens transitions for anyone who asks for less motion,
+      but the sideways trail is a lerp on a frame loop and never passed through
+      CSS. Easing the whole way in one step is what "no trail" means here: the
+      card is still placed by the pointer, it just stops chasing it.
+    */
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    let layer: HTMLElement | null = null;
+    let img: HTMLImageElement;
+    let stand: HTMLElement;
+    let titleEl: HTMLElement;
+    let noteEl: HTMLElement;
+
+    let active: HTMLElement | null = null;
+    let frame = 0;
+    let pointerX = 0;
+    let cardX = 0;
+    let placed = false; // has this opening been given a starting x yet
+    // Paths that 404'd. Asked for once, then the plate stands in for good.
+    const missing = new Set<string>();
+
+    const build = () => {
+      if (layer) return;
+      layer = document.createElement("div");
+      layer.className = "bio-peek-layer";
+      // The card repeats what the sentence around it already says, so it is
+      // scenery: it adds no tab stop and nothing to read out.
+      layer.setAttribute("aria-hidden", "true");
+      layer.innerHTML =
+        '<div class="bio-peek-card">' +
+        '<div class="bio-peek-media"><img alt="" decoding="async" /><span class="bio-peek-stand"></span></div>' +
+        '<p class="bio-peek-title"></p><p class="bio-peek-note"></p>' +
+        "</div>";
+      img = layer.querySelector("img")!;
+      stand = layer.querySelector(".bio-peek-stand")!;
+      titleEl = layer.querySelector(".bio-peek-title")!;
+      noteEl = layer.querySelector(".bio-peek-note")!;
+      img.addEventListener("error", () => {
+        const src = img.getAttribute("src");
+        if (src) missing.add(src);
+        layer!.classList.remove("is-waiting");
+        layer!.classList.add("is-bare");
+      });
+      img.addEventListener("load", () => layer!.classList.remove("is-waiting"));
+      document.body.appendChild(layer);
+    };
+
+    const paint = () => {
+      frame = 0;
+      if (!active || !layer) return;
+
+      // Read fresh every frame: the word moves under smooth scrolling, and the
+      // card's own height depends on whether the note wrapped to two lines.
+      const word = active.getBoundingClientRect();
+      const w = layer.offsetWidth;
+      const h = layer.offsetHeight;
+
+      const wantX = Math.min(Math.max(pointerX - w / 2, EDGE), Math.max(EDGE, window.innerWidth - w - EDGE));
+      const below = word.bottom + GAP;
+      const above = word.top - GAP - h;
+      // Below the word by default, and above it only when below would run off
+      // the bottom and above genuinely fits.
+      const flip = below + h > window.innerHeight - EDGE && above >= EDGE;
+
+      layer.classList.toggle("is-above", flip);
+      // The first frame of an opening lands where it belongs; every frame after
+      // it eases, so the card trails the pointer instead of snapping to it.
+      const ease = reduced.matches ? 1 : EASE;
+      cardX = placed ? cardX + (wantX - cardX) * ease : wantX;
+      placed = true;
+
+      /*
+        Neither side is guaranteed to have room: a tall portrait card next to a
+        word in a short window can overflow above and below at once. Clamped to
+        the window, the whole card stays readable — it covers a little more of
+        the copy than it would like, which is a far smaller problem than being
+        sliced off by the edge of the screen.
+      */
+      const y = Math.min(
+        Math.max(flip ? above : below, EDGE),
+        Math.max(EDGE, window.innerHeight - h - EDGE)
+      );
+      const px = Math.round(cardX * 10) / 10;
+      const py = Math.round(y * 10) / 10;
+      layer.style.transform = `translate3d(${px}px, ${py}px, 0)`;
+      frame = requestAnimationFrame(paint);
+    };
+
+    const run = () => {
+      if (!frame) frame = requestAnimationFrame(paint);
+    };
+
+    const open = (el: HTMLElement) => {
+      build();
+      if (!layer) return;
+
+      const src = el.dataset.peekImage || "";
+      const usable = !!src && !missing.has(src);
+      layer.classList.toggle("is-bare", !usable);
+      if (usable && img.getAttribute("src") !== src) img.setAttribute("src", src);
+      // `complete` covers the picture already being in cache, where no load
+      // event is coming because it never had to be fetched.
+      layer.classList.toggle("is-waiting", usable && !img.complete);
+      img.style.objectPosition = el.dataset.peekFocus || "";
+      layer.style.setProperty("--peek-ratio", el.dataset.peekRatio || "16 / 10");
+      layer.style.setProperty("--peek-fit", el.dataset.peekFit || "cover");
+
+      const title = el.dataset.peekTitle || "";
+      titleEl.textContent = title;
+      stand.textContent = title;
+      noteEl.textContent = el.dataset.peekNote || "";
+
+      active = el;
+      placed = false;
+      // Moving straight from one word to the next should read as a new card
+      // arriving, not the old one sliding across the paragraph: dropping the
+      // class and forcing a reflow restarts the arrival from the top.
+      layer.classList.remove("is-open");
+      void layer.offsetWidth;
+      layer.classList.add("is-open");
+      run();
+    };
+
+    const close = () => {
+      active = null;
+      if (layer) layer.classList.remove("is-open");
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+    };
+
+    document.addEventListener(
+      "pointermove",
+      (e) => {
+        pointerX = e.clientX;
+      },
+      { passive: true }
+    );
+
+    /*
+      One listener on the document rather than a pair on every word. `pointerover`
+      fires whenever the pointer crosses into a new element, so moving off a word
+      onto the copy around it closes the card, and moving between the split word
+      spans inside one highlight changes nothing.
+    */
+    document.addEventListener(
+      "pointerover",
+      (e) => {
+        if (!fine.matches || e.pointerType === "touch") return;
+        pointerX = e.clientX;
+        const target = e.target as HTMLElement | null;
+        const el = target?.closest?.("[data-peek]") as HTMLElement | null;
+        if (el) {
+          if (el !== active) open(el);
+        } else if (active) {
+          close();
+        }
+      },
+      { passive: true }
+    );
+
+    /*
+      Fetch the pictures once the browser is idle. They are decoration and must
+      never compete with the page's own loading, but a card that opens on a
+      picture already in cache opens with the picture in it, which is the whole
+      point of the thing.
+    */
+    const warm = () => {
+      const seen = new Set<string>();
+      for (const el of triggers) {
+        const src = el.dataset.peekImage;
+        if (src && !seen.has(src)) {
+          seen.add(src);
+          new Image().src = src;
+        }
+      }
+    };
+    const idle = window.requestIdleCallback || ((fn: () => void) => setTimeout(fn, 1200));
+    if (fine.matches) {
+      if (document.readyState === "complete") idle(warm);
+      else window.addEventListener("load", () => idle(warm), { once: true });
+    }
+
+    // The pointer can leave the window without ever crossing into another
+    // element, which would otherwise strand the card on screen.
+    document.documentElement.addEventListener("pointerleave", close);
+    window.addEventListener("blur", close);
+  }
+</script>
