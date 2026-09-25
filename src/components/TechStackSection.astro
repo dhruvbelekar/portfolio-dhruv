@@ -1,5 +1,20 @@
 ---
+import type { ImageMetadata } from "astro";
 import { techStack } from "../data/projects";
+
+/*
+  The marks are resolved through the build rather than pointed at a path in
+  `public`, and deliberately. Three of these replaced a file of the same name
+  once already, and every browser that had seen the old artwork went on showing
+  it for a day: the public folder serves whatever is sitting at the name, and
+  the name had not changed. The build stamps each file with a hash of its own
+  contents, so different artwork is a different URL and nobody can be handed a
+  copy of the previous one.
+*/
+const marks = import.meta.glob<{ default: ImageMetadata }>("../assets/tools/*.webp", {
+  eager: true,
+});
+const artFor = (file?: string) => (file ? marks[`../assets/tools/${file}`]?.default : undefined);
 
 /*
   The title is split here rather than in the browser, so the letters are in the
@@ -29,7 +44,7 @@ const titleChars = letters.map((ch, i) => {
 const rowMiddle = (techStack.length - 1) / 2;
 const tools = techStack.map((tool, i) => {
   const c = Number(((i - rowMiddle) / rowMiddle).toFixed(3));
-  return { ...tool, c, a: Math.abs(c) };
+  return { ...tool, c, a: Math.abs(c), art: artFor(tool.mark) };
 });
 ---
 
@@ -56,8 +71,15 @@ const tools = techStack.map((tool, i) => {
       {
         tools.map((tool) => (
           <li class="ts-tool" style={`--c: ${tool.c}; --a: ${tool.a}`} data-ts-tool>
-            {tool.mark ? (
-              <img src={tool.mark} alt={tool.name} width="56" height="56" loading="lazy" decoding="async" />
+            {tool.art ? (
+              <img
+                src={tool.art.src}
+                alt={tool.name}
+                width={tool.art.width}
+                height={tool.art.height}
+                loading="lazy"
+                decoding="async"
+              />
             ) : (
               <span class="ts-name">{tool.name}</span>
             )}

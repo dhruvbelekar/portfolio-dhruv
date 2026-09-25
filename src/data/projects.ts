@@ -265,16 +265,20 @@ export const services: Service[] = [
 */
 export type Tool = {
   name: string;
+  /*
+    A file name inside `src/assets/tools`, not a URL. The section resolves it
+    through the build, which stamps the file with a hash of its own contents.
+  */
   mark?: string;
 };
 
 export const techStack: Tool[] = [
-  { name: "Figma", mark: "/img/tools/figma.webp" },
-  { name: "Photoshop", mark: "/img/tools/photoshop.webp" },
-  { name: "Illustrator", mark: "/img/tools/illustrator.webp" },
-  { name: "Premiere Pro", mark: "/img/tools/premiere-pro.webp" },
-  { name: "ChatGPT", mark: "/img/tools/chatgpt.webp" },
-  { name: "Claude", mark: "/img/tools/claude.webp" },
+  { name: "Figma", mark: "figma.webp" },
+  { name: "Photoshop", mark: "photoshop.webp" },
+  { name: "Illustrator", mark: "illustrator.webp" },
+  { name: "Premiere Pro", mark: "premiere-pro.webp" },
+  { name: "ChatGPT", mark: "chatgpt.webp" },
+  { name: "Claude", mark: "claude.webp" },
 ];
 
 export const clientLogos = [
