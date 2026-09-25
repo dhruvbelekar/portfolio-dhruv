@@ -274,6 +274,7 @@ export const techStack: Tool[] = [
   { name: "Illustrator", mark: "/img/tools/illustrator.webp" },
   { name: "Premiere Pro", mark: "/img/tools/premiere-pro.webp" },
   { name: "ChatGPT", mark: "/img/tools/chatgpt.webp" },
+  { name: "Claude", mark: "/img/tools/claude.webp" },
 ];
 
 export const clientLogos = [
