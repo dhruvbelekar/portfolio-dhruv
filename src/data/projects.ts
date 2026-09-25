@@ -258,6 +258,36 @@ export const services: Service[] = [
   { name: "AI", image: "/img/projects/ai-film-thumb.webp" },
 ];
 
+/*
+  What the work above was actually made with, in one colour so the row reads as
+  a set rather than a scatter of brand palettes.
+
+  A tool with no `mark` yet falls back to its name, set the way the rest of the
+  page is set, so the row is never missing a tooth while artwork is found.
+*/
+export type Tool = {
+  name: string;
+  mark?: string;
+  /*
+    Optical sizing. A filled square carries far more weight than a line drawing
+    of the same height, so the four Adobe marks are set a little smaller to sit
+    level with the rest.
+  */
+  scale?: number;
+};
+
+export const techStack: Tool[] = [
+  { name: "Figma", mark: "/img/tools/figma.svg" },
+  { name: "Photoshop", mark: "/img/tools/photoshop.webp", scale: 0.86 },
+  { name: "Illustrator", mark: "/img/tools/illustrator.webp", scale: 0.86 },
+  { name: "After Effects", mark: "/img/tools/after-effects.webp", scale: 0.86 },
+  { name: "Premiere Pro", mark: "/img/tools/premiere-pro.webp", scale: 0.86 },
+  { name: "DaVinci Resolve", mark: "/img/tools/davinci-resolve.svg" },
+  { name: "Cinema 4D", mark: "/img/tools/cinema-4d.svg" },
+  { name: "Blender", mark: "/img/tools/blender.svg" },
+  { name: "ElevenLabs", mark: "/img/tools/elevenlabs.svg" },
+];
+
 export const clientLogos = [
   { src: "/img/logos/logo-1.webp", width: 653, height: 122 },
   { src: "/img/logos/logo-2.webp", width: 584, height: 339 },

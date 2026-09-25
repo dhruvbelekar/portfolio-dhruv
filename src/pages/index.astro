@@ -8,6 +8,7 @@ import BioCopy from "../components/BioCopy.astro";
 import MagicText from "../components/MagicText.astro";
 import ExperienceSection from "../components/ExperienceSection.astro";
 import ServicesSection from "../components/ServicesSection.astro";
+import TechStackSection from "../components/TechStackSection.astro";
 import ClientLogos from "../components/ClientLogos.astro";
 import TestimonialsSection from "../components/TestimonialsSection.astro";
 import { projects, filterCategories } from "../data/projects";
@@ -175,6 +176,12 @@ import { projects, filterCategories } from "../data/projects";
     They stand still now, and each one has a picture.
   */}
   <ServicesSection />
+
+  {/*
+    Straight after the services, because it answers the question the list of
+    them raises: what any of it is actually made with.
+  */}
+  <TechStackSection />
 
   {/*
     Full bleed and outside the usual shell: the section pins itself and runs a

@@ -56,7 +56,8 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     {/* The reveals start hidden and are released by script; without one, the page is the content. */}
     <noscript>
       <style>
-        .reveal {
+        .reveal,
+        [data-ts-tool] {
           opacity: 1 !important;
           transform: none !important;
         }

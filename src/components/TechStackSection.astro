@@ -1,0 +1,262 @@
+---
+import { techStack } from "../data/projects";
+
+/*
+  The title is split here rather than in the browser, so the letters are in the
+  markup from the first paint and a page with no script simply has a heading.
+
+  Each letter carries one number: how far it sits from the middle of the line,
+  as a fraction, -1 at the first letter and 1 at the last. Everything the bend
+  needs is read off that — how far the letter turns, how far it drops, how far
+  it is pushed out — so the whole line straightens from the single value the
+  scroll handler writes, and the browser does the rest in CSS.
+*/
+const title = "My Tech Stack";
+const letters = [...title];
+const middle = (letters.length - 1) / 2;
+const titleChars = letters.map((ch, i) => ({
+  ch,
+  space: ch === " ",
+  c: Number(((i - middle) / middle).toFixed(3)),
+}));
+
+/*
+  The row arrives from the middle outwards, so each tool carries its distance
+  from the centre of the line rather than its index: the two innermost are 0.5
+  away, the two outermost furthest, and both sides of a pair land together.
+*/
+const rowMiddle = (techStack.length - 1) / 2;
+const tools = techStack.map((tool, i) => ({ ...tool, d: Math.abs(i - rowMiddle) }));
+---
+
+<section class="ts" data-ts>
+  <div class="ts-inner">
+    {/* The letters are scenery; the heading is named once. */}
+    <h2 class="ts-title" data-ts-title aria-label={title}>
+      {
+        titleChars.map(({ ch, space, c }) =>
+          space ? (
+            <span class="ts-space" aria-hidden="true">
+              &nbsp;
+            </span>
+          ) : (
+            <span class="ts-char" style={`--c: ${c}`} aria-hidden="true">
+              {ch}
+            </span>
+          )
+        )
+      }
+    </h2>
+
+    <ul class="ts-row reveal" style="--reveal-y: 0px">
+      {
+        tools.map((tool) => (
+          <li
+            class="ts-tool"
+            style={`--d: ${tool.d}${tool.scale ? `; --s: ${tool.scale}` : ""}`}
+            data-ts-tool
+          >
+            {tool.mark ? (
+              <img src={tool.mark} alt={tool.name} width="56" height="56" loading="lazy" decoding="async" />
+            ) : (
+              <span class="ts-name">{tool.name}</span>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .ts {
+    padding: var(--space-section) 1.5rem;
+  }
+
+  .ts-inner {
+    margin: 0 auto;
+    max-width: 1400px;
+  }
+
+  /*
+    Sized off the shell like every other section headline, but capped so the
+    thirteen letters stay on one line at any width. The bend is measured along
+    a line; a heading that wrapped would be two arcs pretending to be one.
+  */
+  .ts-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: min(var(--type-section), calc(var(--shell) * 0.093));
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--color-blue);
+    /*
+      Flat is the resting state and the state a page with no script keeps. The
+      script lifts this to 1 the moment it runs and scrubs it back down as the
+      line climbs the screen.
+    */
+    --k: 0;
+    --ts-turn: 88deg;
+    --ts-face: 44deg;
+    --ts-drop: 0.55em;
+    --ts-spread: 0.42em;
+    /* Turns the outer letters away from the eye rather than merely tilting
+       them, which is what keeps the line reading as one bent ribbon. */
+    perspective: 900px;
+  }
+
+  .ts-char {
+    display: inline-block;
+    transform: translateX(calc(var(--c) * var(--k) * var(--ts-spread)))
+      translateY(calc(var(--c) * var(--c) * var(--k) * var(--ts-drop)))
+      rotate(calc(var(--c) * var(--k) * var(--ts-turn)))
+      rotateY(calc(var(--c) * var(--k) * var(--ts-face)));
+    will-change: transform;
+  }
+
+  .ts-space {
+    display: inline-block;
+  }
+
+  .ts-row {
+    display: flex;
+    margin: clamp(2.5rem, 6vh, 5rem) 0 0;
+    padding: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.25rem, 3.4vw, 3.5rem);
+    list-style: none;
+  }
+
+  /* The row itself holds still and hands the arrival to its children, which
+     come in from the middle outwards rather than all together. */
+  .ts-row.reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ts-tool {
+    opacity: 0;
+    transform: translateY(18px) scale(0.84);
+    transition:
+      opacity 0.5s ease calc(var(--d) * 80ms),
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) calc(var(--d) * 80ms);
+  }
+
+  .ts-row.is-revealed .ts-tool,
+  :global(.no-reveal) .ts-tool {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ts-tool img {
+    display: block;
+    width: calc(clamp(2rem, 3.6vw, 3.25rem) * var(--s, 1));
+    height: auto;
+  }
+
+  .ts-name {
+    display: block;
+    font-family: var(--font-display);
+    font-size: clamp(0.72rem, 0.55rem + 0.4vw, 0.95rem);
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    white-space: nowrap;
+  }
+
+  @media (min-width: 768px) {
+    /*
+      A full screen to itself. The bend is scrubbed by how far the line has
+      climbed the window, so it needs the room to climb: in a section only as
+      tall as its contents the whole straightening would be over in a flick of
+      the wheel.
+    */
+    .ts {
+      display: flex;
+      min-height: 100svh;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(5rem, 12vh, 8rem) 1.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ts-title {
+      --k: 0 !important;
+    }
+    .ts-tool {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    const section = document.querySelector<HTMLElement>("[data-ts]");
+    const title = document.querySelector<HTMLElement>("[data-ts-title]");
+    if (!section || !title) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    /*
+      The line is fully bent while it is still down at the bottom of the window
+      and flat by the time it has climbed to a little above the middle, which is
+      where it is actually read. Scrolling back down bends it again — it follows
+      the wheel rather than firing once and being spent.
+    */
+    const BENT_AT = 0.92;
+    const FLAT_AT = 0.4;
+
+    let frame = 0;
+
+    const measure = () => {
+      frame = 0;
+      const vh = window.innerHeight;
+      const start = vh * BENT_AT;
+      const end = vh * FLAT_AT;
+      const top = title.getBoundingClientRect().top;
+      const k = Math.min(1, Math.max(0, (top - end) / (start - end)));
+      title.style.setProperty("--k", k.toFixed(3));
+    };
+
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(measure);
+    };
+
+    /*
+      The handler is only attached while the section is within a screen of the
+      window. Every other section on this page would otherwise be paying for a
+      measurement on every frame of every scroll.
+    */
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              window.addEventListener("scroll", onScroll, { passive: true });
+              onScroll();
+            } else {
+              window.removeEventListener("scroll", onScroll);
+            }
+          }
+        },
+        { rootMargin: "100% 0px" }
+      );
+      io.observe(section);
+    } else {
+      window.addEventListener("scroll", onScroll, { passive: true });
+    }
+
+    window.addEventListener("resize", onScroll);
+    measure();
+  })();
+</script>
