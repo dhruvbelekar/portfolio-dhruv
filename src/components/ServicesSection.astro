@@ -14,6 +14,12 @@ const lettered = services.map((service) => {
   let i = 0;
   return {
     ...service,
+    // Both frames below hold the same picture, so how it is held is worked out
+    // once here rather than written twice in the markup.
+    frame:
+      [service.fit && `object-fit: ${service.fit}`, service.focus && `object-position: ${service.focus}`]
+        .filter(Boolean)
+        .join("; ") || undefined,
     words: service.name.split(" ").map((word) => [...word].map((ch) => ({ ch, i: i++ }))),
   };
 });
@@ -68,7 +74,7 @@ const lettered = services.map((service) => {
               {/* Touch has no hover, so on a phone each service simply carries
                   its own picture instead of pointing at a shared one. */}
               <div class="svc-inline">
-                <img src={service.image} alt="" loading="lazy" decoding="async" />
+                <img src={service.image} alt="" loading="lazy" decoding="async" style={service.frame} />
               </div>
             </li>
           ))
@@ -79,7 +85,7 @@ const lettered = services.map((service) => {
         {
           lettered.map((service, i) => (
             <figure class:list={["svc-figure", i === 0 && "is-active"]} data-svc-figure data-index={i}>
-              <img src={service.image} alt="" loading="lazy" decoding="async" />
+              <img src={service.image} alt="" loading="lazy" decoding="async" style={service.frame} />
             </figure>
           ))
         }

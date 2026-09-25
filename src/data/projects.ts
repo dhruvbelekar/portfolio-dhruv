@@ -231,12 +231,28 @@ export const skillsRowB = ["Creative Direction", "Photography", "Filmmaking", "A
   The same list the skills ticker carried, standing still so each one can be
   read and shown. Each one points at the cover of the project that makes the
   case for it, so a name and the work behind it are looked at together.
+
+  The panel is a tall frame and most of these covers are not, so the two that
+  do not survive a centred crop say how they want to be held in it.
 */
-export const services = [
+export type Service = {
+  name: string;
+  image: string;
+  /* Where the crop should sit, as an `object-position`. */
+  focus?: string;
+  /* Shown whole, letting the frame go empty around it, rather than cropped. */
+  fit?: "contain";
+};
+
+export const services: Service[] = [
   { name: "UI/UX Design", image: "/img/projects/mahavitaran-thumb.webp" },
-  { name: "Experience Design", image: "/img/projects/drive-thumb.webp" },
+  // The driver sits well to the left of a wide frame; centred, the crop takes
+  // his head off and leaves the steering wheel to carry the picture.
+  { name: "Experience Design", image: "/img/projects/drive-thumb.webp", focus: "20% center" },
   { name: "Brand Identity", image: "/img/projects/mp4-thumb.webp" },
-  { name: "Visual Design", image: "/img/projects/frelo-thumb.webp" },
+  // A ring drawn to the edges of a square: a crop takes a bite out of it
+  // whichever way it is turned, so this one is not cropped at all.
+  { name: "Visual Design", image: "/img/projects/frelo-thumb.webp", fit: "contain" },
   { name: "Photography", image: "/img/projects/ope-thumb.webp" },
   { name: "Filmmaking", image: "/img/projects/passion-project-thumb.webp" },
   { name: "AI", image: "/img/projects/ai-film-thumb.webp" },
