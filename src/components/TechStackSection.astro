@@ -5,20 +5,21 @@ import { techStack } from "../data/projects";
   The title is split here rather than in the browser, so the letters are in the
   markup from the first paint and a page with no script simply has a heading.
 
-  Each letter carries one number: how far it sits from the middle of the line,
-  as a fraction, -1 at the first letter and 1 at the last. Everything the bend
-  needs is read off that — how far the letter turns, how far it drops, how far
-  it is pushed out — so the whole line straightens from the single value the
-  scroll handler writes, and the browser does the rest in CSS.
+  Each letter carries where it sits in the line, as a fraction of the way out
+  from the middle: `--c` signed, -1 at the first letter and 1 at the last, and
+  `--a` the same without its sign. The signed one throws the letters apart; the
+  unsigned one says how far round the letter has been rolled, which is why the
+  middle of the line lands first and the ends last. Both are multiplied by the
+  single value the scroll handler writes, so one property write re-rolls the
+  whole line and the browser does the rest.
 */
 const title = "My Tech Stack";
 const letters = [...title];
 const middle = (letters.length - 1) / 2;
-const titleChars = letters.map((ch, i) => ({
-  ch,
-  space: ch === " ",
-  c: Number(((i - middle) / middle).toFixed(3)),
-}));
+const titleChars = letters.map((ch, i) => {
+  const c = Number(((i - middle) / middle).toFixed(3));
+  return { ch, space: ch === " ", c, a: Math.abs(c) };
+});
 
 /*
   The row arrives from the middle outwards, so each tool carries its distance
@@ -34,13 +35,13 @@ const tools = techStack.map((tool, i) => ({ ...tool, d: Math.abs(i - rowMiddle) 
     {/* The letters are scenery; the heading is named once. */}
     <h2 class="ts-title" data-ts-title aria-label={title}>
       {
-        titleChars.map(({ ch, space, c }) =>
+        titleChars.map(({ ch, space, c, a }) =>
           space ? (
             <span class="ts-space" aria-hidden="true">
               &nbsp;
             </span>
           ) : (
-            <span class="ts-char" style={`--c: ${c}`} aria-hidden="true">
+            <span class="ts-char" style={`--c: ${c}; --a: ${a}`} aria-hidden="true">
               {ch}
             </span>
           )
@@ -53,7 +54,7 @@ const tools = techStack.map((tool, i) => ({ ...tool, d: Math.abs(i - rowMiddle) 
         tools.map((tool) => (
           <li
             class="ts-tool"
-            style={`--d: ${tool.d}${tool.scale ? `; --s: ${tool.scale}` : ""}`}
+            style={`--d: ${tool.d}`}
             data-ts-tool
           >
             {tool.mark ? (
@@ -71,6 +72,13 @@ const tools = techStack.map((tool, i) => ({ ...tool, d: Math.abs(i - rowMiddle) 
 <style>
   .ts {
     padding: var(--space-section) 1.5rem;
+    /*
+      The letters are thrown apart before they land, which on a narrow phone
+      puts the ends of the line past the edge of the page for a moment. Clipped
+      rather than scrollable: a sideways scrollbar that appears halfway through
+      an animation and leaves again is worse than a letter grazing the edge.
+    */
+    overflow-x: clip;
   }
 
   .ts-inner {
@@ -100,21 +108,28 @@ const tools = techStack.map((tool, i) => ({ ...tool, d: Math.abs(i - rowMiddle) 
       line climbs the screen.
     */
     --k: 0;
-    --ts-turn: 88deg;
-    --ts-face: 44deg;
-    --ts-drop: 0.55em;
-    --ts-spread: 0.42em;
-    /* Turns the outer letters away from the eye rather than merely tilting
-       them, which is what keeps the line reading as one bent ribbon. */
-    perspective: 900px;
+    /*
+      Getting on for two turns at the ends of the line and none at the middle.
+      It has to be more than half a turn: the letters are meant to be caught at
+      every stage of the roll at once — some upright, some edge-on, some fully
+      over and reading backwards — which is what makes the line look scattered
+      rather than bent, and what makes it unwind from the middle outwards.
+    */
+    --ts-roll: 620deg;
+    --ts-spread: 1.1em;
+    /*
+      The letters roll about their own horizontal axis, so the ones away from
+      the middle are seen from the side of the vanishing point rather than
+      straight on. That is what leans them as they turn — the shear is the
+      perspective, not a skew, and without this the roll is a flat squash.
+    */
+    perspective: 800px;
   }
 
   .ts-char {
     display: inline-block;
     transform: translateX(calc(var(--c) * var(--k) * var(--ts-spread)))
-      translateY(calc(var(--c) * var(--c) * var(--k) * var(--ts-drop)))
-      rotate(calc(var(--c) * var(--k) * var(--ts-turn)))
-      rotateY(calc(var(--c) * var(--k) * var(--ts-face)));
+      rotateX(calc(var(--a) * var(--k) * var(--ts-roll)));
     will-change: transform;
   }
 
@@ -156,7 +171,7 @@ const tools = techStack.map((tool, i) => ({ ...tool, d: Math.abs(i - rowMiddle) 
 
   .ts-tool img {
     display: block;
-    width: calc(clamp(2rem, 3.6vw, 3.25rem) * var(--s, 1));
+    width: clamp(2.25rem, 4vw, 3.5rem);
     height: auto;
   }
 
