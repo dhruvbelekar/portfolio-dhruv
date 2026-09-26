@@ -110,9 +110,14 @@ const frames = await Promise.all(
           />
         </div>
         <figcaption class="ps-text">
-          <span class="ps-n" aria-hidden="true">{f.n}</span>
-          <h3 class="ps-title">{f.title}</h3>
-          <p class="ps-body">{f.body}</p>
+          {/*
+            Every line sits in a box that clips it, with the line itself held
+            below the edge. Sliding it up from behind that edge is what makes
+            the words arrive rather than simply appear.
+          */}
+          <span class="ps-line" aria-hidden="true"><span class="ps-n">{f.n}</span></span>
+          <h3 class="ps-title"><span class="ps-line"><span>{f.title}</span></span></h3>
+          <p class="ps-body"><span class="ps-line"><span>{f.body}</span></span></p>
         </figcaption>
       </figure>
     ))
@@ -198,57 +203,89 @@ const frames = await Promise.all(
   }
 
   /*
-    Each row arrives on its own as it comes into view: the photograph settles
-    out of a slight enlargement while the writing rises after it, so the frame
-    is already there to be looked at by the time the words about it land.
+    A line and the box that clips it. The box is the window; the span inside is
+    what moves. The padding and equal negative margin give descenders somewhere
+    to live once the line has settled, so a "g" is not sheared off by the very
+    edge that produced the effect.
+  */
+  .ps-line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.12em;
+    margin-bottom: -0.12em;
+  }
 
-    Held by script, not by the stylesheet — with no JavaScript the rows are
+  .ps-line > span {
+    display: block;
+  }
+
+  /*
+    Each row arrives on its own as it comes into view. The photograph wipes
+    upward out of nothing while the picture inside it eases back from an
+    enlargement, and the three lines climb out from behind their edges one
+    after the other — so the frame is filling as the words about it land.
+
+    Held by script, not by the stylesheet: with no JavaScript the rows are
     simply in place rather than permanently invisible.
   */
+  [data-photo-story].is-armed .ps-frame {
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 1.15s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
   [data-photo-story].is-armed .ps-frame img {
-    opacity: 0;
-    transform: scale(1.06);
-    transition:
-      opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: scale(1.16);
+    transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  [data-photo-story].is-armed .ps-text > * {
-    opacity: 0;
-    transform: translateY(14px);
-    transition:
-      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s),
-      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s);
+  [data-photo-story].is-armed .ps-line > span {
+    transform: translateY(115%);
+    transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s);
   }
 
-  [data-photo-story].is-armed .ps-row.is-in .ps-frame img {
-    opacity: 1;
+  [data-photo-story].is-armed .ps-row.is-in .ps-frame {
+    clip-path: inset(0 0 0 0);
+  }
+
+  [data-photo-story].is-armed .ps-row.is-in .ps-frame img,
+  [data-photo-story].is-armed .ps-row.is-in .ps-line > span {
     transform: none;
   }
 
-  [data-photo-story].is-armed .ps-row.is-in .ps-text > * {
-    opacity: 1;
-    transform: none;
+  .ps-text > :nth-child(1) .ps-line > span,
+  .ps-text > :nth-child(1).ps-line > span {
+    --d: 0.22s;
   }
-
-  .ps-text > :nth-child(1) {
-    --d: 0.16s;
-  }
-  .ps-text > :nth-child(2) {
-    --d: 0.24s;
-  }
-  .ps-text > :nth-child(3) {
+  .ps-text > :nth-child(2) .ps-line > span {
     --d: 0.32s;
+  }
+  .ps-text > :nth-child(3) .ps-line > span {
+    --d: 0.44s;
+  }
+
+  /*
+    And a drift that never finishes: the writing rides slightly against the
+    scroll the whole time its row is on screen, so the column keeps moving
+    after the arrival is over instead of locking into place.
+  */
+  .ps-text {
+    transform: translateY(var(--drift, 0px));
+    will-change: transform;
   }
 
   @media (prefers-reduced-motion: reduce) {
+    [data-photo-story].is-armed .ps-frame,
     [data-photo-story].is-armed .ps-frame img,
-    [data-photo-story].is-armed .ps-text > * {
-      opacity: 1;
+    [data-photo-story].is-armed .ps-line > span {
+      clip-path: none;
       transform: none;
       transition: none;
     }
+    .ps-text {
+      transform: none;
+    }
   }
+
 </style>
 
 <script>
@@ -260,25 +297,64 @@ const frames = await Promise.all(
 
     if (rows.length && !reduced.matches && "IntersectionObserver" in window) {
       // Armed only once the observer is definitely going to run, so a browser
-      // that never gets here shows the photographs rather than hiding them.
+      // that never reaches here shows the photographs rather than hiding them.
       root.classList.add("is-armed");
 
-      const io = new IntersectionObserver(
+      /* The arrival: fires once per row, then stops watching it. */
+      const arrive = new IntersectionObserver(
         (entries) => {
           for (const entry of entries) {
             if (!entry.isIntersecting) continue;
             entry.target.classList.add("is-in");
-            // A row only arrives once; watching it afterwards costs frames for
-            // nothing and would re-run the animation on the way back up.
-            io.unobserve(entry.target);
+            arrive.unobserve(entry.target);
           }
         },
-        // Starts when the row is a sixth of the way up the viewport, so the
-        // photograph is settling as it is read rather than after.
+        // Starts when the row is a sixth of the way up, so the wipe is running
+        // while the row is being read rather than after it has passed.
         { rootMargin: "0px 0px -16% 0px", threshold: 0.12 }
       );
+      rows.forEach((row) => arrive.observe(row));
 
-      rows.forEach((row) => io.observe(row));
+      /*
+        The drift: a continuous counter-scroll on the writing for as long as its
+        row is on screen. Only rows actually in view are measured, and the loop
+        stops itself the moment the last one leaves, so an idle page costs
+        nothing.
+      */
+      const DRIFT = 30;
+      const live = new Set<HTMLElement>();
+      let frame = 0;
+
+      const paint = () => {
+        frame = 0;
+        const vh = window.innerHeight;
+        for (const row of live) {
+          const r = row.getBoundingClientRect();
+          // -1 with the row's middle at the bottom of the window, +1 at the
+          // top, 0 as it passes the centre.
+          const raw = (r.top + r.height / 2 - vh / 2) / (vh / 2 + r.height / 2);
+          const p = Math.max(-1, Math.min(1, raw));
+          const text = row.querySelector<HTMLElement>(".ps-text");
+          if (text) text.style.setProperty("--drift", `${(p * DRIFT).toFixed(1)}px`);
+        }
+        if (live.size) frame = requestAnimationFrame(paint);
+      };
+
+      const run = () => {
+        if (!frame && live.size) frame = requestAnimationFrame(paint);
+      };
+
+      const watch = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) live.add(entry.target as HTMLElement);
+            else live.delete(entry.target as HTMLElement);
+          }
+          run();
+        },
+        { rootMargin: "15% 0px" }
+      );
+      rows.forEach((row) => watch.observe(row));
     }
   }
 </script>
