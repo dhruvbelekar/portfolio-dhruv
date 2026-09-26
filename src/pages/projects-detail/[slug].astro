@@ -3,6 +3,7 @@ import path from "node:path";
 import sharp from "sharp";
 import Layout from "../../layouts/Layout.astro";
 import ScrollReveal from "../../components/ScrollReveal.astro";
+import PhotoStory from "../../components/PhotoStory.astro";
 import StatCounter from "../../components/StatCounter.astro";
 import Marquee from "../../components/Marquee.astro";
 import { projects } from "../../data/projects";
@@ -106,6 +107,7 @@ const isAiFilm = project.slug === "ai-film";
 const isPassionProject = project.slug === "passion-project";
 const isDrive = project.slug === "drive";
 const isAria = project.slug === "aria";
+const isOpe = project.slug === "ope";
 // Mp4, Aria and AI Film are each one continuous artboard, and Drive is a deck
 // whose pages carry their own background: in all of them, a gap between items
 // shows as a band of page behind, so they butt together with a hairline overlap
@@ -650,7 +652,20 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
     </div>
 
     {
-      !isBento && (
+      /*
+        OPE is nine photographs of one day rather than nine pieces of artwork,
+        so they are told alongside what was happening in them instead of being
+        stacked edge to edge with nothing said.
+      */
+      isOpe && (
+        <div class="mt-16 pb-[var(--space-section)]">
+          <PhotoStory />
+        </div>
+      )
+    }
+
+    {
+      !isBento && !isOpe && (
         <div
           class={`mt-16 flex flex-col pb-[var(--space-section)] ${isSeamless ? "gap-0" : "gap-8"}`}
         >

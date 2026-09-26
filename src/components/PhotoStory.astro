@@ -1,0 +1,284 @@
+---
+import fs from "node:fs";
+import path from "node:path";
+import sharp from "sharp";
+
+/*
+  The OPE gallery, told rather than listed.
+
+  Nine photographs from one day, each one held next to a few lines about what
+  is happening inside it. The plain gallery ran them edge to edge with nothing
+  said, which reads as a contact sheet: you scroll past nine frames in four
+  seconds and remember none of them. Paired with the writing, each frame has to
+  be looked at for as long as it takes to read beside it.
+
+  The writing is about the feeling in the frame rather than the schedule of the
+  day — what the room was like at that moment, not what was on the agenda.
+*/
+
+interface Story {
+  /* A short line that names the feeling, not the activity. */
+  title: string;
+  body: string;
+  /* What is actually visible, for anyone who cannot see it. */
+  alt: string;
+}
+
+const stories: Story[] = [
+  {
+    title: "The first laugh",
+    body:
+      "At nine in the morning nobody knew anybody. Somewhere before ten, someone said something daft enough to crack the whole table open — and the room stopped being a room full of strangers.",
+    alt: "A man in a lanyard laughing mid-conversation against a brick wall",
+  },
+  {
+    title: "Heads down",
+    body:
+      "There is a particular quiet a room goes into when it is working. Not bored quiet. Twenty people leaning over the same table, nobody checking how long is left.",
+    alt: "A long table seen from one end, the whole room bent over paper and materials",
+  },
+  {
+    title: "Careful with it",
+    body:
+      "Card, tape, and about four minutes of work, held like it is made of glass. That is what making something in front of people does. It stops being scrap the second you care whether it stands up.",
+    alt: "Two hands holding a small paper prototype, scissors just out of frame",
+  },
+  {
+    title: "Say that again",
+    body:
+      "One of them is explaining. The other has stopped assembling his reply and is just listening — head tilted, hands empty. Easy to photograph, rare to actually see.",
+    alt: "A younger man gesturing mid-sentence while an older man listens across the table",
+  },
+  {
+    title: "Permission to play",
+    body:
+      "Grown adults were handed a box of colour and told to build something. For a few seconds nobody could remember what they did for a living. This is what that looks like on a face.",
+    alt: "A woman laughing with her eyes closed, holding a strip of coloured beads",
+  },
+  {
+    title: "Four hands, one thing",
+    body:
+      "Nobody is looking at anybody's face. They are looking at the joint, the tape, the corner that keeps giving way. You trust someone quickly when you are both holding the same structure up.",
+    alt: "Two pairs of hands binding paper straws into a frame with tape",
+  },
+  {
+    title: "Before anyone sees it",
+    body:
+      "A bicycle, in red, small in the corner of the page. The quiet minute before an idea has to be explained to anybody — while it is still only yours, and still perfect.",
+    alt: "A hand sketching a bicycle in red pencil under low warm light",
+  },
+  {
+    title: "Your turn",
+    body:
+      "Arms folded, weight on one leg, everyone watching one person talk. Nobody here is relaxed. Presenting to a room of designers is its own specific kind of nervous.",
+    alt: "A group standing and sitting around a table with pastel balloons, watching someone present",
+  },
+  {
+    title: "The huddle",
+    body:
+      "One voice, and everybody bent slightly toward it. By the end of the day the circles had stopped being teams and started being people who had built something together.",
+    alt: "A cluster of people leaning in to listen to one man speaking, warm evening light",
+  },
+];
+
+/*
+  Measured at build time rather than guessed: the browser can then hold the
+  right amount of room for each photograph before it has loaded, so nothing
+  below it jumps when it arrives.
+*/
+const frames = await Promise.all(
+  stories.map(async (story, i) => {
+    const src = `/img/projects/ope/gallery-${String(i + 1).padStart(2, "0")}.webp`;
+    const { width, height } = await sharp(path.join(process.cwd(), "public", src)).metadata();
+    return { ...story, src, width, height, n: String(i + 1).padStart(2, "0") };
+  })
+);
+---
+
+<div class="ps" data-photo-story>
+  {
+    frames.map((f) => (
+      <figure class="ps-row" data-ps-row>
+        <div class="ps-frame">
+          <img
+            src={f.src}
+            width={f.width}
+            height={f.height}
+            alt={f.alt}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <figcaption class="ps-text">
+          <span class="ps-n" aria-hidden="true">{f.n}</span>
+          <h3 class="ps-title">{f.title}</h3>
+          <p class="ps-body">{f.body}</p>
+        </figcaption>
+      </figure>
+    ))
+  }
+</div>
+
+<style>
+  .ps {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4rem, 8vw, 9rem);
+    margin-inline: auto;
+    max-width: 1400px;
+    padding-inline: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .ps {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  .ps-row {
+    margin: 0;
+    display: grid;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  /*
+    The photograph takes the larger share and the writing sits beside it in a
+    column narrow enough to stay readable — past about 60 characters a line
+    the eye loses its place coming back for the next one.
+  */
+  @media (min-width: 900px) {
+    .ps-row {
+      grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+      gap: clamp(2rem, 4vw, 4.5rem);
+    }
+  }
+
+  .ps-frame {
+    overflow: hidden;
+    border-radius: 0.5rem;
+    background: color-mix(in srgb, var(--color-ink) 4%, var(--color-paper));
+  }
+
+  .ps-frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .ps-text {
+    max-width: 34ch;
+  }
+
+  .ps-n {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: color-mix(in srgb, var(--color-blue) 55%, transparent);
+  }
+
+  .ps-title {
+    margin: 0.75rem 0 0;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.5rem, 1.1rem + 1.1vw, 2.25rem);
+    line-height: 1.05;
+    letter-spacing: -0.05em;
+    color: var(--color-blue);
+  }
+
+  .ps-body {
+    margin: 0.875rem 0 0;
+    font-size: clamp(0.95rem, 0.9rem + 0.2vw, 1.0625rem);
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+    color: var(--color-ink-muted);
+  }
+
+  /*
+    Each row arrives on its own as it comes into view: the photograph settles
+    out of a slight enlargement while the writing rises after it, so the frame
+    is already there to be looked at by the time the words about it land.
+
+    Held by script, not by the stylesheet — with no JavaScript the rows are
+    simply in place rather than permanently invisible.
+  */
+  [data-photo-story].is-armed .ps-frame img {
+    opacity: 0;
+    transform: scale(1.06);
+    transition:
+      opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  [data-photo-story].is-armed .ps-text > * {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s);
+  }
+
+  [data-photo-story].is-armed .ps-row.is-in .ps-frame img {
+    opacity: 1;
+    transform: none;
+  }
+
+  [data-photo-story].is-armed .ps-row.is-in .ps-text > * {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ps-text > :nth-child(1) {
+    --d: 0.16s;
+  }
+  .ps-text > :nth-child(2) {
+    --d: 0.24s;
+  }
+  .ps-text > :nth-child(3) {
+    --d: 0.32s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-photo-story].is-armed .ps-frame img,
+    [data-photo-story].is-armed .ps-text > * {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-photo-story]");
+
+  if (root) {
+    const rows = [...root.querySelectorAll<HTMLElement>("[data-ps-row]")];
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    if (rows.length && !reduced.matches && "IntersectionObserver" in window) {
+      // Armed only once the observer is definitely going to run, so a browser
+      // that never gets here shows the photographs rather than hiding them.
+      root.classList.add("is-armed");
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            entry.target.classList.add("is-in");
+            // A row only arrives once; watching it afterwards costs frames for
+            // nothing and would re-run the animation on the way back up.
+            io.unobserve(entry.target);
+          }
+        },
+        // Starts when the row is a sixth of the way up the viewport, so the
+        // photograph is settling as it is read rather than after.
+        { rootMargin: "0px 0px -16% 0px", threshold: 0.12 }
+      );
+
+      rows.forEach((row) => io.observe(row));
+    }
+  }
+</script>
