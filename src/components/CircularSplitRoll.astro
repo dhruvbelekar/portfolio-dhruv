@@ -1,0 +1,422 @@
+---
+import path from "node:path";
+import sharp from "sharp";
+
+/*
+  A photo series told on two wheels.
+
+  Ported from a React and GSAP component ("circular split roll") into the way
+  the rest of this site moves: a sticky stage, the scroll read by hand, and no
+  animation library. The maths is the same. The writing rides one circle
+  whose centre sits off the left of the screen, the photographs ride a mirror
+  of it off the right, and both turn together as the page scrolls. Whichever
+  pair has reached the front of its circle is in focus, full size and fully
+  lit; everything else slides back around the curve, smaller and faded.
+
+  Only the photograph and the writing at the front can be read, so each frame
+  gets looked at for as long as it takes to read the lines beside it. The
+  scroll also lingers a little on each one before letting the wheel turn on,
+  so it settles rather than drifting past.
+
+  Below the wheel's width, or with reduced motion, the same photographs and
+  writing are simply stacked.
+*/
+
+export interface RollItem {
+  /* Path under /public. */
+  src: string;
+  /* A short line that names the feeling, not the activity. */
+  title: string;
+  body: string;
+  /* What is actually visible, for anyone who cannot see it. */
+  alt: string;
+}
+
+interface Props {
+  items: RollItem[];
+}
+
+const { items } = Astro.props;
+
+/*
+  Measured at build time, so each card is cut to its own photograph's shape
+  and the one portrait in a run of landscapes is not cropped to fit them.
+*/
+const frames = await Promise.all(
+  items.map(async (item, i) => {
+    const { width, height } = await sharp(path.join(process.cwd(), "public", item.src)).metadata();
+    return { ...item, width, height, n: String(i + 1).padStart(2, "0") };
+  })
+);
+---
+
+<section class="csr" data-csr style={`--csr-n: ${frames.length}`}>
+  {/*
+    The wheel is a picture of the list below, so it is hidden from assistive
+    technology and the list is what gets read out, in both arrangements.
+  */}
+  <div class="csr-track" data-csr-track>
+    <div class="csr-stage" aria-hidden="true">
+      <div class="csr-words">
+        {
+          frames.map((f) => (
+            <div class="csr-word" data-csr-word>
+              <span class="csr-n">{f.n}</span>
+              <p class="csr-title">{f.title}</p>
+              <p class="csr-body">{f.body}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="csr-photos">
+        {
+          frames.map((f) => (
+            <div class="csr-photo" data-csr-photo style={`aspect-ratio: ${f.width} / ${f.height}`}>
+              <img src={f.src} width={f.width} height={f.height} alt="" loading="lazy" decoding="async" />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <ol class="csr-list">
+    {
+      frames.map((f) => (
+        <li class="csr-item">
+          <div class={`csr-item-frame ${f.height > f.width ? "is-portrait" : ""}`}>
+            <img src={f.src} width={f.width} height={f.height} alt={f.alt} loading="lazy" decoding="async" />
+          </div>
+          <span class="csr-n" aria-hidden="true">{f.n}</span>
+          <h3 class="csr-title">{f.title}</h3>
+          <p class="csr-body">{f.body}</p>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  /* ---------- Shared type ---------- */
+
+  .csr-n {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: color-mix(in srgb, var(--color-blue) 55%, transparent);
+  }
+
+  .csr-title {
+    margin: 0.75rem 0 0;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.75rem, 1.1rem + 1.6vw, 3rem);
+    line-height: 1.02;
+    letter-spacing: -0.05em;
+    color: var(--color-blue);
+  }
+
+  .csr-body {
+    margin: 1rem 0 0;
+    font-size: clamp(0.95rem, 0.9rem + 0.25vw, 1.125rem);
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+    color: var(--color-ink-muted);
+  }
+
+  /* ---------- Stacked: phones, tablets, reduced motion, no script ---------- */
+
+  .csr-track {
+    display: none;
+  }
+
+  .csr-list {
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    max-width: 1400px;
+    list-style: none;
+  }
+
+  @media (min-width: 768px) {
+    .csr-list {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  .csr-item + .csr-item {
+    margin-top: clamp(4rem, 10vw, 7rem);
+  }
+
+  .csr-item-frame {
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    background: color-mix(in srgb, var(--color-ink) 4%, var(--color-paper));
+  }
+
+  .csr-item-frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* The portrait frame would stand taller than a phone screen at full width. */
+  .csr-item-frame.is-portrait {
+    max-width: 30rem;
+  }
+
+  .csr-item .csr-body {
+    max-width: 38ch;
+  }
+
+  /* ---------- The wheel ---------- */
+
+  [data-csr].is-wheel .csr-track {
+    display: block;
+    /*
+      One screen for the stage to sit in, then a stretch of scroll for every
+      turn from one photograph to the next, plus a short hold at each end so
+      the first and last are not already moving the moment they arrive.
+    */
+    height: calc(100vh + (var(--csr-n) - 1 + 0.6) * var(--csr-step, 80vh));
+  }
+
+  /* Still in the page for screen readers, gone for everyone else. */
+  [data-csr].is-wheel .csr-list {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .csr-stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .csr-word,
+  .csr-photo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 50% 50%;
+    will-change: transform, opacity;
+  }
+
+  .csr-word {
+    width: var(--csr-text-w, 26rem);
+  }
+
+  /*
+    The number and the title are what show round the rest of the curve. The
+    body only comes up as its photograph reaches the front, so the faded
+    neighbours read as a list of names rather than a wall of grey text.
+  */
+  .csr-word .csr-body {
+    opacity: var(--csr-fb, 0);
+  }
+
+  .csr-photo {
+    height: var(--csr-card-h, 60vh);
+    overflow: hidden;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--color-ink) 4%, var(--color-paper));
+    box-shadow:
+      0 28px 60px rgba(32, 36, 47, 0.14),
+      0 6px 18px rgba(32, 36, 47, 0.08);
+  }
+
+  .csr-photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+    pointer-events: none;
+  }
+
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-csr]");
+
+  if (root) {
+    const track = root.querySelector<HTMLElement>("[data-csr-track]")!;
+    const words = [...root.querySelectorAll<HTMLElement>("[data-csr-word]")];
+    const photos = [...root.querySelectorAll<HTMLElement>("[data-csr-photo]")];
+    const total = words.length;
+
+    const wide = window.matchMedia("(min-width: 1025px)");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    /* Where a card is at the front of its circle and where it is at the back. */
+    const TEXT = { centerScale: 1, sideScale: 0.68, centerOpacity: 1, sideOpacity: 0.18, start: 0.42, power: 2.6 };
+    const IMAGE = { centerScale: 1, sideScale: 0.58, centerOpacity: 1, sideOpacity: 0.14, start: 0.45, power: 3.2 };
+
+    /* Part of a turn spent holding still on each photograph. */
+    const DWELL = 0.75;
+    /* How much of the gap to the scroll position is closed each frame. */
+    const SCRUB = 0.12;
+    /* The short hold before the first turn and after the last, in turns. */
+    const HOLD = 0.3;
+    /* Angle between neighbouring cards, and how far round one is still drawn. */
+    const STEP = (Math.PI * 2) / 9;
+    const REACH = Math.PI * 0.6;
+
+    const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+    /* Depth on the circle, 1 at the front and 0 at the back, sharpened so only
+       the card right at the front is fully in focus. */
+    const focusOf = (depth: number, start: number, power: number) => {
+      const strength = (depth + 1) / 2;
+      return Math.pow(clamp((strength - start) / (1 - start), 0, 1), power);
+    };
+
+    let layout = { vh: 0, textX: 0, photoX: 0, radiusText: 0, radiusPhoto: 0 };
+
+    const measure = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      // Sized so a landscape card and the writing beside it never meet, on a
+      // short laptop screen as much as a tall monitor.
+      const cardH = Math.min(vh * 0.58, vw * 0.44 * 0.75);
+      const textW = Math.min(vw * 0.27, 440);
+      root.style.setProperty("--csr-card-h", `${cardH}px`);
+      root.style.setProperty("--csr-text-w", `${textW}px`);
+      layout = {
+        vh,
+        textX: vw * 0.23,
+        photoX: vw * 0.635,
+        // Tight enough that the faded title above stays clear of the nav bar.
+        radiusText: vh * 0.55,
+        radiusPhoto: vh * 0.95,
+      };
+    };
+
+    /*
+      `k` is which photograph is at the front, as a continuous number: 2 is the
+      third one in focus, 2.5 is halfway through the turn to the fourth.
+
+      Every card sits at an angle on its circle, 0 at the front. The next ones
+      wait below and the ones already seen have gone round above, so the wheel
+      turns upward with the scroll like the rest of the page does. The writing
+      circles off to the left and the photographs off to the right, so the two
+      open away from each other around the gap between them.
+
+      Unlike the original, the circle does not wrap: a series has a first and a
+      last frame, and the last one waiting above the first read as if the story
+      had already ended. A card more than a few steps away is simply not drawn.
+    */
+    const render = (k: number) => {
+      const { vh, textX, photoX, radiusText, radiusPhoto } = layout;
+      const cy = vh / 2;
+
+      for (let i = 0; i < total; i++) {
+        const angle = (i - k) * STEP;
+        const gone = Math.abs(angle) > REACH;
+        words[i].style.visibility = gone ? "hidden" : "";
+        photos[i].style.visibility = gone ? "hidden" : "";
+        if (gone) continue;
+        const depth = Math.cos(angle);
+        const sin = Math.sin(angle);
+
+        const tf = focusOf(depth, TEXT.start, TEXT.power);
+        const word = words[i];
+        const wx = textX - radiusText + depth * radiusText;
+        const wy = cy + sin * radiusText;
+        word.style.transform = `translate3d(${wx.toFixed(1)}px, ${wy.toFixed(1)}px, 0) translate(-50%, -50%) scale(${lerp(TEXT.sideScale, TEXT.centerScale, tf).toFixed(4)})`;
+        word.style.opacity = lerp(TEXT.sideOpacity, TEXT.centerOpacity, tf).toFixed(3);
+        word.style.zIndex = String(Math.round(1 + tf * 29));
+        // Only in the last stretch before the front, so a neighbour's body
+        // never shows as a smear of faint grey under its title.
+        word.style.setProperty("--csr-fb", clamp((tf - 0.8) / 0.2, 0, 1).toFixed(3));
+
+        const pf = focusOf(depth, IMAGE.start, IMAGE.power);
+        const photo = photos[i];
+        const px = photoX + radiusPhoto - depth * radiusPhoto;
+        const py = cy + sin * radiusPhoto;
+        photo.style.transform = `translate3d(${px.toFixed(1)}px, ${py.toFixed(1)}px, 0) translate(-50%, -50%) scale(${lerp(IMAGE.sideScale, IMAGE.centerScale, pf).toFixed(4)})`;
+        photo.style.opacity = lerp(IMAGE.sideOpacity, IMAGE.centerOpacity, pf).toFixed(3);
+        photo.style.zIndex = String(Math.round(1 + pf * 39));
+      }
+    };
+
+    /* Where the scroll says the wheel should be, with a pause on each stop. */
+    const target = () => {
+      const r = track.getBoundingClientRect();
+      const run = r.height - window.innerHeight;
+      const p = run > 0 ? clamp(-r.top / run, 0, 1) : 0;
+      const raw = clamp(p * (total - 1 + HOLD * 2) - HOLD, 0, total - 1);
+      const whole = Math.floor(raw);
+      const f = raw - whole;
+      // Slow at both ends of each turn, so the wheel comes to rest on a
+      // photograph instead of rolling straight through it.
+      return whole + f - (DWELL * Math.sin(f * Math.PI * 2)) / (Math.PI * 2);
+    };
+
+    let k = 0;
+    let frame = 0;
+    let near = false;
+
+    const tick = () => {
+      frame = 0;
+      const t = target();
+      k = Math.abs(t - k) < 0.0005 ? t : lerp(k, t, SCRUB);
+      render(k);
+      // Keeps easing after the scroll stops, then goes quiet until the next.
+      if (near && k !== t) frame = requestAnimationFrame(tick);
+    };
+
+    const wake = () => {
+      if (near && !frame) frame = requestAnimationFrame(tick);
+    };
+
+    const watch = new IntersectionObserver(
+      ([entry]) => {
+        near = entry.isIntersecting;
+        wake();
+      },
+      { rootMargin: "20% 0px" }
+    );
+
+    let armed = false;
+
+    const arrange = () => {
+      const on = wide.matches && !reduced.matches;
+      if (on === armed) return;
+      armed = on;
+      root.classList.toggle("is-wheel", on);
+      if (on) {
+        measure();
+        k = target();
+        render(k);
+        watch.observe(track);
+        window.addEventListener("scroll", wake, { passive: true });
+      } else {
+        watch.disconnect();
+        window.removeEventListener("scroll", wake);
+        near = false;
+      }
+    };
+
+    window.addEventListener("resize", () => {
+      if (!armed) return;
+      measure();
+      render(k);
+    });
+    wide.addEventListener("change", arrange);
+    reduced.addEventListener("change", arrange);
+    arrange();
+  }
+</script>

@@ -4,6 +4,7 @@ import sharp from "sharp";
 import Layout from "../../layouts/Layout.astro";
 import ScrollReveal from "../../components/ScrollReveal.astro";
 import PhotoStory from "../../components/PhotoStory.astro";
+import CircularSplitRoll from "../../components/CircularSplitRoll.astro";
 import StatCounter from "../../components/StatCounter.astro";
 import Marquee from "../../components/Marquee.astro";
 import { projects } from "../../data/projects";
@@ -108,6 +109,59 @@ const isPassionProject = project.slug === "passion-project";
 const isDrive = project.slug === "drive";
 const isAria = project.slug === "aria";
 const isOpe = project.slug === "ope";
+const isAai = project.slug === "aai";
+// Aai is a series about Dhruv's mother, so each frame is told for what it
+// feels like to watch her rather than for what she is doing in it.
+const aaiStories = [
+  {
+    title: "Against the light",
+    body: "She is barely in this one. An outline against the window grill, curry leaves and morning behind her. It is how most of us see our mothers: always there, rarely looked at properly. This series is me trying to look.",
+    alt: "A woman in silhouette standing at a barred window, plants and daylight behind her",
+  },
+  {
+    title: "Measured by hand",
+    body: "No recipe, no measuring cup. Her hands know the size of a bhakri the way they know the way home. Flour on the knuckles, the rolling pin worn smooth where she holds it.",
+    alt: "Two hands rolling out a large round of dough on a wooden board, flour dusted on the counter",
+  },
+  {
+    title: "Every flame in use",
+    body: "Something on every burner and her palm flat on the hot tawa like it is nothing. I have watched this a thousand times and I still flinch. She never does.",
+    alt: "A hand pressing flatbread onto a tawa, an omelette cooking in a pan behind it",
+  },
+  {
+    title: "Packed and sent",
+    body: "Every dabba goes out full and comes back empty, and that is the whole conversation. There is never a note inside. The food is the note.",
+    alt: "Hands sliding a stacked steel tiffin into a canvas lunch bag",
+  },
+  {
+    title: "Yesterday's news",
+    body: "Afternoon work. Peas shelled one pod at a time over an old newspaper, the steel bowl filling slowly. The kind of patience nobody ever thanks anyone for.",
+    alt: "Hands shelling green peas into a small steel bowl, pods heaped on newspaper",
+  },
+  {
+    title: "Folded and kept",
+    body: "Her wedding saree, folded with care, and a photograph of her wearing it. Some things in the cupboard are clothes. This one is a whole day, and every year that came after it.",
+    alt: "Her folded yellow and maroon wedding saree above a framed photograph of her wearing it",
+  },
+  {
+    title: "Her time",
+    body: "Her first watch, a gift from her brother Yogesh. The strap has cracked and the glass has clouded, and it is still the one on her wrist. It keeps her time, most of which she has quietly given to us.",
+    alt: "Her first wristwatch, small and worn, with a black dial and cracked leather strap",
+  },
+  {
+    title: "A minute to herself",
+    body: "She loves her yoga. Eyes closed, fingers resting in a mudra, the house briefly not her problem. The few quiet minutes in her day that belong to nobody else.",
+    alt: "Her hand resting on her knee in a yoga mudra, thumb and forefinger touching, over a printed cotton dress",
+  },
+  {
+    title: "Something of her own",
+    body: "She loves to sing. Notebook open, pencil ready, one hand keeping time as she practises. Everything else in this series is something she does for us. This one is hers.",
+    alt: "Her practising singing in an orange kurta and glasses, an open notebook on her lap, one hand raised mid phrase",
+  },
+].map((story, i) => ({
+  ...story,
+  src: `/img/projects/aai/gallery-${String(i + 1).padStart(2, "0")}.webp`,
+}));
 // Mp4, Aria and AI Film are each one continuous artboard, and Drive is a deck
 // whose pages carry their own background: in all of them, a gap between items
 // shows as a band of page behind, so they butt together with a hairline overlap
@@ -122,6 +176,10 @@ const thumbSize = await sharp(path.join(process.cwd(), "public", project.thumb))
 // A cover that is portrait or square would stand as tall as the page is wide
 // if run edge to edge, so those stay contained and height-capped instead.
 const coverIsTall = coverFitsNatural && thumbSize.height >= thumbSize.width;
+// Aai's cover is open sea with one word on it, with no fine detail to go soft
+// when stretched, so it runs the full width of the screen instead of stopping
+// at its own 1254px.
+const coverBleeds = isAai;
 
 // A capped clip stops short of the page edge, so its own left and right edges
 // show as hard borders. Masking the outer tenth of each side fades the footage
@@ -261,7 +319,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
             width={thumbSize.width}
             height={thumbSize.height}
             class="mx-auto aspect-[16/9] w-full object-cover"
-            style={`max-width: ${thumbSize.width}px`}
+            style={coverBleeds ? undefined : `max-width: ${thumbSize.width}px`}
           />
         )
       }
@@ -665,7 +723,19 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
     }
 
     {
-      !isBento && !isOpe && (
+      /*
+        Aai turns through its photographs on a pair of wheels, the writing on
+        one and the frames on the other, so each is held and read in turn.
+      */
+      isAai && (
+        <div class="mt-16 pb-[var(--space-section)]">
+          <CircularSplitRoll items={aaiStories} />
+        </div>
+      )
+    }
+
+    {
+      !isBento && !isOpe && !isAai && (
         <div
           class={`mt-16 flex flex-col pb-[var(--space-section)] ${isSeamless ? "gap-0" : "gap-8"}`}
         >

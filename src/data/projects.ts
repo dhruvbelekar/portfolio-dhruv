@@ -136,6 +136,22 @@ export const projects: Project[] = [
     galleryCount: 9,
   },
   {
+    slug: "aai",
+    // Her name for her, in her own script.
+    title: "\u0906\u0908",
+    category: "Photography",
+    filterCategory: "Photography",
+    thumb: "/img/projects/aai-thumb.webp",
+    thumbAlt: "The word आई, mother in Marathi, in white over dark sea water",
+    description:
+      "Aai means mother in Marathi. This is a photo series about mine, shot at home on ordinary days. It stays close to her hands, because that is where most of her love gets spent: rolling dough, packing a tiffin, shelling peas. It ends on the things she keeps for herself, her wedding saree, her first watch, her yoga and her singing. Nine frames of the person the whole house quietly runs on.",
+    live: false,
+    links: [],
+    // Aai is told through its own scroll piece, which reads its photographs
+    // itself, so the standard gallery has nothing to render.
+    galleryCount: 0,
+  },
+  {
     slug: "coke",
     title: "Coca-Cola Ad",
     category: "3D Animation",
