@@ -3,7 +3,6 @@ import path from "node:path";
 import sharp from "sharp";
 import Layout from "../../layouts/Layout.astro";
 import ScrollReveal from "../../components/ScrollReveal.astro";
-import PhotoStory from "../../components/PhotoStory.astro";
 import CircularSplitRoll from "../../components/CircularSplitRoll.astro";
 import StatCounter from "../../components/StatCounter.astro";
 import Marquee from "../../components/Marquee.astro";
@@ -110,6 +109,58 @@ const isDrive = project.slug === "drive";
 const isAria = project.slug === "aria";
 const isOpe = project.slug === "ope";
 const isAai = project.slug === "aai";
+// OPE is nine photographs of one day, each told for the feeling in the room
+// at that moment rather than the running order of the agenda.
+const opeStories = [
+  {
+    title: "The first laugh",
+    body: "At nine in the morning nobody knew anybody. Somewhere before ten, someone said something daft enough to crack the whole table open, and the room stopped being a room full of strangers.",
+    alt: "A man in a lanyard laughing mid conversation against a brick wall",
+  },
+  {
+    title: "Heads down",
+    body: "There is a particular quiet a room goes into when it is working. Not bored quiet. Twenty people leaning over the same table, nobody checking how long is left.",
+    alt: "A long table seen from one end, the whole room bent over paper and materials",
+  },
+  {
+    title: "Careful with it",
+    body: "Card, tape, and about four minutes of work, held like it is made of glass. That is what making something in front of people does. It stops being scrap the second you care whether it stands up.",
+    alt: "Two hands holding a small paper prototype, scissors just out of frame",
+  },
+  {
+    title: "Say that again",
+    body: "One of them is explaining. The other has stopped assembling his reply and is just listening, head tilted, hands empty. Easy to photograph, rare to actually see.",
+    alt: "A younger man gesturing mid sentence while an older man listens across the table",
+  },
+  {
+    title: "Permission to play",
+    body: "Grown adults were handed a box of colour and told to build something. For a few seconds nobody could remember what they did for a living. This is what that looks like on a face.",
+    alt: "A woman laughing with her eyes closed, holding a strip of coloured beads",
+  },
+  {
+    title: "Four hands, one thing",
+    body: "Nobody is looking at anybody's face. They are looking at the joint, the tape, the corner that keeps giving way. You trust someone quickly when you are both holding the same structure up.",
+    alt: "Two pairs of hands binding paper straws into a frame with tape",
+  },
+  {
+    title: "Before anyone sees it",
+    body: "A bicycle, in red, small in the corner of the page. The quiet minute before an idea has to be explained to anybody, while it is still only yours, and still perfect.",
+    alt: "A hand sketching a bicycle in red pencil under low warm light",
+  },
+  {
+    title: "Your turn",
+    body: "Arms folded, weight on one leg, everyone watching one person talk. Nobody here is relaxed. Presenting to a room of designers is its own specific kind of nervous.",
+    alt: "A group standing and sitting around a table with pastel balloons, watching someone present",
+  },
+  {
+    title: "The huddle",
+    body: "One voice, and everybody bent slightly toward it. By the end of the day the circles had stopped being teams and started being people who had built something together.",
+    alt: "A cluster of people leaning in to listen to one man speaking, warm evening light",
+  },
+].map((story, i) => ({
+  ...story,
+  src: `/img/projects/ope/gallery-${String(i + 1).padStart(2, "0")}.webp`,
+}));
 // Aai is a series about Dhruv's mother, so each frame is told for what it
 // feels like to watch her rather than for what she is doing in it.
 const aaiStories = [
@@ -712,12 +763,12 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
     {
       /*
         OPE is nine photographs of one day rather than nine pieces of artwork,
-        so they are told alongside what was happening in them instead of being
-        stacked edge to edge with nothing said.
+        so they turn through on the same pair of wheels as Aai, each held
+        beside what was happening in it.
       */
       isOpe && (
         <div class="mt-16 pb-[var(--space-section)]">
-          <PhotoStory />
+          <CircularSplitRoll items={opeStories} />
         </div>
       )
     }

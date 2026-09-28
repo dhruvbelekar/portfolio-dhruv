@@ -72,7 +72,12 @@ const frames = await Promise.all(
       <div class="csr-photos">
         {
           frames.map((f) => (
-            <div class="csr-photo" data-csr-photo style={`aspect-ratio: ${f.width} / ${f.height}`}>
+            <div
+              class="csr-photo"
+              data-csr-photo
+              data-aspect={f.width / f.height}
+              style={`aspect-ratio: ${f.width} / ${f.height}`}
+            >
               <img src={f.src} width={f.width} height={f.height} alt="" loading="lazy" decoding="async" />
             </div>
           ))
@@ -254,6 +259,8 @@ const frames = await Promise.all(
     const track = root.querySelector<HTMLElement>("[data-csr-track]")!;
     const words = [...root.querySelectorAll<HTMLElement>("[data-csr-word]")];
     const photos = [...root.querySelectorAll<HTMLElement>("[data-csr-photo]")];
+    /* The widest card in the series sets the height every card shares. */
+    const widest = Math.max(1, ...photos.map((p) => Number(p.dataset.aspect) || 1));
     const total = words.length;
 
     const wide = window.matchMedia("(min-width: 1025px)");
@@ -288,9 +295,9 @@ const frames = await Promise.all(
     const measure = () => {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-      // Sized so a landscape card and the writing beside it never meet, on a
+      // Sized so the widest card and the writing beside it never meet, on a
       // short laptop screen as much as a tall monitor.
-      const cardH = Math.min(vh * 0.58, vw * 0.44 * 0.75);
+      const cardH = Math.min(vh * 0.58, (vw * 0.44) / widest);
       const textW = Math.min(vw * 0.27, 440);
       root.style.setProperty("--csr-card-h", `${cardH}px`);
       root.style.setProperty("--csr-text-w", `${textW}px`);
