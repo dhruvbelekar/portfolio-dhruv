@@ -1,0 +1,72 @@
+---
+/*
+  The card a UI/UX case study opens with: brief, problem, process and solution
+  in one row, one short line each, so the whole project is taken in at a glance
+  before the slides below go into detail.
+
+  The problem statement is the one thing the rest hangs off, so it is the one
+  cell drawn in the brand blue.
+*/
+import ScrollReveal from "./ScrollReveal.astro";
+import type { ProjectOverview } from "../data/projects";
+
+interface Props {
+  overview: ProjectOverview;
+}
+
+const { brief, problem, process, solution } = Astro.props.overview;
+const cell = "bg-paper p-6 sm:p-7";
+const label = "text-xs font-bold tracking-wide text-blue";
+const line = "mt-3 text-base font-bold leading-snug text-ink sm:text-lg";
+---
+
+<ScrollReveal class="mt-16">
+  <section
+    aria-label="Project at a glance"
+    class="grid gap-px overflow-hidden rounded-3xl border border-blue/10 bg-blue/10 sm:grid-cols-2 lg:grid-cols-4"
+  >
+    <div class={cell}>
+      <p class={label}>Brief</p>
+      <p class={line}>{brief}</p>
+    </div>
+
+    <div class="bg-blue p-6 text-paper sm:p-7">
+      <p class="text-xs font-bold tracking-wide text-paper/70">Problem</p>
+      <p class="mt-3 text-base font-bold leading-snug sm:text-lg">{problem}</p>
+    </div>
+
+    <div class={cell}>
+      <p class={label}>Process</p>
+      {/* Each arrow rides at the end of its step, so a wrapped line ends on
+          one rather than the next line starting with it. */}
+      <ol class={`${line} flex flex-wrap gap-x-1.5`}>
+        {
+          process.map((step, i) => (
+            <li class="flex items-center gap-1.5">
+              {step}
+              {i < process.length - 1 && (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  class="h-3.5 w-3.5 shrink-0 text-blue"
+                >
+                  <path d="m9 6 6 6-6 6" />
+                </svg>
+              )}
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+
+    <div class={cell}>
+      <p class={label}>Solution</p>
+      <p class={line}>{solution}</p>
+    </div>
+  </section>
+</ScrollReveal>

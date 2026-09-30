@@ -4,6 +4,7 @@ import sharp from "sharp";
 import Layout from "../../layouts/Layout.astro";
 import ScrollReveal from "../../components/ScrollReveal.astro";
 import CircularSplitRoll from "../../components/CircularSplitRoll.astro";
+import ProjectOverview from "../../components/ProjectOverview.astro";
 import StatCounter from "../../components/StatCounter.astro";
 import Marquee from "../../components/Marquee.astro";
 import { projects } from "../../data/projects";
@@ -454,6 +455,8 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
           }
         </ScrollReveal>
       </div>
+
+      {project.overview && <ProjectOverview overview={project.overview} />}
 
       {
         isBento ? (

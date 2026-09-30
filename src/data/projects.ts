@@ -1,6 +1,18 @@
 export const filterCategories = ["UI/UX", "Visual Design", "Film", "Photography"] as const;
 export type FilterCategory = (typeof filterCategories)[number];
 
+/*
+  What a UI/UX case study opens with, before its slides: the brief, the
+  problem, the route taken and what came out of it. It is read at a glance, so
+  each part is one short line and the process is step names only.
+*/
+export type ProjectOverview = {
+  brief: string;
+  problem: string;
+  process: string[];
+  solution: string;
+};
+
 export type Project = {
   slug: string;
   title: string;
@@ -13,6 +25,7 @@ export type Project = {
   live: boolean;
   links: { label: string; href: string }[];
   galleryCount: number;
+  overview?: ProjectOverview;
 };
 
 export const projects: Project[] = [
@@ -33,6 +46,12 @@ export const projects: Project[] = [
       { label: "mahavitaran.atm", href: "https://atmmahavitaran.figma.site" },
     ],
     galleryCount: 15,
+    overview: {
+      brief: "Make Maharashtra's electricity services simple for every consumer.",
+      problem: "How might we make paying bills and raising complaints easy for everyone?",
+      process: ["Research", "Personas", "Ideation", "Design", "Testing"],
+      solution: "One AI assistant on WhatsApp, the app, ATMs and feature phones.",
+    },
   },
   {
     slug: "drive",
@@ -48,6 +67,12 @@ export const projects: Project[] = [
     live: false,
     links: [],
     galleryCount: 20,
+    overview: {
+      brief: "Give visually impaired people the experience of driving.",
+      problem: "How might visually impaired people experience driving in an autonomous future?",
+      process: ["Research", "Concept", "11 prototypes", "Road testing"],
+      solution: "An AI co driver you feel through touch, voice and sound.",
+    },
   },
   {
     slug: "aria",
@@ -62,6 +87,12 @@ export const projects: Project[] = [
     live: true,
     links: [{ label: "aria.fitness", href: "https://dhruvbelekar.github.io/aria-fitness/" }],
     galleryCount: 16,
+    overview: {
+      brief: "An AI fitness companion people actually keep using.",
+      problem: "How might fitness adapt to each person's time, motivation and level?",
+      process: ["Research", "Personas", "Benchmarking", "Building", "Testing"],
+      solution: "A fitness coach you simply talk to, instead of an app you navigate.",
+    },
   },
   {
     slug: "mp4",
