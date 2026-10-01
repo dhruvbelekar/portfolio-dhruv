@@ -25,6 +25,7 @@ import { projects, filterCategories } from "../data/projects";
     >
       <h1
         data-hero-name
+        data-hero-depth="28"
         class="select-none text-center font-bold leading-[0.8] text-blue"
         style="font-family: var(--font-display); font-size: var(--name-font); letter-spacing: -0.05em;"
       >
@@ -36,6 +37,7 @@ import { projects, filterCategories } from "../data/projects";
           */}
           <span
             data-hero-face
+            data-hero-depth="20"
             class="group absolute left-[4.475em] -top-[0.375em] block w-[0.70em]"
           >
             <span
@@ -64,6 +66,7 @@ import { projects, filterCategories } from "../data/projects";
       </h1>
       <p
         data-hero-copy
+        data-hero-depth="14"
         class="mx-auto w-full font-bold leading-tight text-gray-400"
         style="font-family: var(--font-display); font-size: clamp(1.125rem, var(--shell) * 0.028, 40px); text-indent: 42%; margin-top: clamp(1rem, var(--shell) * 0.048, 70px); max-width: var(--name-width);"
       >
@@ -193,3 +196,120 @@ import { projects, filterCategories } from "../data/projects";
 
   <TestimonialsSection />
 </Layout>
+
+<script>
+  /*
+    The hero follows the pointer. Each layer carries a reach in pixels and the
+    ones further forward travel further, so the face clears the name and the
+    name clears the line under it, and the hero reads as having depth rather
+    than sliding as one sheet. The face sits inside the name, so its reach is
+    on top of the name's.
+
+    It writes `translate` rather than `transform`: the intro owns `transform`
+    on these same elements while it reveals them, and the face tilts on hover
+    from its own, so neither is touched.
+  */
+  const layers = [...document.querySelectorAll<HTMLElement>("[data-hero-depth]")].map((el) => ({
+    el,
+    reach: Number(el.dataset.heroDepth) || 0,
+  }));
+
+  if (layers.length) {
+    const fine = window.matchMedia("(pointer: fine)");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // The share of the remaining distance covered each 60th of a second. Low
+    // enough that the hero drifts after the pointer rather than snapping to it.
+    const EASE = 0.08;
+
+    let listening = false;
+    let onScreen = true;
+    let frame = 0;
+    let last = 0;
+    let targetX = 0;
+    let targetY = 0;
+    let x = 0;
+    let y = 0;
+
+    const paint = (now: number) => {
+      // Scaled by the time since the last frame, so a 120Hz screen eases at
+      // the same pace as a 60Hz one instead of twice as fast.
+      const steps = last ? Math.min((now - last) / (1000 / 60), 4) : 1;
+      last = now;
+      const k = 1 - Math.pow(1 - EASE, steps);
+      x += (targetX - x) * k;
+      y += (targetY - y) * k;
+
+      // Close enough to land on the target exactly, so the hero comes to rest
+      // where it was set rather than a hundredth of a pixel off it.
+      const settled = Math.abs(targetX - x) < 0.0005 && Math.abs(targetY - y) < 0.0005;
+      if (settled) {
+        x = targetX;
+        y = targetY;
+      }
+
+      for (const { el, reach } of layers) {
+        el.style.translate = x || y ? `${(x * reach).toFixed(2)}px ${(y * reach).toFixed(2)}px` : "";
+      }
+
+      // Once it has caught up there is nothing to draw until the pointer moves.
+      if (settled) {
+        frame = 0;
+        last = 0;
+        return;
+      }
+      frame = requestAnimationFrame(paint);
+    };
+
+    const wake = () => {
+      if (!frame && onScreen) frame = requestAnimationFrame(paint);
+    };
+
+    // Measured against the whole window rather than the hero, as the reference
+    // does: the pointer anywhere on screen is somewhere the hero can lean to.
+    const onMove = (e: MouseEvent) => {
+      targetX = (e.clientX / window.innerWidth - 0.5) * 2;
+      targetY = (e.clientY / window.innerHeight - 0.5) * 2;
+      wake();
+    };
+
+    // Leaving the window lets the hero settle back to where it was set.
+    const onLeave = () => {
+      targetX = 0;
+      targetY = 0;
+      wake();
+    };
+
+    // Scrolled past, the hero is not drawn at all.
+    const observer = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      if (onScreen) wake();
+    });
+
+    const start = () => {
+      if (listening) return;
+      listening = true;
+      document.addEventListener("mousemove", onMove, { passive: true });
+      document.documentElement.addEventListener("mouseleave", onLeave);
+      observer.observe(layers[0].el);
+    };
+
+    const stop = () => {
+      if (!listening) return;
+      listening = false;
+      cancelAnimationFrame(frame);
+      frame = 0;
+      last = 0;
+      targetX = targetY = x = y = 0;
+      document.removeEventListener("mousemove", onMove);
+      document.documentElement.removeEventListener("mouseleave", onLeave);
+      observer.disconnect();
+      for (const { el } of layers) el.style.translate = "";
+    };
+
+    // Touch has no pointer to follow, and reduced motion asked for stillness.
+    const sync = () => (fine.matches && !reduced.matches ? start() : stop());
+    sync();
+    fine.addEventListener("change", sync);
+    reduced.addEventListener("change", sync);
+  }
+</script>
