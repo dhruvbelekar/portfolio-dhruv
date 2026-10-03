@@ -4,7 +4,6 @@ import sharp from "sharp";
 import Layout from "../../layouts/Layout.astro";
 import ScrollReveal from "../../components/ScrollReveal.astro";
 import CircularSplitRoll from "../../components/CircularSplitRoll.astro";
-import Mp4Hero from "../../components/Mp4Hero.astro";
 import PromoVideo from "../../components/PromoVideo.astro";
 import ProjectOverview from "../../components/ProjectOverview.astro";
 import StatCounter from "../../components/StatCounter.astro";
@@ -342,13 +341,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
 
 <Layout title={`${project.title} — Dhruv Belekar`}>
   <section class={`${sectionBg} pt-16 pb-[var(--space-section)]`}>
-    {/*
-      Mp4's cover is not a picture of the mark, it is the mark: the glyph
-      extruded, lit and turning with the pointer in the page itself.
-    */}
-    {isMp4 ? (
-      <Mp4Hero />
-    ) : project.promo ? (
+    {project.promo ? (
       /*
         The film is the first thing a visitor sees, sized to fit the screen
         whole above the fold with the title just showing beneath it.
