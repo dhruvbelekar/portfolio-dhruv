@@ -195,6 +195,8 @@ export const projects: Project[] = [
     // Aai is told through its own scroll piece, which reads its photographs
     // itself, so the standard gallery has nothing to render.
     galleryCount: 0,
+    // The cover, set moving: the word holds still while the sea runs under it.
+    promo: { label: "आई title film", cardStart: 0, single: true },
   },
   {
     slug: "coke",
