@@ -14,14 +14,17 @@ interface Props {
   timeline?: string;
   index: number;
   promo?: Project["promo"];
+  cycle?: Project["thumbCycle"];
 }
 
-const { slug, title, category, image, alt, description, timeline, index, promo } = Astro.props;
+const { slug, title, category, image, alt, description, timeline, index, promo, cycle } = Astro.props;
 const { width, height } = await sharp(path.join(process.cwd(), "public", image)).metadata();
-// Passion Project's poster and Frelo's circular badge both lose their top and
-// bottom to the shared 4:3 crop, so they are fitted whole. Every other cover
-// keeps the crop.
-const fitWhole = slug === "passion-project" || slug === "frelo";
+// Frelo's circular badges lose their top and bottom to the shared 4:3 crop, so
+// they are fitted whole. Every other cover keeps the crop.
+const fitWhole = slug === "frelo";
+// Each cover in a cycle holds for this long, fading over the next for the last
+// half second of it.
+const CYCLE_HOLD = 2.6;
 ---
 
 <a
@@ -51,6 +54,26 @@ const fitWhole = slug === "passion-project" || slug === "frelo";
           class="aspect-video overflow-hidden rounded-2xl bg-black"
           videoClass="transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] group-focus-visible:scale-[1.05]"
         />
+      ) : cycle ? (
+        <div class="overflow-hidden rounded-2xl">
+          <div
+            class="relative aspect-[4/3] w-full transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] group-focus-visible:scale-[1.05]"
+            style={`--cycle-length: ${cycle.length * CYCLE_HOLD}s`}
+          >
+            {cycle.map((src, i) => (
+              <img
+                src={src}
+                alt={i === 0 ? alt : ""}
+                width={width}
+                height={height}
+                loading="lazy"
+                decoding="async"
+                class={`row-cycle absolute inset-0 h-full w-full ${fitWhole ? "object-contain" : "object-cover"}`}
+                style={`animation-delay: ${i * CYCLE_HOLD}s; ${i === 0 ? "" : "opacity: 0;"}`}
+              />
+            ))}
+          </div>
+        </div>
       ) : (
         <div class="overflow-hidden rounded-2xl">
           <img
@@ -125,3 +148,29 @@ const fitWhole = slug === "passion-project" || slug === "frelo";
     </div>
   </div>
 </a>
+
+<style>
+  /* Each cover fades in over the last, holds, and fades out as the next one
+     arrives. The stops are fifths, for Frelo's five badges. With reduced motion the animation ends at once and every cover
+     falls back to its resting opacity, which leaves only the first showing. */
+  .row-cycle {
+    animation: row-cycle var(--cycle-length) linear infinite;
+  }
+  @keyframes row-cycle {
+    0% {
+      opacity: 0;
+      transform: scale(1.02);
+    }
+    4% {
+      opacity: 1;
+    }
+    20% {
+      opacity: 1;
+    }
+    24%,
+    100% {
+      opacity: 0;
+      transform: scale(1);
+    }
+  }
+</style>

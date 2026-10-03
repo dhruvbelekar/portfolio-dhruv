@@ -35,8 +35,16 @@ export type Project = {
    * `single` marks a film that only exists as one 720p H.264 render: there is
    * no 1080p to serve, and re-encoding it to HEVC loses detail for little
    * saving, so the row and the case study both play promo-720.mp4.
+   * `pageStart` is where the case study opens, for a film whose own opening
+   * should be skipped there too; otherwise the case study plays from the top.
    */
-  promo?: { label: string; cardStart: number; single?: boolean };
+  promo?: { label: string; cardStart: number; single?: boolean; pageStart?: number };
+  /**
+   * Covers the landing row turns through in place of `thumb`, one fading into
+   * the next on a loop. `thumb` stays the first of them and the still used
+   * everywhere else.
+   */
+  thumbCycle?: string[];
 };
 
 export const projects: Project[] = [
@@ -139,6 +147,14 @@ export const projects: Project[] = [
     // Frelo renders the bento layout, not the standard gallery, so there is
     // nothing to count and no page images to read at build time.
     galleryCount: 0,
+    // Its row runs through the city chapter badges, Mumbai first.
+    thumbCycle: [
+      "/img/projects/frelo-thumb.webp",
+      "/img/projects/frelo/chapters/delhi.webp",
+      "/img/projects/frelo/chapters/kochi.webp",
+      "/img/projects/frelo/chapters/pune.webp",
+      "/img/projects/frelo/chapters/bengaluru.webp",
+    ],
   },
   {
     slug: "ai-film",
@@ -152,7 +168,10 @@ export const projects: Project[] = [
     timeline: "6 months",
     live: false,
     links: [],
-    galleryCount: 9,
+    galleryCount: 8,
+    // It opens on a "rotate your phone" card meant for phones, so the case
+    // study starts as Earth fades up after it and the row a little later.
+    promo: { label: "The New World, AI short film", cardStart: 10, single: true, pageStart: 5.8 },
   },
   {
     slug: "passion-project",
@@ -165,7 +184,9 @@ export const projects: Project[] = [
       "A personal passion project documenting my journey from childhood to the present and my growing love for filmmaking, editing, and capturing everyday moments. I explored my memories, experiences, and interests through a collage-style animation, bringing together photographs, videos, graphics, and personal moments to tell my story. The project is a visual reflection of how documenting life became a part of how I see and express the world.",
     live: false,
     links: [],
-    galleryCount: 13,
+    galleryCount: 12,
+    // The first seconds are bare paper, so the row starts on the cutout face.
+    promo: { label: "Passion Project film", cardStart: 8.3, single: true },
   },
   {
     slug: "ope",

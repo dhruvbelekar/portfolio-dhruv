@@ -254,8 +254,6 @@ const trailingVideos: Record<
     bleed?: boolean;
   }[]
 > = {
-  "ai-film": [{ index: 8, hoverSound: true, width: 1280 }],
-  "passion-project": [{ index: 12, hoverSound: true, width: 1278 }],
   // Aria's artboard arrives in 14 slices, then hands over to the product film
   // and a recording of the fitness game running in the browser. The recording
   // carries no audio track at all, so it does not take the hover.
@@ -352,10 +350,21 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
           phoneBase={project.promo.single ? undefined : `/video/projects/${project.slug}/promo-720`}
           hevcCut={!project.promo.single}
           label={project.promo.label}
+          start={project.promo.pageStart}
           soundButton
           class="mx-auto aspect-video w-full overflow-hidden rounded-3xl bg-black"
           style="max-width: min(1600px, calc((100svh - 8rem) * 16 / 9))"
         />
+        {isAiFilm && (
+          <a
+            href="https://www.instagram.com/p/DEsODJ8B3Vx/?hl=en"
+            target="_blank"
+            rel="noreferrer"
+            class="mt-4 block text-center text-lg font-bold text-blue transition-transform duration-300 ease-out hover:-translate-y-0.5"
+          >
+            Want to watch part two and three?
+          </a>
+        )}
       </ScrollReveal>
     ) : (
       <ScrollReveal>
@@ -829,16 +838,6 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
                           class={img.maxWidth ?? "w-full"}
                           style={img.fadeEdges ? sideFadeStyle : undefined}
                         />
-                        {isAiFilm && img.hoverSound && (
-                          <a
-                            href="https://www.instagram.com/p/DEsODJ8B3Vx/?hl=en"
-                            target="_blank"
-                            rel="noreferrer"
-                            class="mt-4 block text-center text-lg font-bold text-blue transition-transform duration-300 ease-out hover:-translate-y-0.5"
-                          >
-                            Want to watch part two and three?
-                          </a>
-                        )}
                       </>
                     ) : (
                       <>
