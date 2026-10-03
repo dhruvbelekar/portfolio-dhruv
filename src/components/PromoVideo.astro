@@ -28,6 +28,8 @@ interface Props {
   class?: string;
   style?: string;
   videoClass?: string;
+  /** False for a film that ships only as H.264, so no HEVC file is asked for. */
+  hevcCut?: boolean;
 }
 
 const {
@@ -42,12 +44,13 @@ const {
   class: className = "",
   style,
   videoClass = "",
+  hevcCut = true,
 } = Astro.props;
 
 const fragment = start ? `#t=${start}` : "";
 const hevc = { "1080": "hvc1.1.6.L120.B0", "720": "hvc1.1.6.L93.B0" };
 const pair = (path: string, level: keyof typeof hevc, media?: string) => [
-  { src: `${path}.hevc.mp4${fragment}`, type: `video/mp4; codecs="${hevc[level]}"`, media },
+  ...(hevcCut ? [{ src: `${path}.hevc.mp4${fragment}`, type: `video/mp4; codecs="${hevc[level]}"`, media }] : []),
   { src: `${path}.mp4${fragment}`, type: "video/mp4", media },
 ];
 const sources = [

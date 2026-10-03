@@ -32,8 +32,11 @@ export type Project = {
    * promo-720 (.hevc.mp4 and .mp4), the poster at /img/projects/<slug>/.
    * The row opens on `cardStart`, the film's strongest frame, because the
    * films begin on title slides too small to read at row size.
+   * `single` marks a film that only exists as one 720p H.264 render: there is
+   * no 1080p to serve, and re-encoding it to HEVC loses detail for little
+   * saving, so the row and the case study both play promo-720.mp4.
    */
-  promo?: { label: string; cardStart: number };
+  promo?: { label: string; cardStart: number; single?: boolean };
 };
 
 export const projects: Project[] = [
@@ -204,7 +207,8 @@ export const projects: Project[] = [
       "A visual advertisement created in Blender to explore a more dynamic and cinematic approach. I focused on camera movement, lighting, animation, and editing to create an engaging visual piece that reflects my creative style.",
     live: false,
     links: [],
-    galleryCount: 8,
+    galleryCount: 7,
+    promo: { label: "Coca-Cola ad film", cardStart: 8.5, single: true },
   },
 ];
 

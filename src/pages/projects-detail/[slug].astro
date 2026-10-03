@@ -256,7 +256,6 @@ const trailingVideos: Record<
 > = {
   "ai-film": [{ index: 8, hoverSound: true, width: 1280 }],
   "passion-project": [{ index: 12, hoverSound: true, width: 1278 }],
-  coke: [{ index: 7, hoverSound: true, width: 1280 }],
   // Aria's artboard arrives in 14 slices, then hands over to the product film
   // and a recording of the fitness game running in the browser. The recording
   // carries no audio track at all, so it does not take the hover.
@@ -348,9 +347,10 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
       */
       <ScrollReveal class="px-6 md:px-10">
         <PromoVideo
-          base={`/video/projects/${project.slug}/promo-1080`}
-          size="1080"
-          phoneBase={`/video/projects/${project.slug}/promo-720`}
+          base={`/video/projects/${project.slug}/promo-${project.promo.single ? "720" : "1080"}`}
+          size={project.promo.single ? "720" : "1080"}
+          phoneBase={project.promo.single ? undefined : `/video/projects/${project.slug}/promo-720`}
+          hevcCut={!project.promo.single}
           label={project.promo.label}
           soundButton
           class="mx-auto aspect-video w-full overflow-hidden rounded-3xl bg-black"

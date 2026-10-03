@@ -46,6 +46,7 @@ const fitWhole = slug === "passion-project" || slug === "frelo";
           label={promo.label}
           poster={`/img/projects/${slug}/promo-poster.webp`}
           start={promo.cardStart}
+          hevcCut={!promo.single}
           lazy
           class="aspect-video overflow-hidden rounded-2xl bg-black"
           videoClass="transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] group-focus-visible:scale-[1.05]"
