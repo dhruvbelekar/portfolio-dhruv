@@ -4,6 +4,8 @@ import sharp from "sharp";
 import Layout from "../../layouts/Layout.astro";
 import ScrollReveal from "../../components/ScrollReveal.astro";
 import CircularSplitRoll from "../../components/CircularSplitRoll.astro";
+import Mp4Hero from "../../components/Mp4Hero.astro";
+import PromoVideo from "../../components/PromoVideo.astro";
 import ProjectOverview from "../../components/ProjectOverview.astro";
 import StatCounter from "../../components/StatCounter.astro";
 import Marquee from "../../components/Marquee.astro";
@@ -340,42 +342,66 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
 
 <Layout title={`${project.title} — Dhruv Belekar`}>
   <section class={`${sectionBg} pt-16 pb-[var(--space-section)]`}>
-    <ScrollReveal>
-      {
-        coverIsTall ? (
-          <div class="mx-auto max-w-[1400px] px-6 md:px-10">
+    {/*
+      Mp4's cover is not a picture of the mark, it is the mark: the glyph
+      extruded, lit and turning with the pointer in the page itself.
+    */}
+    {isMp4 ? (
+      <Mp4Hero />
+    ) : project.promo ? (
+      /*
+        The film is the first thing a visitor sees, sized to fit the screen
+        whole above the fold with the title just showing beneath it.
+      */
+      <ScrollReveal class="px-6 md:px-10">
+        <PromoVideo
+          base={`/video/projects/${project.slug}/promo-1080`}
+          size="1080"
+          phoneBase={`/video/projects/${project.slug}/promo-720`}
+          label={project.promo.label}
+          soundButton
+          class="mx-auto aspect-video w-full overflow-hidden rounded-3xl bg-black"
+          style="max-width: min(1600px, calc((100svh - 8rem) * 16 / 9))"
+        />
+      </ScrollReveal>
+    ) : (
+      <ScrollReveal>
+        {
+          coverIsTall ? (
+            <div class="mx-auto max-w-[1400px] px-6 md:px-10">
+              <img
+                src={project.thumb}
+                alt={project.thumbAlt}
+                fetchpriority="high"
+                width={thumbSize.width}
+                height={thumbSize.height}
+                class="mx-auto max-h-[80vh] w-auto rounded-3xl object-contain"
+              />
+            </div>
+          ) : coverFitsNatural ? (
             <img
               src={project.thumb}
               alt={project.thumbAlt}
               fetchpriority="high"
               width={thumbSize.width}
               height={thumbSize.height}
-              class="mx-auto max-h-[80vh] w-auto rounded-3xl object-contain"
+              class="mx-auto w-full"
+              style={`max-width: ${thumbSize.width}px`}
             />
-          </div>
-        ) : coverFitsNatural ? (
-          <img
-            src={project.thumb}
-            alt={project.thumbAlt}
-            fetchpriority="high"
-            width={thumbSize.width}
-            height={thumbSize.height}
-            class="mx-auto w-full"
-            style={`max-width: ${thumbSize.width}px`}
-          />
-        ) : (
-          <img
-            src={project.thumb}
-            alt={project.thumbAlt}
-            fetchpriority="high"
-            width={thumbSize.width}
-            height={thumbSize.height}
-            class="mx-auto aspect-[16/9] w-full object-cover"
-            style={coverBleeds ? undefined : `max-width: ${thumbSize.width}px`}
-          />
-        )
-      }
-    </ScrollReveal>
+          ) : (
+            <img
+              src={project.thumb}
+              alt={project.thumbAlt}
+              fetchpriority="high"
+              width={thumbSize.width}
+              height={thumbSize.height}
+              class="mx-auto aspect-[16/9] w-full object-cover"
+              style={coverBleeds ? undefined : `max-width: ${thumbSize.width}px`}
+            />
+          )
+        }
+      </ScrollReveal>
+    )}
 
     <div class="mx-auto max-w-[1400px] px-6 md:px-10">
       <div class="mt-10 grid gap-10 md:grid-cols-[1fr_auto] md:items-start">

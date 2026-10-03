@@ -26,6 +26,14 @@ export type Project = {
   links: { label: string; href: string }[];
   galleryCount: number;
   overview?: ProjectOverview;
+  /**
+   * A promo film takes the cover's place on the landing row and at the top of
+   * the case study. Files live at /video/projects/<slug>/promo-1080 and
+   * promo-720 (.hevc.mp4 and .mp4), the poster at /img/projects/<slug>/.
+   * The row opens on `cardStart`, the film's strongest frame, because the
+   * films begin on title slides too small to read at row size.
+   */
+  promo?: { label: string; cardStart: number };
 };
 
 export const projects: Project[] = [
@@ -45,6 +53,7 @@ export const projects: Project[] = [
       { label: "mahavitaran.featurephone", href: "https://featurephonemahavitaran.figma.site" },
       { label: "mahavitaran.atm", href: "https://atmmahavitaran.figma.site" },
     ],
+    promo: { label: "Mahavitaran promo film", cardStart: 15.5 },
     galleryCount: 15,
     overview: {
       brief: "Make Maharashtra's electricity services simple for every consumer.",
@@ -67,6 +76,7 @@ export const projects: Project[] = [
     live: false,
     links: [],
     galleryCount: 20,
+    promo: { label: "DRIVE promo film", cardStart: 8.5 },
     overview: {
       brief: "Give visually impaired people the experience of driving.",
       problem: "How might visually impaired people experience driving in an autonomous future?",
@@ -87,6 +97,7 @@ export const projects: Project[] = [
     live: true,
     links: [{ label: "aria.fitness", href: "https://dhruvbelekar.github.io/aria-fitness/" }],
     galleryCount: 16,
+    promo: { label: "ARIA promo film", cardStart: 11.2 },
     overview: {
       brief: "An AI fitness companion people actually keep using.",
       problem: "How might fitness adapt to each person's time, motivation and level?",

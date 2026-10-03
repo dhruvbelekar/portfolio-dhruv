@@ -1,0 +1,224 @@
+---
+/*
+  A project's promo film, standing where its cover picture used to: on the
+  landing page row and at the top of the case study.
+
+  Each film ships twice. HEVC carries the same picture as H.264 in about three
+  quarters of the bytes, so browsers that decode it take that file and the rest
+  fall through to the H.264 one. The codec strings are read off the encoded
+  files' hvcC boxes; a bare "hvc1" makes Chrome answer that it cannot play it.
+
+  It plays muted, as browsers insist, and the sound fades in while the pointer
+  rests on it. A page has to have been clicked or tapped once before a browser
+  allows sound, so until then the film carries on silently instead.
+*/
+interface Props {
+  /** Path without extension, e.g. /video/projects/drive/promo-1080 */
+  base: string;
+  size: "1080" | "720";
+  /** A 720p cut served to phones instead, where it looks the same for half the data. */
+  phoneBase?: string;
+  label: string;
+  poster?: string;
+  /** Second to open on. The loop still runs the whole film. */
+  start?: number;
+  /** Hold the file back until the film is near the viewport. */
+  lazy?: boolean;
+  soundButton?: boolean;
+  class?: string;
+  style?: string;
+  videoClass?: string;
+}
+
+const {
+  base,
+  size,
+  phoneBase,
+  label,
+  poster,
+  start,
+  lazy = false,
+  soundButton = false,
+  class: className = "",
+  style,
+  videoClass = "",
+} = Astro.props;
+
+const fragment = start ? `#t=${start}` : "";
+const hevc = { "1080": "hvc1.1.6.L120.B0", "720": "hvc1.1.6.L93.B0" };
+const pair = (path: string, level: keyof typeof hevc, media?: string) => [
+  { src: `${path}.hevc.mp4${fragment}`, type: `video/mp4; codecs="${hevc[level]}"`, media },
+  { src: `${path}.mp4${fragment}`, type: "video/mp4", media },
+];
+const sources = [
+  ...(phoneBase ? pair(phoneBase, "720", "(max-width: 767px)") : []),
+  ...pair(base, size),
+];
+---
+
+<div class:list={["relative", className]} style={style} data-promo>
+  <video
+    muted
+    loop
+    playsinline
+    autoplay={!lazy}
+    preload={lazy ? "none" : "auto"}
+    poster={poster}
+    aria-label={label}
+    class:list={["block h-full w-full object-cover", videoClass]}
+  >
+    {
+      sources.map((s) =>
+        lazy ? (
+          <source data-src={s.src} type={s.type} media={s.media} />
+        ) : (
+          <source src={s.src} type={s.type} media={s.media} />
+        )
+      )
+    }
+  </video>
+  {
+    soundButton && (
+      <button
+        type="button"
+        data-promo-sound
+        aria-pressed="false"
+        class="absolute bottom-4 right-4 flex items-center gap-2 rounded-full bg-black/55 px-4 py-2 text-xs font-bold text-white backdrop-blur-md transition-colors duration-300 hover:bg-black/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:bottom-6 sm:right-6"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          class="h-4 w-4"
+        >
+          <path d="M11 5 6 9H3v6h3l5 4V5Z" />
+          <path data-icon-off d="m16 9 5 6M21 9l-5 6" />
+          <path data-icon-on class="hidden" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" />
+        </svg>
+        <span data-sound-label>Play sound</span>
+      </button>
+    )
+  }
+</div>
+
+<script>
+  const FADE_MS = 450;
+
+  document.querySelectorAll<HTMLElement>("[data-promo]").forEach((box) => {
+    const video = box.querySelector("video")!;
+    const button = box.querySelector<HTMLButtonElement>("[data-promo-sound]");
+    let hovering = false;
+    // Once the button has been used it alone decides; otherwise clicking Mute
+    // while the pointer sits on the film would be overruled by the hover.
+    let chosen: boolean | null = null;
+    let frame = 0;
+    let settle = 0;
+
+    const fadeTo = (target: number) => {
+      cancelAnimationFrame(frame);
+      clearTimeout(settle);
+      if (target > 0 && video.muted) {
+        video.volume = 0;
+        video.muted = false;
+        video.play().catch(() => {
+          video.muted = true;
+          video.play().catch(() => {});
+        });
+      }
+      const from = video.volume;
+      const begun = performance.now();
+      const finish = () => {
+        cancelAnimationFrame(frame);
+        video.volume = target;
+        if (target === 0) video.muted = true;
+      };
+      const step = (now: number) => {
+        const k = Math.min((now - begun) / FADE_MS, 1);
+        video.volume = from + (target - from) * k;
+        if (k < 1) frame = requestAnimationFrame(step);
+        else finish();
+      };
+      frame = requestAnimationFrame(step);
+      // Animation frames stop in a background tab; a fade caught there would
+      // hang halfway, so a timer lands it regardless.
+      settle = window.setTimeout(finish, FADE_MS + 100);
+    };
+    const update = () => fadeTo((chosen ?? hovering) ? 1 : 0);
+
+    box.addEventListener("pointerenter", (e) => {
+      if (e.pointerType !== "mouse") return;
+      hovering = true;
+      update();
+    });
+    box.addEventListener("pointerleave", (e) => {
+      if (e.pointerType !== "mouse") return;
+      hovering = false;
+      update();
+    });
+
+    if (button) {
+      const label = button.querySelector("[data-sound-label]")!;
+      const iconOn = button.querySelector("[data-icon-on]")!;
+      const iconOff = button.querySelector("[data-icon-off]")!;
+      const show = () => {
+        const audible = !video.muted;
+        button.setAttribute("aria-pressed", String(audible));
+        label.textContent = audible ? "Mute" : "Play sound";
+        iconOn.classList.toggle("hidden", !audible);
+        iconOff.classList.toggle("hidden", audible);
+      };
+      video.addEventListener("volumechange", show);
+      button.addEventListener("click", () => {
+        chosen = video.muted;
+        // A click is the gesture browsers wait for, so this always gets sound,
+        // and it also starts a film whose autoplay was blocked.
+        if (chosen) {
+          video.muted = false;
+          video.volume = 1;
+          video.play().catch(() => {});
+        }
+        update();
+      });
+    }
+
+    let visible = false;
+    const load = () => {
+      const sources = video.querySelectorAll<HTMLSourceElement>("source[data-src]");
+      if (!sources.length) return;
+      sources.forEach((s) => {
+        s.src = s.dataset.src!;
+        s.removeAttribute("data-src");
+      });
+      // load() cancels a play() that was waiting on sources, so ask again.
+      video.load();
+      if (visible) video.play().catch(() => {});
+    };
+
+    if (!("IntersectionObserver" in window)) {
+      visible = true;
+      load();
+      return;
+    }
+    new IntersectionObserver(
+      (entries, io) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          load();
+          io.disconnect();
+        }
+      },
+      { rootMargin: "600px 0px" }
+    ).observe(video);
+    // Off screen the film holds its frame rather than decoding for nobody.
+    new IntersectionObserver((entries) =>
+      entries.forEach((e) => {
+        visible = e.isIntersecting;
+        if (visible) video.play().catch(() => {});
+        else if (!video.paused) video.pause();
+      })
+    ).observe(video);
+  });
+</script>

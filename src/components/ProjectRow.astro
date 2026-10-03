@@ -1,6 +1,8 @@
 ---
 import path from "node:path";
 import sharp from "sharp";
+import PromoVideo from "./PromoVideo.astro";
+import type { Project } from "../data/projects";
 
 interface Props {
   slug: string;
@@ -11,9 +13,10 @@ interface Props {
   description: string;
   timeline?: string;
   index: number;
+  promo?: Project["promo"];
 }
 
-const { slug, title, category, image, alt, description, timeline, index } = Astro.props;
+const { slug, title, category, image, alt, description, timeline, index, promo } = Astro.props;
 const { width, height } = await sharp(path.join(process.cwd(), "public", image)).metadata();
 // Passion Project's poster and Frelo's circular badge both lose their top and
 // bottom to the shared 4:3 crop, so they are fitted whole. Every other cover
@@ -32,17 +35,35 @@ const fitWhole = slug === "passion-project" || slug === "frelo";
     class="pointer-events-none absolute -inset-x-4 inset-y-4 rounded-2xl ring-1 ring-blue/0 transition-[box-shadow] duration-500 ease-out group-hover:ring-blue/70 group-focus-visible:ring-blue/70 md:-inset-x-6 lg:inset-y-6"
   ></span>
   <div class="grid items-center gap-7 md:grid-cols-[1.15fr_1fr] md:gap-12 lg:gap-20">
-    <div class="overflow-hidden rounded-2xl">
-      <img
-        src={image}
-        alt={alt}
-        width={width}
-        height={height}
-        loading="lazy"
-        decoding="async"
-        class={`aspect-[4/3] w-full transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] group-focus-visible:scale-[1.05] ${fitWhole ? "object-contain" : "object-cover"}`}
-      />
-    </div>
+    {/* A promo keeps its own 16:9: the 4:3 crop would cut the titles that sit
+        near the frame's left edge. The row's film is the 720p cut, which is
+        already sharp at this width and half the bytes of the 1080p one. */}
+    {
+      promo ? (
+        <PromoVideo
+          base={`/video/projects/${slug}/promo-720`}
+          size="720"
+          label={promo.label}
+          poster={`/img/projects/${slug}/promo-poster.webp`}
+          start={promo.cardStart}
+          lazy
+          class="aspect-video overflow-hidden rounded-2xl bg-black"
+          videoClass="transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] group-focus-visible:scale-[1.05]"
+        />
+      ) : (
+        <div class="overflow-hidden rounded-2xl">
+          <img
+            src={image}
+            alt={alt}
+            width={width}
+            height={height}
+            loading="lazy"
+            decoding="async"
+            class={`aspect-[4/3] w-full transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] group-focus-visible:scale-[1.05] ${fitWhole ? "object-contain" : "object-cover"}`}
+          />
+        </div>
+      )
+    }
 
     <div>
       <div class="flex items-baseline gap-4">
