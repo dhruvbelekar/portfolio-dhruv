@@ -14,6 +14,8 @@ const { projects } = Astro.props;
 // what lets it run forward forever instead of rewinding.
 const CLONES = 2;
 const slides = [...projects, ...projects.slice(0, CLONES)];
+// Each cover in a cycle holds for this long, matching the project rows.
+const CYCLE_HOLD = 2.6;
 ---
 
 <div data-highlights class="relative mx-auto max-w-[880px]">
@@ -34,7 +36,12 @@ const slides = [...projects, ...projects.slice(0, CLONES)];
               inert={clone}
             >
               <a href={`/projects-detail/${p.slug}`} class="group block focus:outline-none" draggable="false">
-                <div class="overflow-hidden rounded-2xl bg-black ring-blue/0 ring-offset-2 transition-[box-shadow] duration-300 group-focus-visible:ring-2 group-focus-visible:ring-blue">
+                <div
+                  class:list={[
+                    "overflow-hidden rounded-2xl ring-blue/0 ring-offset-2 transition-[box-shadow] duration-300 group-focus-visible:ring-2 group-focus-visible:ring-blue",
+                    p.promo ? "bg-black" : "bg-white shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]",
+                  ]}
+                >
                   {p.promo ? (
                     <PromoVideo
                       base={`/video/projects/${p.slug}/promo-720`}
@@ -47,13 +54,32 @@ const slides = [...projects, ...projects.slice(0, CLONES)];
                       class="aspect-video"
                       videoClass="pointer-events-none transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
                     />
+                  ) : p.thumbCycle ? (
+                    // Round badges on white, so they are fitted whole rather
+                    // than cropped to the card, and run through the cities the
+                    // way the project's row does.
+                    <div
+                      class="relative aspect-video transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                      style={`--cycle-length: ${p.thumbCycle.length * CYCLE_HOLD}s`}
+                    >
+                      {p.thumbCycle.map((src, j) => (
+                        <img
+                          src={src}
+                          alt={j === 0 ? p.thumbAlt : ""}
+                          loading="lazy"
+                          decoding="async"
+                          class="highlight-cycle absolute inset-0 h-full w-full object-contain p-4"
+                          style={`animation-delay: ${j * CYCLE_HOLD}s; ${j === 0 ? "" : "opacity: 0;"}`}
+                        />
+                      ))}
+                    </div>
                   ) : (
                     <img
                       src={p.thumb}
                       alt={p.thumbAlt}
                       loading="lazy"
                       decoding="async"
-                      class="aspect-video w-full object-cover"
+                      class="aspect-video w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
                     />
                   )}
                 </div>
@@ -140,6 +166,29 @@ const slides = [...projects, ...projects.slice(0, CLONES)];
   }
   .highlight-arrow:active {
     transform: translateY(-50%) scale(0.92);
+  }
+
+  /* The same fade as the project rows: each cover fades in over the last,
+     holds, and fades out as the next arrives. */
+  .highlight-cycle {
+    animation: highlight-cycle var(--cycle-length) linear infinite;
+  }
+  @keyframes highlight-cycle {
+    0% {
+      opacity: 0;
+      transform: scale(1.02);
+    }
+    4% {
+      opacity: 1;
+    }
+    20% {
+      opacity: 1;
+    }
+    24%,
+    100% {
+      opacity: 0;
+      transform: scale(1);
+    }
   }
 
   .highlight-dot {

@@ -14,10 +14,10 @@ import ClientLogos from "../components/ClientLogos.astro";
 import TestimonialsSection from "../components/TestimonialsSection.astro";
 import { projects, filterCategories } from "../data/projects";
 
-// The landing page leads with these few; the full list waits behind a button.
-const highlights = ["mahavitaran", "drive", "aria", "ai-film"].map(
-  (slug) => projects.find((p) => p.slug === slug)!
-);
+// The landing page leads with these few; the rest wait behind a button.
+const highlightSlugs = ["mahavitaran", "drive", "frelo", "mp4"];
+const highlights = highlightSlugs.map((slug) => projects.find((p) => p.slug === slug)!);
+const moreProjects = projects.filter((p) => !highlightSlugs.includes(p.slug));
 ---
 
 <Layout>
@@ -137,7 +137,7 @@ const highlights = ["mahavitaran", "drive", "aria", "ai-film"].map(
         data-projects-section
       >
         {
-          projects.map((p, i) => (
+          moreProjects.map((p, i) => (
             <div data-project-category={p.filterCategory}>
               <ScrollReveal delay={0.05} y={40}>
                 <ProjectRow
