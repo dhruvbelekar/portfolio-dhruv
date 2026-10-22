@@ -1,6 +1,18 @@
 ---
 ---
 
+{/*
+  The greeting plays once a visit. Coming back from a case study used to replay
+  all four seconds of it with the page locked, every time. This runs before the
+  loader is painted, so a returning visitor never sees it flash up either.
+*/}
+<script is:inline>
+  try {
+    if (sessionStorage.getItem("intro-seen")) {
+      document.documentElement.classList.add("intro-seen");
+    }
+  } catch {}
+</script>
 <div id="intro-loader" class="intro-loader" aria-hidden="true">
   <div class="intro-panel"></div>
   <div class="intro-panel"></div>
@@ -155,6 +167,9 @@
       display: none !important;
     }
   }
+  :global(.intro-seen) .intro-loader {
+    display: none !important;
+  }
 </style>
 
 <script>
@@ -166,7 +181,9 @@
     const logoEl = document.getElementById("intro-logo");
     if (!loader || !textEl) return;
 
-    const skipIntro = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const skipIntro =
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      document.documentElement.classList.contains("intro-seen");
 
     if (skipIntro) {
       loader.remove();
@@ -174,6 +191,9 @@
     }
 
     document.body.style.overflow = "hidden";
+    try {
+      sessionStorage.setItem("intro-seen", "1");
+    } catch {}
 
     /*
       The hero reveal is driven from here rather than from the page, because
