@@ -190,8 +190,23 @@ const moreProjects = projects.filter((p) => !highlightSlugs.includes(p.slug));
       the page, past the experience timeline, hardly anyone did. */}
   <TestimonialsSection />
 
-  <!-- About preview -->
-  <section class="px-6 pt-[var(--space-section)] md:px-10">
+  {/*
+    Straight after the testimonials: what the work is made with, then where
+    it was made, before the longer introduction.
+  */}
+  <TechStackSection />
+
+  {/*
+    Full bleed and outside the usual shell: the section pins itself and runs a
+    track the width of the window, which a 1400px column with padding would
+    crop. The reveal wrapper goes too — the milestones arrive on their own as
+    the track brings them in.
+  */}
+  <ExperienceSection />
+
+  <!-- About preview. No top padding: the experience section above already
+       ends on a full section gap. -->
+  <section class="px-6 md:px-10">
     <div class="mx-auto max-w-[1400px]">
       <ScrollReveal>
         <h2
@@ -244,20 +259,6 @@ const moreProjects = projects.filter((p) => !highlightSlugs.includes(p.slug));
     They stand still now, and each one has a picture.
   */}
   <ServicesSection />
-
-  {/*
-    Straight after the services, because it answers the question the list of
-    them raises: what any of it is actually made with.
-  */}
-  <TechStackSection />
-
-  {/*
-    Full bleed and outside the usual shell: the section pins itself and runs a
-    track the width of the window, which a 1400px column with padding would
-    crop. The reveal wrapper goes too — the milestones arrive on their own as
-    the track brings them in.
-  */}
-  <ExperienceSection />
 </Layout>
 
 <script>
