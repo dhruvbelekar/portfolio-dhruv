@@ -186,6 +186,10 @@ const moreProjects = projects.filter((p) => !highlightSlugs.includes(p.slug));
     sectionSelector="[data-projects-section]"
   />
 
+  {/* Straight after the work, where people actually reach it; at the foot of
+      the page, past the experience timeline, hardly anyone did. */}
+  <TestimonialsSection />
+
   <!-- About preview -->
   <section class="px-6 pt-[var(--space-section)] md:px-10">
     <div class="mx-auto max-w-[1400px]">
@@ -254,8 +258,6 @@ const moreProjects = projects.filter((p) => !highlightSlugs.includes(p.slug));
     the track brings them in.
   */}
   <ExperienceSection />
-
-  <TestimonialsSection />
 </Layout>
 
 <script>
