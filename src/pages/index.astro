@@ -4,6 +4,7 @@ import IntroLoader from "../components/IntroLoader.astro";
 import ScrollReveal from "../components/ScrollReveal.astro";
 import ProjectRow from "../components/ProjectRow.astro";
 import ProjectFilterNav from "../components/ProjectFilterNav.astro";
+import HighlightsCarousel from "../components/HighlightsCarousel.astro";
 import BioCopy from "../components/BioCopy.astro";
 import MagicText from "../components/MagicText.astro";
 import ExperienceSection from "../components/ExperienceSection.astro";
@@ -12,6 +13,11 @@ import TechStackSection from "../components/TechStackSection.astro";
 import ClientLogos from "../components/ClientLogos.astro";
 import TestimonialsSection from "../components/TestimonialsSection.astro";
 import { projects, filterCategories } from "../data/projects";
+
+// The landing page leads with these few; the full list waits behind a button.
+const highlights = ["mahavitaran", "drive", "aria", "ai-film"].map(
+  (slug) => projects.find((p) => p.slug === slug)!
+);
 ---
 
 <Layout>
@@ -80,11 +86,10 @@ import { projects, filterCategories } from "../data/projects";
     <ClientLogos class="-mx-6 mb-6" />
   </section>
 
-  <!-- Projects -->
+  <!-- Highlights, with the full project list folded away beneath them -->
   <section
     id="projects"
     class="scroll-mt-24 px-6 pt-[var(--space-section)] md:px-10 sm:scroll-mt-28"
-    data-projects-section
   >
     <div class="mx-auto max-w-[1400px]">
       <ScrollReveal>
@@ -92,11 +97,45 @@ import { projects, filterCategories } from "../data/projects";
           class="select-none text-center font-black leading-[0.9] text-blue"
           style="font-family: var(--font-display); font-size: var(--type-section);"
         >
-          Projects
+          Highlights
         </h2>
+        <p class="mt-4 text-center text-base text-ink-muted">A few projects I'm proud of.</p>
       </ScrollReveal>
 
-      <div class="mt-12 pb-24">
+      <ScrollReveal delay={0.05} y={40} class="mt-12">
+        <HighlightsCarousel projects={highlights} />
+      </ScrollReveal>
+
+      <div class="mt-12 flex justify-center">
+        <button
+          type="button"
+          data-more-projects
+          aria-expanded="false"
+          aria-controls="all-projects"
+          class="group flex items-center gap-2 rounded-full border border-blue/30 px-6 py-3 text-sm font-bold text-blue transition-[background-color,border-color,color] duration-300 ease-out hover:border-blue hover:bg-blue hover:text-white"
+        >
+          <span data-more-label>View more projects</span>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            class="h-4 w-4 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-aria-expanded:rotate-180"
+          >
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </button>
+      </div>
+
+      <div
+        id="all-projects"
+        hidden
+        class="mt-12 scroll-mt-24 pb-24 sm:scroll-mt-28"
+        data-projects-section
+      >
         {
           projects.map((p, i) => (
             <div data-project-category={p.filterCategory}>
@@ -120,6 +159,26 @@ import { projects, filterCategories } from "../data/projects";
       </div>
     </div>
   </section>
+
+  <script>
+    const button = document.querySelector<HTMLButtonElement>("[data-more-projects]");
+    const list = document.getElementById("all-projects");
+    const label = button?.querySelector("[data-more-label]");
+
+    button?.addEventListener("click", () => {
+      if (!list || !label) return;
+      const open = list.hidden;
+      list.hidden = !open;
+      button.setAttribute("aria-expanded", String(open));
+      label.textContent = open ? "Show fewer projects" : "View more projects";
+      // The list folding away from under someone halfway down it would drop
+      // them somewhere unrelated, so they are brought back to the button.
+      if (!open) button.scrollIntoView({ block: "center" });
+      // The filter bar decides whether to show itself on scroll; this nudges
+      // it to look again now the list has appeared or gone.
+      window.dispatchEvent(new Event("scroll"));
+    });
+  </script>
 
   <ProjectFilterNav
     categories={filterCategories}

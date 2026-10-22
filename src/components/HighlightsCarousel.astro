@@ -1,0 +1,303 @@
+---
+import PromoVideo from "./PromoVideo.astro";
+import type { Project } from "../data/projects";
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+
+// The first two slides are repeated at the end of the strip. Two is the most
+// that are ever on screen at once, so when the strip slides onto the copies it
+// looks exactly like the start, and it can jump back there unseen. That is
+// what lets it run forward forever instead of rewinding.
+const CLONES = 2;
+const slides = [...projects, ...projects.slice(0, CLONES)];
+---
+
+<div data-highlights class="relative mx-auto max-w-[880px]">
+  <div class="overflow-hidden rounded-2xl" data-highlights-viewport>
+    <div
+      data-highlights-track
+      class="flex gap-4 will-change-transform sm:gap-5"
+      style="touch-action: pan-y"
+    >
+      {
+        slides.map((p, i) => {
+          const clone = i >= projects.length;
+          return (
+            <div
+              data-highlights-slide
+              class="highlight-slide shrink-0"
+              aria-hidden={clone ? "true" : undefined}
+              inert={clone}
+            >
+              <a href={`/projects-detail/${p.slug}`} class="group block focus:outline-none" draggable="false">
+                <div class="overflow-hidden rounded-2xl bg-black ring-blue/0 ring-offset-2 transition-[box-shadow] duration-300 group-focus-visible:ring-2 group-focus-visible:ring-blue">
+                  {p.promo ? (
+                    <PromoVideo
+                      base={`/video/projects/${p.slug}/promo-720`}
+                      size="720"
+                      label={p.promo.label}
+                      poster={`/img/projects/${p.slug}/promo-poster.webp`}
+                      start={p.promo.cardStart}
+                      hevcCut={!p.promo.single}
+                      lazy
+                      class="aspect-video"
+                      videoClass="pointer-events-none transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                    />
+                  ) : (
+                    <img
+                      src={p.thumb}
+                      alt={p.thumbAlt}
+                      loading="lazy"
+                      decoding="async"
+                      class="aspect-video w-full object-cover"
+                    />
+                  )}
+                </div>
+                <div class="mt-3 flex items-baseline justify-between gap-4 px-1">
+                  <span class="text-base font-bold text-ink transition-colors duration-300 group-hover:text-blue">
+                    {p.title}
+                  </span>
+                  <span class="text-xs font-bold tracking-wide text-ink-muted">{p.category}</span>
+                </div>
+              </a>
+            </div>
+          );
+        })
+      }
+    </div>
+  </div>
+
+  {/* Outside the strip on wide screens, the way the reference sits its
+      chevrons; on a phone the strip is swiped instead and they would only
+      crowd it. */}
+  <button
+    type="button"
+    data-highlights-prev
+    aria-label="Previous project"
+    class="highlight-arrow absolute -left-14 top-[calc(50%-1.25rem)] hidden -translate-y-1/2 md:flex"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5">
+      <path d="m15 18-6-6 6-6" />
+    </svg>
+  </button>
+  <button
+    type="button"
+    data-highlights-next
+    aria-label="Next project"
+    class="highlight-arrow absolute -right-14 top-[calc(50%-1.25rem)] hidden -translate-y-1/2 md:flex"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5">
+      <path d="m9 18 6-6-6-6" />
+    </svg>
+  </button>
+
+  <div class="mt-6 flex justify-center gap-2" data-highlights-dots>
+    {
+      projects.map((p, i) => (
+        <button
+          type="button"
+          data-highlights-dot={i}
+          aria-label={`Show ${p.title}`}
+          aria-current={i === 0 ? "true" : undefined}
+          class="highlight-dot h-2 rounded-full bg-blue/20 transition-[width,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        ></button>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .highlight-slide {
+    /* One card on a phone, two side by side from tablets up. */
+    --per-view: 1;
+    --gap: 1rem;
+    flex-basis: calc((100% - var(--gap) * (var(--per-view) - 1)) / var(--per-view));
+  }
+  @media (min-width: 640px) {
+    .highlight-slide {
+      --per-view: 2;
+      --gap: 1.25rem;
+    }
+  }
+
+  .highlight-arrow {
+    height: 2.5rem;
+    width: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    color: var(--color-blue);
+    transition:
+      background-color 0.3s ease,
+      transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .highlight-arrow:hover {
+    background-color: color-mix(in srgb, var(--color-blue) 8%, transparent);
+  }
+  .highlight-arrow:active {
+    transform: translateY(-50%) scale(0.92);
+  }
+
+  .highlight-dot {
+    width: 0.5rem;
+  }
+  .highlight-dot[aria-current="true"] {
+    width: 1.5rem;
+    background-color: var(--color-blue);
+  }
+</style>
+
+<script>
+  // How long each pair of cards holds before the strip moves on, and how long
+  // the move takes.
+  const HOLD = 4200;
+  const SLIDE = 700;
+  const CLONES = 2;
+
+  document.querySelectorAll<HTMLElement>("[data-highlights]").forEach((root) => {
+    const track = root.querySelector<HTMLElement>("[data-highlights-track]")!;
+    const slides = [...root.querySelectorAll<HTMLElement>("[data-highlights-slide]")];
+    const dots = [...root.querySelectorAll<HTMLButtonElement>("[data-highlights-dot]")];
+    const count = slides.length - CLONES;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    let index = 0;
+    let timer = 0;
+    let settle = 0;
+    let hovering = false;
+    let onScreen = false;
+
+    const place = (animate: boolean) => {
+      track.style.transition =
+        animate && !reduced.matches ? `transform ${SLIDE}ms cubic-bezier(0.65, 0, 0.35, 1)` : "none";
+      track.style.transform = `translate3d(${-slides[index].offsetLeft}px, 0, 0)`;
+      const active = index % count;
+      dots.forEach((dot, i) =>
+        i === active ? dot.setAttribute("aria-current", "true") : dot.removeAttribute("aria-current")
+      );
+    };
+
+    // Once the strip has slid onto the copies, it is put back on the real
+    // slides they copy, with no transition, so the next move starts from there.
+    const normalise = () => {
+      if (index < count) return;
+      index -= count;
+      place(false);
+    };
+
+    const goTo = (target: number) => {
+      clearTimeout(settle);
+      if (target < 0) {
+        // Stepping back from the first card: stand on its copy first, unseen,
+        // so there is a card to slide back onto.
+        index = count;
+        place(false);
+        void track.offsetWidth;
+        target = count - 1;
+      }
+      index = target;
+      place(true);
+      // A timer rather than transitionend, which never fires in a background
+      // tab and would leave the strip parked on the copies.
+      settle = window.setTimeout(normalise, SLIDE + 40);
+    };
+
+    const stop = () => {
+      clearTimeout(timer);
+      timer = 0;
+    };
+    const schedule = () => {
+      stop();
+      if (reduced.matches || hovering || !onScreen || document.hidden) return;
+      timer = window.setTimeout(() => {
+        goTo(index + 1);
+        schedule();
+      }, HOLD);
+    };
+
+    root.querySelector("[data-highlights-next]")?.addEventListener("click", () => {
+      goTo(index + 1);
+      schedule();
+    });
+    root.querySelector("[data-highlights-prev]")?.addEventListener("click", () => {
+      goTo(index - 1);
+      schedule();
+    });
+    dots.forEach((dot, i) =>
+      dot.addEventListener("click", () => {
+        goTo(i);
+        schedule();
+      })
+    );
+
+    // Holds still under the pointer, so a card someone is reading does not
+    // slide away from them.
+    root.addEventListener("pointerenter", (e) => {
+      if (e.pointerType !== "mouse") return;
+      hovering = true;
+      stop();
+    });
+    root.addEventListener("pointerleave", (e) => {
+      if (e.pointerType !== "mouse") return;
+      hovering = false;
+      schedule();
+    });
+
+    // Tabbing onto a card that is off to the side brings it into view.
+    slides.slice(0, count).forEach((slide, i) =>
+      slide.addEventListener("focusin", () => {
+        const visible = window.matchMedia("(min-width: 640px)").matches ? 2 : 1;
+        if (i < index || i >= index + visible) goTo(i);
+        stop();
+      })
+    );
+
+    // A swipe on touch screens. Vertical drags are left to the page.
+    let startX = 0;
+    let startY = 0;
+    let swiping = false;
+    let swiped = false;
+    track.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "mouse") return;
+      startX = e.clientX;
+      startY = e.clientY;
+      swiping = true;
+      swiped = false;
+    });
+    track.addEventListener("pointerup", (e) => {
+      if (!swiping) return;
+      swiping = false;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(e.clientY - startY)) return;
+      swiped = true;
+      goTo(dx < 0 ? index + 1 : index - 1);
+      schedule();
+    });
+    track.addEventListener("pointercancel", () => (swiping = false));
+    // The finger lifting at the end of a swipe would otherwise also count as a
+    // tap on whichever card it lifted over, and open it.
+    track.addEventListener(
+      "click",
+      (e) => {
+        if (!swiped) return;
+        swiped = false;
+        e.preventDefault();
+      },
+      true
+    );
+
+    new IntersectionObserver((entries) => {
+      onScreen = entries.some((e) => e.isIntersecting);
+      onScreen ? schedule() : stop();
+    }).observe(root);
+    document.addEventListener("visibilitychange", schedule);
+    reduced.addEventListener("change", schedule);
+    window.addEventListener("resize", () => place(false));
+
+    place(false);
+  });
+</script>
