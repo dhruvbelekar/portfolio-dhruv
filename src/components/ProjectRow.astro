@@ -104,46 +104,34 @@ const CYCLE_HOLD = 2.6;
         {title}
       </h3>
 
-      {/* Collapsed to nothing until hover on pointer screens; always open on touch,
-          where there is no hover to reveal it. */}
-      <div
-        class="grid grid-rows-[1fr] transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] md:grid-rows-[0fr] md:group-hover:grid-rows-[1fr] md:group-focus-visible:grid-rows-[1fr]"
-      >
-        <div class="overflow-hidden">
-          <div
-            class="pt-4 opacity-100 transition-opacity duration-500 ease-out md:opacity-0 md:group-hover:opacity-100 md:group-focus-visible:opacity-100"
-          >
-            <p class="max-w-xl text-sm leading-relaxed text-ink-muted">{description}</p>
+      <p class="mt-4 max-w-xl text-sm leading-relaxed text-ink-muted">{description}</p>
 
-            <div class="mt-5 flex flex-wrap items-center gap-x-8 gap-y-3">
-              {
-                timeline && (
-                  <div>
-                    <p class="text-[0.7rem] font-bold tracking-wide text-ink-muted">Timeline</p>
-                    <p class="text-sm font-bold text-ink">{timeline}</p>
-                  </div>
-                )
-              }
-              <span
-                class="flex items-center gap-2 text-sm font-bold text-blue transition-transform duration-300 ease-out group-hover:translate-x-1"
-              >
-                View project
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                  class="h-4 w-4"
-                >
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </span>
+      <div class="mt-5 flex flex-wrap items-center gap-x-8 gap-y-3">
+        {
+          timeline && (
+            <div>
+              <p class="text-[0.7rem] font-bold tracking-wide text-ink-muted">Timeline</p>
+              <p class="text-sm font-bold text-ink">{timeline}</p>
             </div>
-          </div>
-        </div>
+          )
+        }
+        <span
+          class="flex items-center gap-2 text-sm font-bold text-blue transition-transform duration-300 ease-out group-hover:translate-x-1"
+        >
+          View project
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            class="h-4 w-4"
+          >
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </span>
       </div>
     </div>
   </div>
