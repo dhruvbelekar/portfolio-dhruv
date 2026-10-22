@@ -1,12 +1,12 @@
 ---
-import Marquee from "./Marquee.astro";
 import ScrollReveal from "./ScrollReveal.astro";
 import { testimonials } from "../data/projects";
 
-// One row carrying all four quotes. A second row running the other way only
-// showed the same people twice. They are repeated so the track is always
-// wider than the window, which keeps the loop from showing a gap.
-const items = Array(2).fill(testimonials).flat();
+// One quote at a time, in the order they are read: the frame pins while the
+// page scrolls past it, and each stretch of scroll hands the stage to the next
+// person, so every quote gets the whole screen to itself.
+const order = ["Vaishakh Sajeevan", "Ankit Savla", "Rupak Shah", "Nikhil Kulkarni"];
+const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
 ---
 
 <section class="px-6 pt-[var(--space-section)] md:px-10">
@@ -22,30 +22,270 @@ const items = Array(2).fill(testimonials).flat();
   </div>
 </section>
 
-<section class="px-6 pb-16 pt-10 md:px-10">
-  <div class="mx-auto max-w-[1400px]">
-    <Marquee speed={65} gap="1rem" direction="left">
-      {items.map((t, i) => (
-        <div
-          key={i}
-          class="group flex h-[185px] w-[320px] shrink-0 flex-col rounded-2xl p-6 transition-[transform,box-shadow,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 hover:bg-white hover:shadow-[0_18px_40px_rgba(19,67,240,0.10)]"
-        >
-          <div class="flex items-center gap-3">
-            <img
-              src={t.avatar}
-              alt=""
-              class="h-10 w-10 shrink-0 rounded-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110"
-            />
-            <div>
-              <p class="font-bold text-ink transition-colors duration-300 group-hover:text-blue">
-                {t.name}
-              </p>
-              <p class="text-sm text-ink-muted">{t.role}</p>
-            </div>
-          </div>
-          <p class="mt-4 line-clamp-4 text-sm text-ink-muted">{t.quote}</p>
-        </div>
-      ))}
-    </Marquee>
+<section class="tm" data-tm style={`--tm-count: ${quotes.length}`}>
+  <div class="tm-frame">
+    <div class="tm-inner">
+      <div class="tm-people" role="tablist" aria-label="Testimonials">
+        {
+          quotes.map((t, i) => (
+            <button
+              type="button"
+              role="tab"
+              data-tm-person={i}
+              aria-selected={i === 0 ? "true" : "false"}
+              aria-label={t.name}
+              class="tm-person"
+            >
+              <img src={t.avatar} alt="" width="56" height="56" loading="lazy" decoding="async" />
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="tm-stage">
+        {
+          quotes.map((t, i) => (
+            <figure class="tm-quote" data-tm-quote={i} data-state={i === 0 ? "now" : "next"}>
+              <blockquote>
+                <p
+                  class="tm-text"
+                  style="font-family: var(--font-display);"
+                >
+                  “{t.quote}”
+                </p>
+              </blockquote>
+              <figcaption class="tm-who">
+                <span class="tm-name">{t.name}</span>
+                <span class="tm-role">{t.role}</span>
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+
+      <p class="tm-count" aria-hidden="true">
+        <span data-tm-index>01</span> / {String(quotes.length).padStart(2, "0")}
+      </p>
+    </div>
   </div>
 </section>
+
+<style>
+  /*
+    The section is as tall as the scroll the quotes take, and the frame inside
+    it sticks to the window for that whole stretch. Each quote gets about two
+    thirds of a screen of scrolling before the next one takes over.
+  */
+  .tm {
+    position: relative;
+    height: calc(100svh + (var(--tm-count) - 1) * 65svh);
+  }
+
+  .tm-frame {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    display: flex;
+    align-items: center;
+    padding: 6rem 1.5rem 3rem;
+  }
+
+  .tm-inner {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(1.75rem, 4vh, 3rem);
+  }
+
+  .tm-people {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .tm-person {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 9999px;
+    overflow: hidden;
+    opacity: 0.35;
+    filter: grayscale(1);
+    transform: scale(0.82);
+    box-shadow: 0 0 0 0 transparent;
+    transition:
+      opacity 0.5s ease,
+      filter 0.5s ease,
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.5s ease;
+  }
+  .tm-person img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .tm-person:hover {
+    opacity: 0.7;
+  }
+  .tm-person[aria-selected="true"] {
+    opacity: 1;
+    filter: none;
+    transform: scale(1);
+    box-shadow:
+      0 0 0 3px var(--color-paper),
+      0 0 0 5px var(--color-blue);
+  }
+  .tm-person:focus-visible {
+    outline: 2px solid var(--color-blue);
+    outline-offset: 4px;
+  }
+
+  /* Every quote sits in the same cell, so the stage is as tall as the longest
+     and nothing below it jumps when they change. */
+  .tm-stage {
+    display: grid;
+    width: 100%;
+  }
+  .tm-quote {
+    grid-area: 1 / 1;
+    margin: 0;
+    text-align: center;
+    transition:
+      opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* Arrives from below out of a blur, the way the greeting and the name do,
+     and leaves upward the same way. */
+  .tm-quote[data-state="next"] {
+    opacity: 0;
+    transform: translateY(40px);
+    filter: blur(10px);
+    pointer-events: none;
+  }
+  .tm-quote[data-state="past"] {
+    opacity: 0;
+    transform: translateY(-40px);
+    filter: blur(10px);
+    pointer-events: none;
+  }
+
+  .tm-text {
+    color: var(--color-ink);
+    font-weight: 500;
+    font-size: clamp(1.5rem, 1rem + 2.4vw, 3rem);
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .tm-who {
+    margin-top: clamp(1.25rem, 3vh, 2rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .tm-name {
+    font-weight: 700;
+    color: var(--color-blue);
+  }
+  .tm-role {
+    font-size: 0.875rem;
+    color: var(--color-ink-muted);
+  }
+
+  .tm-count {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--color-ink-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* With motion turned down the quotes simply stack, one after another. */
+  @media (prefers-reduced-motion: reduce) {
+    .tm {
+      height: auto;
+    }
+    .tm-frame {
+      position: static;
+      height: auto;
+      padding-top: 3rem;
+    }
+    .tm-people,
+    .tm-count {
+      display: none;
+    }
+    .tm-stage {
+      gap: 4rem;
+    }
+    .tm-quote,
+    .tm-quote[data-state] {
+      grid-area: auto;
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-tm]").forEach((section) => {
+    const quotes = [...section.querySelectorAll<HTMLElement>("[data-tm-quote]")];
+    const people = [...section.querySelectorAll<HTMLButtonElement>("[data-tm-person]")];
+    const counter = section.querySelector("[data-tm-index]");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const count = quotes.length;
+    let active = -1;
+
+    const show = (index: number) => {
+      if (index === active) return;
+      active = index;
+      quotes.forEach((q, i) => {
+        q.dataset.state = i === index ? "now" : i < index ? "past" : "next";
+        q.setAttribute("aria-hidden", i === index ? "false" : "true");
+      });
+      people.forEach((p, i) => p.setAttribute("aria-selected", i === index ? "true" : "false"));
+      if (counter) counter.textContent = String(index + 1).padStart(2, "0");
+    };
+
+    // How far through its pinned stretch the section is, split into one equal
+    // share per quote.
+    const measure = () => {
+      if (reduced.matches) return;
+      const rect = section.getBoundingClientRect();
+      const travel = rect.height - window.innerHeight;
+      const progress = travel > 0 ? Math.min(Math.max(-rect.top / travel, 0), 0.9999) : 0;
+      show(Math.floor(progress * count));
+    };
+
+    let queued = 0;
+    const onScroll = () => {
+      if (queued) return;
+      queued = requestAnimationFrame(() => {
+        queued = 0;
+        measure();
+      });
+    };
+
+    // Picking a face scrolls to that person's stretch, so the page and the
+    // quote on screen never disagree.
+    people.forEach((person, i) =>
+      person.addEventListener("click", () => {
+        const travel = section.offsetHeight - window.innerHeight;
+        const top = section.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({
+          top: top + ((i + 0.5) / count) * travel,
+          behavior: reduced.matches ? "auto" : "smooth",
+        });
+      })
+    );
+
+    show(0);
+    measure();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+  });
+</script>
