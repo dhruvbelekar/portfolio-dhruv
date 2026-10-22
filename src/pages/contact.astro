@@ -5,11 +5,11 @@ import ScrollReveal from "../components/ScrollReveal.astro";
 // Handles reconciled to match the footer everywhere (see rebuild decisions —
 // the live site's contact page pointed at different handles than its own footer).
 const links = [
-  { label: "Email", value: "dhruv.belekar@gmail.com", href: "mailto:dhruv.belekar@gmail.com" },
-  { label: "Phone", value: "+91 98614 46304", href: "tel:+919861446304" },
-  { label: "Behance", value: "Behance", href: "https://www.behance.net/dhruvbelekar1" },
-  { label: "LinkedIn", value: "LinkedIn", href: "https://www.linkedin.com/in/dhruv-belekar-089636214/" },
-  { label: "Instagram", value: "Instagram", href: "https://www.instagram.com/dhruvv.mp4/?hl=en" },
+  { label: "Email", icon: "/icons/contact/gmail.svg", value: "dhruv.belekar@gmail.com", href: "mailto:dhruv.belekar@gmail.com" },
+  { label: "Phone", icon: "/icons/contact/phone.svg", value: "+91 98614 46304", href: "tel:+919861446304" },
+  { label: "Behance", icon: "/icons/contact/behance.svg", value: "Behance", href: "https://www.behance.net/dhruvbelekar1" },
+  { label: "LinkedIn", icon: "/icons/contact/linkedin.svg", value: "LinkedIn", href: "https://www.linkedin.com/in/dhruv-belekar-089636214/" },
+  { label: "Instagram", icon: "/icons/contact/instagram.svg", value: "Instagram", href: "https://www.instagram.com/dhruvv.mp4/?hl=en" },
 ];
 ---
 
@@ -25,7 +25,13 @@ const links = [
               rel={link.href.startsWith("http") ? "noreferrer" : undefined}
               class="group block"
             >
-              <span class="mb-2 block text-base text-gray">({link.label})</span>
+              <img
+                src={link.icon}
+                alt={link.label === link.value ? "" : link.label}
+                width="40"
+                height="40"
+                class="mb-4 h-10 w-10 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1"
+              />
               <span
                 class="flex items-center gap-3 font-black text-blue transition-colors duration-500 ease-out group-hover:text-ink"
                 style="font-family: var(--font-display); font-size: clamp(1.25rem, 0.75rem + var(--shell) * 0.008, 1.75rem); letter-spacing: -0.03em;"
