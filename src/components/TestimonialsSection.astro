@@ -73,12 +73,13 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
 <style>
   /*
     The section is as tall as the scroll the quotes take, and the frame inside
-    it sticks to the window for that whole stretch. Each quote gets about two
-    thirds of a screen of scrolling before the next one takes over.
+    it sticks to the window for that whole stretch. Each quote gets most of a
+    screen of scrolling: it holds for the middle of that and hands over at the
+    ends.
   */
   .tm {
     position: relative;
-    height: calc(100svh + (var(--tm-count) - 1) * 65svh);
+    height: calc(100svh + (var(--tm-count) - 1) * 85svh);
   }
 
   .tm-frame {
@@ -147,28 +148,22 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
     display: grid;
     width: 100%;
   }
+  /* Moved by the script below in step with the scroll, so there is no
+     transition here to fight it. Opacity and transform only: a blur on type
+     this size has to be repainted every frame, and that was the stutter. */
   .tm-quote {
     grid-area: 1 / 1;
     margin: 0;
     text-align: center;
-    transition:
-      opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-      filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
   }
-  /* Arrives from below out of a blur, the way the greeting and the name do,
-     and leaves upward the same way. */
-  .tm-quote[data-state="next"] {
-    opacity: 0;
-    transform: translateY(40px);
-    filter: blur(10px);
-    pointer-events: none;
-  }
+  .tm-quote[data-state="next"],
   .tm-quote[data-state="past"] {
-    opacity: 0;
-    transform: translateY(-40px);
-    filter: blur(10px);
     pointer-events: none;
+  }
+  /* Before the script runs, only the first quote shows. */
+  .tm-quote:not([data-state="now"]) {
+    opacity: 0;
   }
 
   .tm-text {
@@ -224,14 +219,26 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
     .tm-quote,
     .tm-quote[data-state] {
       grid-area: auto;
-      opacity: 1;
-      transform: none;
-      filter: none;
+      opacity: 1 !important;
+      transform: none !important;
     }
   }
 </style>
 
 <script>
+  // Of each quote's stretch of scroll, the share either side of its middle it
+  // holds perfectly still for, and the share it spends arriving or leaving.
+  const HOLD = 0.18;
+  const FADE = 0.32;
+  // How far a quote travels as it arrives or leaves, in pixels.
+  const LIFT = 56;
+  // The share of the remaining distance covered each frame. The quotes trail
+  // the scroll by a few frames, which turns the steps of a mouse wheel into
+  // one glide.
+  const EASE = 0.14;
+
+  const smooth = (t: number) => t * t * (3 - 2 * t);
+
   document.querySelectorAll<HTMLElement>("[data-tm]").forEach((section) => {
     const quotes = [...section.querySelectorAll<HTMLElement>("[data-tm-quote]")];
     const people = [...section.querySelectorAll<HTMLButtonElement>("[data-tm-person]")];
@@ -240,7 +247,17 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
     const count = quotes.length;
     let active = -1;
 
-    const show = (index: number) => {
+    // How far through its pinned stretch the section is, in quotes: 0 at the
+    // start, `count` at the end.
+    const target = () => {
+      const rect = section.getBoundingClientRect();
+      const travel = rect.height - window.innerHeight;
+      const progress = travel > 0 ? Math.min(Math.max(-rect.top / travel, 0), 1) : 0;
+      return progress * count;
+    };
+    let current = target();
+
+    const mark = (index: number) => {
       if (index === active) return;
       active = index;
       quotes.forEach((q, i) => {
@@ -251,27 +268,37 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
       if (counter) counter.textContent = String(index + 1).padStart(2, "0");
     };
 
-    // How far through its pinned stretch the section is, split into one equal
-    // share per quote.
-    const measure = () => {
-      if (reduced.matches) return;
-      const rect = section.getBoundingClientRect();
-      const travel = rect.height - window.innerHeight;
-      const progress = travel > 0 ? Math.min(Math.max(-rect.top / travel, 0), 0.9999) : 0;
-      show(Math.floor(progress * count));
-    };
-
-    let queued = 0;
-    const onScroll = () => {
-      if (queued) return;
-      queued = requestAnimationFrame(() => {
-        queued = 0;
-        measure();
+    const paint = (pos: number) => {
+      quotes.forEach((q, i) => {
+        // Distance from this quote's middle, in quotes. The first has nothing
+        // to arrive after and the last nothing to leave for, so they hold at
+        // the ends instead.
+        let d = pos - (i + 0.5);
+        if (i === 0 && d < 0) d = 0;
+        if (i === count - 1 && d > 0) d = 0;
+        const away = smooth(Math.min(Math.max((Math.abs(d) - HOLD) / FADE, 0), 1));
+        q.style.opacity = String(1 - away);
+        q.style.transform = `translate3d(0, ${-Math.sign(d) * away * LIFT}px, 0) scale(${1 - away * 0.04})`;
       });
+      mark(Math.min(Math.floor(pos), count - 1));
     };
 
-    // Picking a face scrolls to that person's stretch, so the page and the
-    // quote on screen never disagree.
+    let frame = 0;
+    const tick = () => {
+      frame = 0;
+      const goal = target();
+      current += (goal - current) * EASE;
+      if (Math.abs(goal - current) < 0.001) current = goal;
+      paint(current);
+      if (current !== goal) frame = requestAnimationFrame(tick);
+    };
+    const wake = () => {
+      if (reduced.matches || frame) return;
+      frame = requestAnimationFrame(tick);
+    };
+
+    // Picking a face scrolls to the middle of that person's stretch, so the
+    // page and the quote on screen never disagree.
     people.forEach((person, i) =>
       person.addEventListener("click", () => {
         const travel = section.offsetHeight - window.innerHeight;
@@ -283,9 +310,12 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
       })
     );
 
-    show(0);
-    measure();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    if (reduced.matches) {
+      mark(0);
+      return;
+    }
+    paint(current);
+    window.addEventListener("scroll", wake, { passive: true });
+    window.addEventListener("resize", wake);
   });
 </script>
