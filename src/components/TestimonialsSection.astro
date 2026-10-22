@@ -149,13 +149,13 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
     width: 100%;
   }
   /* Moved by the script below in step with the scroll, so there is no
-     transition here to fight it. Opacity and transform only: a blur on type
-     this size has to be repainted every frame, and that was the stutter. */
+     transition here to fight it. A quote only carries a blur while it is
+     arriving or leaving; at rest it is plain type. */
   .tm-quote {
     grid-area: 1 / 1;
     margin: 0;
     text-align: center;
-    will-change: opacity, transform;
+    will-change: opacity, transform, filter;
   }
   .tm-quote[data-state="next"],
   .tm-quote[data-state="past"] {
@@ -221,6 +221,7 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
       grid-area: auto;
       opacity: 1 !important;
       transform: none !important;
+      filter: none !important;
     }
   }
 </style>
@@ -232,6 +233,8 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
   const FADE = 0.32;
   // How far a quote travels as it arrives or leaves, in pixels.
   const LIFT = 56;
+  // The most blur a quote carries, reached as it fades out completely.
+  const BLUR = 12;
   // The share of the remaining distance covered each frame. The quotes trail
   // the scroll by a few frames, which turns the steps of a mouse wheel into
   // one glide.
@@ -279,6 +282,10 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
         const away = smooth(Math.min(Math.max((Math.abs(d) - HOLD) / FADE, 0), 1));
         q.style.opacity = String(1 - away);
         q.style.transform = `translate3d(0, ${-Math.sign(d) * away * LIFT}px, 0) scale(${1 - away * 0.04})`;
+        // The blur is only there while a quote is on the move, and taken off
+        // the moment it settles, so a quote sitting still costs nothing to
+        // draw. Two at most are ever in motion at once.
+        q.style.filter = away > 0.005 && away < 0.995 ? `blur(${(away * BLUR).toFixed(2)}px)` : "";
       });
       mark(Math.min(Math.floor(pos), count - 1));
     };
