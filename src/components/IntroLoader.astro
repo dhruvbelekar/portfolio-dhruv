@@ -211,6 +211,12 @@
       have landed, so it is held out of the letters it sits above.
     */
     const heroFace = document.querySelector<HTMLElement>("[data-hero-face]");
+    /*
+      On the landing page the name is drawn by the portal rather than set in
+      letters, so it cannot arrive one letter at a time. It comes up out of a
+      blur as one piece, on the beat the letters used to.
+    */
+    const heroPortal = document.querySelector<HTMLElement>("[data-hero-portal]");
     const nameChars = heroName ? splitChars(heroName, "hero-char") : [];
     const copyWords = heroCopy ? splitWords(heroCopy, "hero-word") : [];
 
@@ -235,6 +241,11 @@
       ch.style.willChange = "opacity, transform, filter";
     });
     copyWords.forEach((word) => (word.style.opacity = "0"));
+    if (heroPortal) {
+      heroPortal.style.opacity = "0";
+      heroPortal.style.transform = "translateY(2.5rem)";
+      heroPortal.style.filter = "blur(14px)";
+    }
     if (heroFace) {
       heroFace.style.opacity = "0";
       heroFace.style.transform = "translateY(25%) scale(0.72)";
@@ -255,6 +266,7 @@
     const COPY_DURATION = 380;
     const FACE_DELAY = 1980;
     const FACE_DURATION = 560;
+    const PORTAL_DURATION = 900;
 
     function revealHero() {
       nameChars.forEach((ch, i) => {
@@ -268,6 +280,13 @@
       copyWords.forEach((word, i) => {
         word.style.transition = `opacity ${COPY_DURATION}ms ease ${COPY_DELAY + i * COPY_STEP}ms`;
       });
+
+      if (heroPortal) {
+        heroPortal.style.transition =
+          `opacity ${PORTAL_DURATION}ms ease ${NAME_DELAY}ms, ` +
+          `transform ${PORTAL_DURATION}ms cubic-bezier(0.16, 1, 0.3, 1) ${NAME_DELAY}ms, ` +
+          `filter ${PORTAL_DURATION}ms ease ${NAME_DELAY}ms`;
+      }
 
       // Overshoots a little on the way in, which is the difference between the
       // face landing and the face popping.
@@ -295,6 +314,11 @@
         ch.style.filter = "blur(0)";
       });
       copyWords.forEach((word) => (word.style.opacity = "1"));
+      if (heroPortal) {
+        heroPortal.style.opacity = "1";
+        heroPortal.style.transform = "translateY(0)";
+        heroPortal.style.filter = "blur(0)";
+      }
       if (heroFace) {
         heroFace.style.opacity = "1";
         heroFace.style.transform = "translateY(0) scale(1)";
@@ -314,6 +338,13 @@
           ch.style.willChange = "";
         });
         copyWords.forEach((word) => (word.style.transition = ""));
+        // A transform or filter left on it would hold the pinned frame inside
+        // it, so all three come off.
+        if (heroPortal) {
+          heroPortal.style.transition = "";
+          heroPortal.style.transform = "";
+          heroPortal.style.filter = "";
+        }
         if (heroFace) {
           heroFace.style.transition = "";
           heroFace.style.transform = "";
