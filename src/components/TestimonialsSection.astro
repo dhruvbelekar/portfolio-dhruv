@@ -255,6 +255,33 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
     font-variant-numeric: tabular-nums;
   }
 
+  /*
+    The way in. While the section is coming up the page, the script sets one
+    value per part, 0 to 1, and each part rises into place on its own: the
+    faces first, then the quote out of a blur, the name, the numbers and the
+    counter. Only the quote on stage is touched; the rest are hidden anyway.
+  */
+  .tm[data-entering] .tm-people {
+    opacity: var(--tm-in-people);
+    transform: translate3d(0, calc((1 - var(--tm-in-people)) * 24px), 0);
+  }
+  .tm[data-entering] .tm-quote[data-state="now"] .tm-text {
+    opacity: var(--tm-in-text);
+    transform: translate3d(0, calc((1 - var(--tm-in-text)) * 48px), 0);
+    filter: blur(calc((1 - var(--tm-in-text)) * 12px));
+  }
+  .tm[data-entering] .tm-quote[data-state="now"] .tm-who {
+    opacity: var(--tm-in-who);
+    transform: translate3d(0, calc((1 - var(--tm-in-who)) * 24px), 0);
+  }
+  .tm[data-entering] .tm-quote[data-state="now"] .tm-metrics {
+    opacity: var(--tm-in-metrics);
+    transform: translate3d(0, calc((1 - var(--tm-in-metrics)) * 32px), 0);
+  }
+  .tm[data-entering] .tm-count {
+    opacity: var(--tm-in-count);
+  }
+
   /* With motion turned down the quotes simply stack, one after another. */
   @media (prefers-reduced-motion: reduce) {
     .tm {
@@ -297,6 +324,21 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
   const EASE = 0.14;
   // How long a quote's numbers take to count up once it is on stage.
   const COUNT_MS = 1400;
+  // Where the section's top sits, as a share of the window, when the reveal
+  // starts. It is complete the moment the frame pins.
+  const ENTER_FROM = 0.75;
+  // The reveal in order: faces, quote, name, numbers, counter. Each part
+  // plays across its own share of the way in, overlapping the next, so the
+  // stage fills one piece at a time.
+  const STAGES: [string, number, number][] = [
+    ["--tm-in-people", 0, 0.45],
+    ["--tm-in-text", 0.15, 0.7],
+    ["--tm-in-who", 0.4, 0.85],
+    ["--tm-in-metrics", 0.55, 1],
+    ["--tm-in-count", 0.65, 1],
+  ];
+  // How far in the numbers have to be before they start counting.
+  const COUNT_AT = 0.55;
 
   const smooth = (t: number) => t * t * (3 - 2 * t);
 
@@ -307,7 +349,7 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     const count = quotes.length;
     let active = -1;
-    let inView = false;
+    let showing = false;
 
     // How far through its pinned stretch the section is, in quotes: 0 at the
     // start, `count` at the end.
@@ -318,6 +360,15 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
       return progress * count;
     };
     let current = target();
+
+    // How far the section has come up into the window, from 0 as its top
+    // nears the fold to 1 as it pins.
+    const entry = () => {
+      const top = section.getBoundingClientRect().top;
+      const from = window.innerHeight * ENTER_FROM;
+      return Math.min(Math.max((from - top) / from, 0), 1);
+    };
+    let entered = entry();
 
     // Each time a quote takes the stage its numbers run up from zero, so the
     // result lands as the quote does. The page is served with the final
@@ -352,7 +403,31 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
       });
       people.forEach((p, i) => p.setAttribute("aria-selected", i === index ? "true" : "false"));
       if (counter) counter.textContent = String(index + 1).padStart(2, "0");
-      if (inView) countUp(quotes[index]);
+      if (showing) countUp(quotes[index]);
+    };
+
+    // Played by the scroll, so it runs back the way it came if the reader
+    // scrolls up again. Once the stage is full the attribute comes off and
+    // nothing is held on the type.
+    const reveal = (e: number) => {
+      if (e >= 1) {
+        section.removeAttribute("data-entering");
+      } else {
+        section.setAttribute("data-entering", "");
+        STAGES.forEach(([name, a, b]) =>
+          section.style.setProperty(name, smooth(Math.min(Math.max((e - a) / (b - a), 0), 1)).toFixed(3))
+        );
+      }
+      // The numbers count up as they come into view, and again each time the
+      // section is come back to from above or below.
+      const rect = section.getBoundingClientRect();
+      const now = e >= COUNT_AT && rect.bottom > window.innerHeight * 0.3;
+      if (now && !showing && active >= 0) {
+        showing = true;
+        countUp(quotes[active]);
+      } else if (!now) {
+        showing = false;
+      }
     };
 
     const paint = (pos: number) => {
@@ -380,8 +455,12 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
       const goal = target();
       current += (goal - current) * EASE;
       if (Math.abs(goal - current) < 0.001) current = goal;
+      const way = entry();
+      entered += (way - entered) * EASE;
+      if (Math.abs(way - entered) < 0.001) entered = way;
       paint(current);
-      if (current !== goal) frame = requestAnimationFrame(tick);
+      reveal(entered);
+      if (current !== goal || entered !== way) frame = requestAnimationFrame(tick);
     };
     const wake = () => {
       if (reduced.matches || frame) return;
@@ -405,17 +484,8 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
       mark(0);
       return;
     }
-    // The first quote is on stage before the section is on screen, so its
-    // numbers wait for the section to come into view, and run again whenever
-    // it comes back.
-    new IntersectionObserver(
-      ([entry]) => {
-        inView = entry.isIntersecting;
-        if (inView && active >= 0) countUp(quotes[active]);
-      },
-      { threshold: 0.25 }
-    ).observe(section.querySelector(".tm-frame") ?? section);
     paint(current);
+    reveal(entered);
     window.addEventListener("scroll", wake, { passive: true });
     window.addEventListener("resize", wake);
   });
