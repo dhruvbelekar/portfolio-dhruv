@@ -1,0 +1,1026 @@
+---
+/*
+  A case study told one chapter at a time. The frame pins while the page
+  scrolls past it, each stretch of scroll hands the stage to the next chapter,
+  and what is in a chapter comes in a piece at a time as the scroll carries on,
+  so the problem is read before the people, the people before the idea, and
+  every chapter gets the same screen to itself.
+*/
+import ScrollReveal from "./ScrollReveal.astro";
+import type { Story } from "../data/stories";
+
+interface Props {
+  story: Story;
+}
+
+const { story } = Astro.props;
+const chapters = story.chapters;
+
+// "**simple and reliable**" in the data becomes a run of text in the accent.
+const split = (text: string) =>
+  text.split(/\*\*(.+?)\*\*/).map((part, i) => ({ part, strong: i % 2 === 1 }));
+
+const pad = (n: number) => String(n).padStart(2, "0");
+---
+
+<section
+  class="cs"
+  data-cs
+  style={`--cs-count: ${chapters.length}; --cs-accent: ${story.accent};`}
+  aria-label="Case study"
+>
+  <div class="cs-frame">
+    <div class="cs-inner">
+      {/* Where you are in the story, and a way to jump about in it. Hidden in
+          the stacked version, where the chapters simply follow one another. */}
+      <nav class="cs-nav" aria-label="Chapters">
+        <span class="cs-nav-rail" aria-hidden="true">
+          <span class="cs-nav-fill" data-cs-fill></span>
+        </span>
+        <ol>
+          {
+            chapters.map((c, i) => (
+              <li>
+                <button
+                  type="button"
+                  class="cs-nav-item"
+                  data-cs-step={i}
+                  aria-current={i === 0 ? "step" : undefined}
+                >
+                  <span class="cs-nav-num">{pad(i + 1)}</span>
+                  {c.nav}
+                </button>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+
+      <div class="cs-stage">
+        {
+          chapters.map((c, i) => (
+            <ScrollReveal class="cs-slot">
+              <article
+                class:list={["cs-chapter", "image" in c && c.image && "has-image"]}
+                data-cs-chapter={i}
+                data-kind={c.kind}
+              >
+                <div class="cs-copy">
+                <p class="cs-label" data-cs-line>
+                  <span class="cs-bar" aria-hidden="true" />
+                  {pad(i + 1)} · {c.nav}
+                </p>
+
+                <h3 class="cs-title" data-cs-line>
+                  {/* The closing line is three short sentences, each set on
+                      a line of its own. */}
+                  {c.kind === "outro"
+                    ? c.title.split(/(?<=\.)\s+/).map((sentence) => (
+                        <span class="cs-sentence">
+                          {split(sentence).map(({ part, strong }) =>
+                            strong ? <em>{part}</em> : part
+                          )}
+                        </span>
+                      ))
+                    : split(c.title).map(({ part, strong }) =>
+                        strong ? <em>{part}</em> : part
+                      )}
+                </h3>
+
+                {c.kind === "intro" && (
+                  <>
+                    <p class="cs-lead" data-cs-line>
+                      {c.lead}
+                    </p>
+                    <ul class="cs-facts">
+                      {c.facts.map((f) => (
+                        <li data-cs-line>
+                          <span class="cs-fact-name">{f.name}</span>
+                          {f.text}
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+
+                {c.kind === "personas" && (
+                  <ul class="cs-people">
+                    {c.people.map((p) => (
+                      <li class="cs-person" data-cs-line>
+                        <div class="cs-person-head">
+                          <img
+                            src={p.photo}
+                            alt=""
+                            width="120"
+                            height="120"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                          <div>
+                            <p class="cs-person-name">{p.name}</p>
+                            <p class="cs-person-meta">
+                              {p.role}, {p.age}, {p.city}
+                            </p>
+                          </div>
+                        </div>
+                        <blockquote class="cs-quote">“{p.quote}”</blockquote>
+                        <p class="cs-feels">Feels {p.feels.toLowerCase()}</p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {c.kind === "cards" && (
+                  <>
+                    <ul class="cs-cards">
+                      {c.cards.map((card, j) => (
+                        <li data-cs-line>
+                          <span class="cs-card-num">{pad(j + 1)}</span>
+                          <span class="cs-card-name">{card.name}</span>
+                          <span class="cs-card-text">{card.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    {c.note && (
+                      <p class="cs-note" data-cs-line>
+                        {c.note}
+                      </p>
+                    )}
+                  </>
+                )}
+
+                {c.kind === "statement" && c.chips && (
+                  <ul class="cs-chips">
+                    {c.chips.map((chip) => (
+                      <li data-cs-line>{chip}</li>
+                    ))}
+                  </ul>
+                )}
+
+                {c.kind === "steps" && (
+                  <>
+                    {c.meta && (
+                      <p class="cs-meta" data-cs-line>
+                        {c.meta}
+                      </p>
+                    )}
+                    <ol class="cs-steps">
+                      {c.steps.map((s, j) => (
+                        <li data-cs-line>
+                          <span class="cs-step-num">{pad(j + 1)}</span>
+                          <span class="cs-step-name">{s.name}</span>
+                          <ul class="cs-step-tags">
+                            {s.tags.map((tag) => (
+                              <li>{tag}</li>
+                            ))}
+                          </ul>
+                        </li>
+                      ))}
+                    </ol>
+                  </>
+                )}
+
+                {c.kind === "channels" && (
+                  <ul class="cs-channels">
+                    {c.channels.map((ch) => (
+                      <li data-cs-line>
+                        <div class="cs-device">
+                          <img src={ch.image} alt={`${ch.name} screen`} loading="lazy" decoding="async" />
+                        </div>
+                        <p class="cs-channel-name">{ch.name}</p>
+                        <p class="cs-channel-text">{ch.text}</p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {c.kind === "fixes" && (
+                  <ul class="cs-fixes">
+                    {c.fixes.map((f) => (
+                      <li data-cs-line>
+                        <span class="cs-fix-name">{f.name}</span>
+                        <span class="cs-fix-before">{f.before}</span>
+                        <span class="cs-fix-arrow" aria-hidden="true">
+                          →
+                        </span>
+                        <span class="cs-sr">became</span>
+                        <span class="cs-fix-after">{f.after}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {c.kind === "outro" && (
+                  <>
+                    <p class="cs-lead" data-cs-line>
+                      {c.lead}
+                    </p>
+                    <a class="cs-cta" href={c.cta.href} target="_blank" rel="noreferrer" data-cs-line>
+                      {c.cta.label}
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M7 17 17 7M8 7h9v9" />
+                      </svg>
+                    </a>
+                  </>
+                )}
+                </div>
+
+                {"image" in c && c.image && (
+                  /* Lands with the chapter, so there is something to look
+                     at while the words come in. */
+                  <figure class="cs-figure">
+                    <img src={c.image.src} alt={c.image.alt} loading="lazy" decoding="async" />
+                  </figure>
+                )}
+              </article>
+            </ScrollReveal>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /*
+    The stacked chapters are the real section: what ships in the markup, what a
+    phone or a short window gets, what reduced motion gets and what anyone
+    without JS gets. The pinned stage is added on top by script, and every rule
+    for it is scoped under `.is-live` so none of it can strand the content.
+  */
+  .cs {
+    --cs-tint: color-mix(in srgb, var(--cs-accent) 7%, white);
+    padding: 1rem 1.5rem var(--space-section);
+  }
+
+  .cs-inner {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .cs-nav {
+    display: none;
+  }
+
+  .cs-stage {
+    display: grid;
+    gap: clamp(4rem, 10vw, 7rem);
+  }
+
+  .cs-chapter {
+    min-width: 0;
+  }
+
+  /* A chapter with a picture sets it beside the words on a wide screen and
+     under them on a narrow one. */
+  .cs-chapter.has-image {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .cs-chapter.has-image {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      gap: clamp(2rem, 4vw, 4rem);
+    }
+    .has-image .cs-title {
+      font-size: clamp(1.9rem, 1rem + 2.4vw, 3.25rem);
+    }
+  }
+  .cs-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 62vh;
+    object-fit: contain;
+  }
+  /* The brief has the old platforms in a frame; the facts drop to one column
+     beside it. */
+  .has-image .cs-facts {
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin-top: 1.5rem;
+  }
+  .has-image .cs-facts li {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    align-items: baseline;
+    padding: 0.7rem 0;
+    border-top: 1px solid rgb(0 0 0 / 0.08);
+    border-radius: 0;
+    background: none;
+  }
+  .has-image .cs-fact-name {
+    margin: 0;
+  }
+  [data-kind="intro"] .cs-figure img {
+    border-radius: 1rem;
+    box-shadow: 0 20px 50px rgb(0 0 0 / 0.1);
+  }
+
+  /* The red rule every slide in the deck opened with, carried over. */
+  .cs-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--cs-accent);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .cs-bar {
+    width: 2.5rem;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--cs-accent);
+  }
+
+  .cs-title {
+    max-width: 22ch;
+    margin-top: 1rem;
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 1.2rem + 2.6vw, 3.6rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+  .cs-title em {
+    color: var(--cs-accent);
+    font-style: normal;
+  }
+  [data-kind="statement"] .cs-title {
+    max-width: 30ch;
+    font-weight: 700;
+  }
+
+  .cs-lead {
+    max-width: 44ch;
+    margin-top: 1.25rem;
+    color: var(--color-ink-muted);
+    font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.3rem);
+    line-height: 1.45;
+  }
+
+  .cs-meta {
+    margin-top: 0.75rem;
+    color: var(--color-ink-muted);
+    font-size: 0.95rem;
+  }
+
+  /* ---- Brief ---- */
+
+  .cs-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1rem;
+    margin-top: clamp(1.5rem, 4vh, 2.5rem);
+  }
+  .cs-facts li {
+    padding: 1.25rem 1.4rem;
+    border-radius: 1.25rem;
+    background: var(--cs-tint);
+    color: var(--color-ink);
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+  .cs-fact-name {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: var(--cs-accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ---- Users ---- */
+
+  .cs-people {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1rem;
+    margin-top: clamp(1.5rem, 4vh, 2.5rem);
+  }
+  .cs-person {
+    display: flex;
+    flex-direction: column;
+    padding: 1.4rem;
+    border-radius: 1.5rem;
+    background: var(--cs-tint);
+  }
+  .cs-person-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .cs-person-head img {
+    width: 4.5rem;
+    height: 4.5rem;
+    flex-shrink: 0;
+    border-radius: 999px;
+    object-fit: cover;
+  }
+  .cs-person-name {
+    color: var(--color-ink);
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .cs-person-meta {
+    color: var(--color-ink-muted);
+    font-size: 0.85rem;
+  }
+  .cs-quote {
+    flex: 1;
+    margin-top: 1.1rem;
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-size: clamp(1.1rem, 0.95rem + 0.5vw, 1.4rem);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+  }
+  .cs-feels {
+    margin-top: 1rem;
+    color: var(--cs-accent);
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  /* ---- Pain points ---- */
+
+  .cs-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 0.75rem;
+    margin-top: clamp(1.5rem, 4vh, 2.5rem);
+  }
+  .cs-cards li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.25rem;
+    border-radius: 1.25rem;
+    border: 1px solid color-mix(in srgb, var(--cs-accent) 18%, transparent);
+  }
+  .cs-card-num {
+    color: var(--cs-accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .cs-card-name {
+    color: var(--color-ink);
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .cs-card-text {
+    color: var(--color-ink-muted);
+    font-size: 0.92rem;
+    line-height: 1.4;
+  }
+  .cs-note {
+    margin-top: 1.5rem;
+    padding-left: 1rem;
+    border-left: 3px solid var(--cs-accent);
+    color: var(--color-ink);
+    font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem);
+    font-weight: 600;
+  }
+
+  /* ---- How might we ---- */
+
+  /* The three smaller questions the big one was built from, set as plain
+     lines under a rule rather than as pills. */
+  .cs-chips {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1.5rem;
+    max-width: 60rem;
+    margin-top: clamp(1.75rem, 5vh, 3rem);
+  }
+  .cs-chips li {
+    padding-top: 0.85rem;
+    border-top: 1px solid rgb(0 0 0 / 0.12);
+    color: var(--color-ink-muted);
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  /* ---- Process ---- */
+
+  /*
+    One thin line the stages sit on, a dot for each, the way a timeline is
+    drawn. The rule is only on the stages themselves (`> li`): matched loosely
+    it also landed on every tag in the lists inside them, which striped the
+    whole slide red.
+  */
+  .cs-steps {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 2rem 1.5rem;
+    margin-top: clamp(2rem, 5vh, 3rem);
+  }
+  .cs-steps::before {
+    position: absolute;
+    top: 0.3rem;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: rgb(0 0 0 / 0.12);
+    content: "";
+  }
+  .cs-steps > li {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-top: 1.75rem;
+  }
+  .cs-steps > li::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 999px;
+    background: var(--cs-accent);
+    box-shadow: 0 0 0 5px var(--color-paper);
+    content: "";
+  }
+  .cs-step-num {
+    color: var(--cs-accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .cs-step-name {
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  .cs-step-tags {
+    margin-top: 0.25rem;
+    color: var(--color-ink-muted);
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  /* ---- Solution ---- */
+
+  .cs-channels {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: clamp(1.5rem, 4vh, 2.5rem);
+  }
+  @media (min-width: 900px) {
+    .cs-channels {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .cs-device {
+    display: flex;
+    height: 16rem;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 1.25rem 1rem 0;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    background: var(--cs-tint);
+  }
+  /* The screens were cut from white slides; multiply drops the white into the
+     tint instead of leaving a pale box around each device. */
+  .cs-device img {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    object-position: bottom;
+    mix-blend-mode: multiply;
+  }
+  .cs-channel-name {
+    margin-top: 0.85rem;
+    color: var(--color-ink);
+    font-weight: 700;
+  }
+  .cs-channel-text {
+    margin-top: 0.2rem;
+    color: var(--color-ink-muted);
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  /* ---- Testing ---- */
+
+  .cs-fixes {
+    margin-top: clamp(1.5rem, 4vh, 2.5rem);
+  }
+  /* On a phone the name takes its own line and the change reads across the
+     one below it. */
+  .cs-fixes li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 1.25rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: 0.35rem 0.5rem;
+    padding: 1.1rem 0;
+    border-top: 1px solid rgb(0 0 0 / 0.08);
+  }
+  @media (min-width: 768px) {
+    .cs-fixes li {
+      grid-template-columns: minmax(0, 15rem) minmax(0, 16rem) 1.5rem minmax(0, 1fr);
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .cs-fixes .cs-fix-name {
+      grid-column: auto;
+    }
+  }
+  .cs-fix-name {
+    grid-column: 1 / -1;
+    color: var(--color-ink);
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .cs-fix-before {
+    color: var(--color-ink-muted);
+    text-decoration: line-through;
+    text-decoration-color: color-mix(in srgb, var(--cs-accent) 60%, transparent);
+  }
+  .cs-fix-arrow {
+    color: var(--cs-accent);
+    font-weight: 700;
+  }
+  .cs-fix-after {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+  .cs-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ---- Outcome ---- */
+
+  [data-kind="outro"] .cs-title {
+    max-width: none;
+    font-size: clamp(2.2rem, 0.9rem + 3.4vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1;
+  }
+  .cs-sentence {
+    display: block;
+  }
+  @media (min-width: 900px) {
+    .cs-chapter.has-image[data-kind="outro"] {
+      grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    }
+  }
+  .cs-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 2rem;
+    padding: 0.95rem 1.4rem;
+    border-radius: 0.9rem;
+    background: var(--cs-accent);
+    color: white;
+    font-weight: 700;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .cs-cta svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  .cs-cta:hover {
+    transform: translateY(-2px);
+  }
+  .cs-cta:focus-visible {
+    outline: 2px solid var(--cs-accent);
+    outline-offset: 3px;
+  }
+
+  /* ---- pinned stage, switched on by script ---- */
+
+  .cs.is-live {
+    position: relative;
+    height: calc(100svh + (var(--cs-count) - 1) * 70svh);
+    padding: 0;
+  }
+
+  .cs.is-live .cs-frame {
+    position: sticky;
+    top: 0;
+    display: flex;
+    height: 100svh;
+    align-items: center;
+    padding: clamp(5.5rem, 12vh, 7rem) clamp(1.5rem, 4vw, 2.5rem) clamp(1.5rem, 4vh, 2.5rem);
+  }
+
+  .cs.is-live .cs-inner {
+    display: grid;
+    height: 100%;
+    grid-template-columns: 11rem minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: center;
+  }
+
+  .cs.is-live .cs-nav {
+    position: relative;
+    display: block;
+    padding-left: 1.25rem;
+  }
+  .cs-nav ol {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .cs-nav-rail {
+    position: absolute;
+    top: 0.3rem;
+    bottom: 0.3rem;
+    left: 0;
+    width: 2px;
+    border-radius: 2px;
+    background: rgb(0 0 0 / 0.08);
+    overflow: hidden;
+  }
+  .cs-nav-fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--cs-accent);
+    transform: scaleY(0);
+    transform-origin: top center;
+  }
+  .cs-nav-item {
+    display: flex;
+    width: 100%;
+    gap: 0.6rem;
+    padding: 0.35rem 0;
+    color: var(--color-ink-muted);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: left;
+    opacity: 0.6;
+    transition:
+      color 0.4s ease,
+      opacity 0.4s ease;
+  }
+  .cs-nav-item:hover {
+    opacity: 0.9;
+  }
+  .cs-nav-item[aria-current="step"] {
+    color: var(--cs-accent);
+    opacity: 1;
+  }
+  .cs-nav-item:focus-visible {
+    outline: 2px solid var(--cs-accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  .cs-nav-num {
+    font-variant-numeric: tabular-nums;
+    font-weight: 400;
+  }
+
+  /* Every chapter sits in the same cell, so changing between them moves
+     nothing around it. */
+  .cs.is-live .cs-stage {
+    height: 100%;
+    gap: 0;
+    align-items: center;
+  }
+  /* The slot is ScrollReveal's own element, so it carries that component's
+     scope rather than this one's. */
+  .cs.is-live .cs-stage > :global(.cs-slot) {
+    grid-area: 1 / 1;
+    /* Moved by the script in step with the scroll; the reveal's own fade
+       would only lag behind it. */
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .cs.is-live .cs-chapter {
+    will-change: opacity, transform, filter;
+  }
+  .cs.is-live .cs-chapter[data-state="next"],
+  .cs.is-live .cs-chapter[data-state="past"] {
+    pointer-events: none;
+  }
+
+  .cs.is-live .cs-device {
+    height: min(36vh, 20rem);
+  }
+
+  /* A laptop window: the same stage a size down, so the fullest chapter still
+     fits between the nav and the bottom of the screen. */
+  @media (max-height: 800px) {
+    .cs.is-live .cs-title {
+      font-size: clamp(1.8rem, 1rem + 2.2vw, 2.8rem);
+    }
+    .cs.is-live [data-kind="outro"] .cs-title {
+      font-size: clamp(2.2rem, 0.9rem + 3vw, 3.75rem);
+    }
+    .cs.is-live .cs-quote {
+      font-size: 1.05rem;
+    }
+    .cs.is-live .cs-device {
+      height: min(32vh, 15rem);
+    }
+    .cs.is-live .cs-fixes li {
+      padding: 0.8rem 0;
+    }
+  }
+</style>
+
+<script>
+  // Of each chapter's stretch of scroll, the share either side of its middle it
+  // holds still for, and the share it spends arriving or leaving.
+  const HOLD = 0.3;
+  const FADE = 0.2;
+  // How far a chapter travels as it arrives or leaves, in pixels.
+  const LIFT = 60;
+  // The most blur a chapter carries, reached as it fades out completely.
+  const BLUR = 10;
+  // Where in a chapter's stretch its pieces start and finish coming in. Each
+  // takes `PIECE` of the stretch, spread evenly between the two.
+  const FROM = 0.04;
+  const TO = 0.62;
+  const PIECE = 0.14;
+  // The share of the remaining distance covered each frame, so the steps of a
+  // mouse wheel become one glide.
+  const EASE = 0.14;
+
+  const clamp = (v: number) => Math.min(Math.max(v, 0), 1);
+  const smooth = (t: number) => t * t * (3 - 2 * t);
+
+  document.querySelectorAll<HTMLElement>("[data-cs]").forEach((section) => {
+    const chapters = [...section.querySelectorAll<HTMLElement>("[data-cs-chapter]")];
+    const steps = [...section.querySelectorAll<HTMLButtonElement>("[data-cs-step]")];
+    const fill = section.querySelector<HTMLElement>("[data-cs-fill]");
+    const frame = section.querySelector<HTMLElement>(".cs-frame");
+    const pieces = chapters.map((c) => [...c.querySelectorAll<HTMLElement>("[data-cs-line]")]);
+    const count = chapters.length;
+
+    // A pinned stage needs a screen wide and tall enough to hold the fullest
+    // chapter. Anything smaller keeps the stacked chapters.
+    const room = window.matchMedia("(min-width: 900px) and (min-height: 620px)");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let live = false;
+    let active = -1;
+    let raf = 0;
+
+    // How far through its pinned stretch the section is, in chapters: 0 at the
+    // start, `count` at the end.
+    const target = () => {
+      const rect = section.getBoundingClientRect();
+      const travel = rect.height - window.innerHeight;
+      return (travel > 0 ? clamp(-rect.top / travel) : 0) * count;
+    };
+    let current = 0;
+
+    const mark = (index: number) => {
+      if (index === active) return;
+      active = index;
+      chapters.forEach((c, i) => {
+        c.dataset.state = i === index ? "now" : i < index ? "past" : "next";
+        c.setAttribute("aria-hidden", i === index ? "false" : "true");
+        c.inert = i !== index;
+      });
+      steps.forEach((s, i) =>
+        i === index ? s.setAttribute("aria-current", "step") : s.removeAttribute("aria-current")
+      );
+    };
+
+    const paint = (pos: number) => {
+      chapters.forEach((chapter, i) => {
+        const local = pos - i;
+        // Distance from this chapter's middle, in chapters. The first has
+        // nothing to arrive after and the last nothing to leave for, so they
+        // hold at the ends instead.
+        let d = local - 0.5;
+        if (i === 0 && d < 0) d = 0;
+        if (i === count - 1 && d > 0) d = 0;
+        const away = smooth(clamp((Math.abs(d) - HOLD) / FADE));
+        chapter.style.opacity = String(1 - away);
+        chapter.style.transform = `translate3d(0, ${-Math.sign(d) * away * LIFT}px, 0)`;
+        chapter.style.filter =
+          away > 0.005 && away < 0.995 ? `blur(${(away * BLUR).toFixed(2)}px)` : "";
+
+        // The label and title land with the chapter; the rest is revealed a
+        // piece at a time as the scroll carries on. A chapter that has been
+        // read keeps everything while it leaves.
+        const own = pieces[i];
+        const rest = own.length - 2;
+        const span = rest > 1 ? (TO - PIECE - FROM) / (rest - 1) : 0;
+        own.forEach((piece, j) => {
+          const t =
+            local >= 1 || j < 2 ? 1 : smooth(clamp((local - (FROM + (j - 2) * span)) / PIECE));
+          piece.style.opacity = String(t);
+          piece.style.transform = t === 1 ? "" : `translate3d(0, ${(1 - t) * 24}px, 0)`;
+        });
+      });
+      if (fill) fill.style.transform = `scaleY(${clamp(pos / count)})`;
+      mark(Math.min(Math.floor(pos), count - 1));
+    };
+
+    const tick = () => {
+      raf = 0;
+      if (!live) return;
+      const goal = target();
+      current += (goal - current) * EASE;
+      if (Math.abs(goal - current) < 0.001) current = goal;
+      paint(current);
+      if (current !== goal) raf = requestAnimationFrame(tick);
+    };
+    const wake = () => {
+      if (!live || raf) return;
+      raf = requestAnimationFrame(tick);
+    };
+
+    // Whether the fullest chapter fits the room the pinned frame leaves for it.
+    // The media query rules out the obvious cases; this catches the rest, such
+    // as a window just tall enough that a long title wraps one line too many.
+    const fits = () => {
+      if (!frame) return false;
+      const style = getComputedStyle(frame);
+      const room =
+        frame.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+      return chapters.every((c) => c.offsetHeight <= room);
+    };
+
+    const clear = (el: HTMLElement) => {
+      el.style.opacity = "";
+      el.style.transform = "";
+      el.style.filter = "";
+    };
+
+    const sync = () => {
+      let next = room.matches && !reduced.matches;
+      if (next) {
+        // Measured in the pinned layout, since that is where it has to fit.
+        section.classList.add("is-live");
+        next = fits();
+      }
+      if (next === live) {
+        section.classList.toggle("is-live", live);
+        return;
+      }
+      live = next;
+      section.classList.toggle("is-live", live);
+      if (live) {
+        active = -1;
+        current = target();
+        paint(current);
+      } else {
+        chapters.forEach((c) => {
+          clear(c);
+          c.removeAttribute("aria-hidden");
+          c.inert = false;
+          delete c.dataset.state;
+        });
+        pieces.flat().forEach(clear);
+        if (fill) fill.style.transform = "";
+      }
+    };
+
+    // Picking a chapter scrolls to the point where all of it is in, so the
+    // page and the chapter on screen never disagree.
+    steps.forEach((step, i) =>
+      step.addEventListener("click", () => {
+        const travel = section.offsetHeight - window.innerHeight;
+        const top = section.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({ top: top + ((i + 0.7) / count) * travel, behavior: "smooth" });
+      })
+    );
+
+    sync();
+    room.addEventListener("change", sync);
+    reduced.addEventListener("change", sync);
+    window.addEventListener("scroll", wake, { passive: true });
+    window.addEventListener("resize", () => {
+      sync();
+      wake();
+    });
+  });
+</script>

@@ -6,9 +6,11 @@ import ScrollReveal from "../../components/ScrollReveal.astro";
 import CircularSplitRoll from "../../components/CircularSplitRoll.astro";
 import PromoVideo from "../../components/PromoVideo.astro";
 import ProjectOverview from "../../components/ProjectOverview.astro";
+import CaseStory from "../../components/CaseStory.astro";
 import StatCounter from "../../components/StatCounter.astro";
 import Marquee from "../../components/Marquee.astro";
 import { projects } from "../../data/projects";
+import { stories } from "../../data/stories";
 
 export function getStaticPaths() {
   return projects.map((project, i) => ({
@@ -18,6 +20,9 @@ export function getStaticPaths() {
 }
 
 const { project, next } = Astro.props;
+// A project with a scroll story tells itself through that instead of the
+// overview card and the slide gallery; the full deck is a link away on Behance.
+const story = stories[project.slug];
 
 const isBento = project.slug === "frelo";
 // The reels are 607x1080. Without those numbers on the element a video is
@@ -484,7 +489,7 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
         </ScrollReveal>
       </div>
 
-      {project.overview && <ProjectOverview overview={project.overview} />}
+      {project.overview && !story && <ProjectOverview overview={project.overview} />}
 
       {
         isBento ? (
@@ -816,8 +821,10 @@ const nextTitleColor = isDark ? "text-white" : "text-ink";
       )
     }
 
+    {story && <CaseStory story={story} />}
+
     {
-      !isBento && !isOpe && !isAai && (
+      !story && !isBento && !isOpe && !isAai && (
         <div
           class={`mt-16 flex flex-col pb-[var(--space-section)] ${isSeamless ? "gap-0" : "gap-8"}`}
         >
