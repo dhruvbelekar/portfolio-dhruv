@@ -1,164 +1,223 @@
 ---
+import ScrollReveal from "./ScrollReveal.astro";
 import { experience } from "../data/projects";
 
 /*
   Oldest first. The data is stored newest first, which is right for a CV, but
-  a timeline read left to right has to start where the work started.
+  a story told by scrolling has to start where the work started.
+
+  One company at a time: the frame pins while the page scrolls past it, and
+  each stretch of scroll hands the whole stage to the next role. Laid out side
+  by side, all three were on screen at once and none of them was the one being
+  read.
 */
-const milestones = [...experience].reverse();
+const roles = [...experience].reverse();
+
+// "**100+ members**" in the data becomes a highlighted run of text here.
+const split = (point: string) =>
+  point.split(/\*\*(.+?)\*\*/).map((text, i) => ({ text, strong: i % 2 === 1 }));
+
+const pad = (n: number) => String(n).padStart(2, "0");
 ---
 
-<section class="exp" data-exp>
-  <div class="exp-stage" data-exp-stage>
-    <div class="exp-track" data-exp-track>
-      <header class="exp-panel">
-        {/* Two words, two spans: the run wants them stacked, the list wants
-            them on one line with the space between them still there. */}
-        <h3 class="exp-title"><span>My</span> <span>Experience</span></h3>
-      </header>
+<section class="px-6 pt-[var(--space-section)] md:px-10">
+  <div class="mx-auto max-w-[1400px]">
+    <ScrollReveal>
+      <h2
+        class="select-none text-center font-black leading-[0.9] text-blue"
+        style="font-family: var(--font-display); font-size: var(--type-section);"
+      >
+        My Experience
+      </h2>
+    </ScrollReveal>
+  </div>
+</section>
 
-      {/*
-        The rail spans the whole track rather than just the run of roles, so it
-        is already crossing the window when the section takes hold instead of
-        appearing out of nowhere beside the title.
-      */}
-      <span class="exp-rail" data-exp-rail aria-hidden="true">
-        <span class="exp-rail-fill" data-exp-fill />
-      </span>
-
-      <ol class="exp-items">
+<section class="xp" data-xp style={`--xp-count: ${roles.length}`}>
+  <div class="xp-frame">
+    <div class="xp-inner">
+      {/* Where you are in the run: one bar per company, filling as its
+          stretch of scroll is read. Hidden in the stacked list. */}
+      <div class="xp-steps" role="tablist" aria-label="Experience">
         {
-          milestones.map((e, i) => (
-            <li class:list={["exp-item", i % 2 === 0 ? "is-above" : "is-below"]} data-exp-item>
-              <span class="exp-dot" aria-hidden="true" />
-              <span class="exp-stem" aria-hidden="true" />
-              <article class="exp-card">
-                <img
-                  class="exp-logo"
-                  src={e.logo}
-                  alt={e.company}
-                  loading="lazy"
-                  decoding="async"
-                />
-                <p class="exp-dates">{e.dates}</p>
-                <p class="exp-role">
-                  {e.promotedFrom && (
-                    <>
-                      <span class="exp-prev">{e.promotedFrom}</span>
-                      <span class="exp-arrow" aria-hidden="true">
-                        →
-                      </span>
-                      <span class="exp-sr">promoted to</span>
-                    </>
-                  )}
-                  {e.role}
-                </p>
-                {e.promotion && <p class="exp-promotion">{e.promotion}</p>}
-                <p class="exp-meta">{e.meta}</p>
-                <ul class="exp-points">
-                  {e.points.map((point) => (
-                    <li>{point}</li>
-                  ))}
-                </ul>
-              </article>
-            </li>
+          roles.map((r, i) => (
+            <button
+              type="button"
+              role="tab"
+              class="xp-step"
+              data-xp-step={i}
+              aria-selected={i === 0 ? "true" : "false"}
+            >
+              <span class="xp-step-label">
+                <span class="xp-step-year">{r.year}</span>
+                {r.company}
+              </span>
+              <span class="xp-step-bar" aria-hidden="true">
+                <span class="xp-step-fill" data-xp-fill />
+              </span>
+            </button>
           ))
         }
+      </div>
 
-        {/* Somewhere for the last role to travel to, so it is read in the
-            middle of the window rather than pinned against its right edge. */}
-        <li class="exp-tail" aria-hidden="true" />
-      </ol>
+      <div class="xp-stage">
+        {
+          roles.map((r, i) => (
+            <ScrollReveal class="xp-slot">
+              <article class="xp-role" data-xp-role={i} data-state={i === 0 ? "now" : "next"}>
+                <div class="xp-head" data-xp-head>
+                  <span class="xp-num" aria-hidden="true">
+                    {pad(i + 1)}
+                  </span>
+                  {/* The logo is the name: set out again in type beside it, the
+                      company read twice. */}
+                  <h3 class="xp-company">
+                    <img
+                      class="xp-logo"
+                      src={r.logo}
+                      alt={r.company}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </h3>
+                  <p class="xp-dates">{r.dates}</p>
+                </div>
+
+                <div class="xp-body">
+                  <p class="xp-title" data-xp-line>
+                    {r.promotedFrom && (
+                      <>
+                        <span class="xp-prev">{r.promotedFrom}</span>
+                        <span class="xp-arrow" aria-hidden="true">
+                          →
+                        </span>
+                        <span class="xp-sr">promoted to</span>
+                      </>
+                    )}
+                    {r.role}
+                  </p>
+                  <p class="xp-meta" data-xp-line>
+                    {r.meta}
+                    {r.promotion && (
+                      <>
+                        <span aria-hidden="true">·</span>
+                        <span class="xp-promotion">{r.promotion}</span>
+                      </>
+                    )}
+                  </p>
+                  <ul class="xp-points">
+                    {r.points.map((point) => (
+                      <li data-xp-line>
+                        {split(point).map((part) =>
+                          part.strong ? <strong>{part.text}</strong> : part.text
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </article>
+            </ScrollReveal>
+          ))
+        }
+      </div>
     </div>
   </div>
 </section>
 
 <style>
   /*
-    The list below is the real section: it is what ships in the markup, what a
-    phone gets, what reduced motion gets and what anyone without JS gets. The
-    pinned sideways run is added on top by script, and every rule for it is
-    scoped under `.is-pinned` so none of it can strand the content.
+    The stacked list is the real section: it is what ships in the markup, what
+    a phone or a short window gets, what reduced motion gets and what anyone
+    without JS gets. The pinned stage is added on top by script, and every rule
+    for it is scoped under `.is-live` so none of it can strand the content.
   */
-  .exp {
-    padding: 0 1.5rem var(--space-section);
+  .xp {
+    padding: clamp(2rem, 5vw, 4rem) 1.5rem var(--space-section);
   }
 
-  .exp-track {
+  .xp-inner {
+    width: 100%;
+    max-width: 1200px;
     margin: 0 auto;
-    max-width: 44rem;
   }
 
-  .exp-title {
-    color: var(--color-blue);
-    font-family: var(--font-display);
-    font-size: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
-    font-weight: 900;
-    letter-spacing: -0.03em;
-    line-height: 1;
-    text-align: center;
-  }
-
-  .exp-items {
-    margin: 2.5rem 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .exp-item {
-    border-bottom: 1px solid rgb(0 0 0 / 0.08);
-    padding: 1.75rem 0;
-  }
-  .exp-item:first-of-type {
-    border-top: 1px solid rgb(0 0 0 / 0.08);
-  }
-
-  .exp-rail,
-  .exp-dot,
-  .exp-stem,
-  .exp-tail {
+  .xp-steps {
     display: none;
   }
 
-  .exp-logo {
-    height: 1.75rem;
+  .xp-stage {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .xp-role {
+    display: grid;
+    gap: 1.25rem;
+    padding: 1.75rem;
+    border-radius: 1.5rem;
+    background: rgb(19 67 240 / 0.04);
+  }
+
+  .xp-head {
+    position: relative;
+  }
+
+  /* A large, quiet index behind the company name: which of the three this is,
+     readable from across the room. */
+  .xp-num {
+    display: block;
+    color: rgb(19 67 240 / 0.14);
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 1.5rem + 6.5vw, 9rem);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    line-height: 0.8;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .xp-company {
+    margin-top: clamp(1.25rem, 3vh, 2rem);
+  }
+
+  .xp-logo {
+    display: block;
+    height: clamp(2.75rem, 1.4rem + 3.4vw, 5rem);
     width: auto;
-    max-width: 10rem;
+    max-width: 100%;
     object-fit: contain;
     object-position: left center;
   }
 
-  .exp-dates {
-    margin-top: 0.85rem;
+  .xp-dates {
+    margin-top: clamp(1rem, 2.5vh, 1.5rem);
     color: var(--color-blue);
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
 
-  .exp-role {
-    margin-top: 0.3rem;
+  .xp-title {
     color: var(--color-ink);
     font-family: var(--font-display);
-    font-size: 1.25rem;
+    font-size: clamp(1.35rem, 1rem + 1.3vw, 2.4rem);
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
     line-height: 1.15;
   }
 
-  .exp-prev {
+  .xp-prev {
     color: var(--color-ink-muted);
     font-weight: 400;
   }
 
-  .exp-arrow {
+  .xp-arrow {
     margin: 0 0.4em;
     color: var(--color-blue);
   }
 
   /* The arrow carries the meaning visually; this carries it to a reader. */
-  .exp-sr {
+  .xp-sr {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -168,130 +227,125 @@ const milestones = [...experience].reverse();
     white-space: nowrap;
   }
 
-  /* Getting promoted is the achievement on this card, not a footnote to it. */
-  .exp-promotion {
-    display: inline-block;
-    margin-top: 0.5rem;
-    padding: 0.25rem 0.6rem;
-    border-radius: 999px;
-    background: rgb(19 67 240 / 0.09);
-    color: var(--color-blue);
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .exp-meta {
-    margin-top: 0.4rem;
-    color: var(--color-ink-muted);
-    font-size: 0.85rem;
-  }
-
-  .exp-points {
-    margin: 0.85rem 0 0;
-    padding: 0;
-    list-style: none;
-    /*
-      Not --color-gray: that token is #b3b3b3, a hairline tone for timestamps,
-      and it left this copy too faint to read. --color-ink-muted is the one the
-      rest of the site uses for secondary text people actually read.
-    */
+  .xp-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
     color: var(--color-ink-muted);
     font-size: 0.9rem;
-    line-height: 1.55;
   }
 
-  .exp-points li {
+  /* Said plainly, in the same line as the rest of the details; the arrow in
+     the title above already makes the point. */
+  .xp-promotion {
+    color: var(--color-ink);
+  }
+
+  .xp-points {
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+    color: var(--color-ink);
+    font-size: clamp(1rem, 0.85rem + 0.55vw, 1.35rem);
+    line-height: 1.5;
+  }
+
+  .xp-points li {
     position: relative;
-    /* The dash is an em wide; at 0.9rem of indent the text started flush
-       against it with no gap at all. */
-    padding-left: 1.5rem;
+    padding: 1rem 0 1rem 2rem;
+    border-top: 1px solid rgb(0 0 0 / 0.08);
   }
-  .exp-points li + li {
-    margin-top: 0.3rem;
-  }
-  .exp-points li::before {
+  .xp-points li::before {
     position: absolute;
-    left: 0;
-    content: "—";
+    top: 1.65em;
+    left: 0.15rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--color-blue);
+    content: "";
+    transform: translateY(-50%);
   }
 
-  /* ---- pinned sideways run, switched on by script ---- */
+  /* The number that says what the work came to. */
+  .xp-points strong {
+    color: var(--color-blue);
+    font-weight: 700;
+  }
 
-  .exp.is-pinned {
+  /* ---- pinned stage, switched on by script ---- */
+
+  .xp.is-live {
+    position: relative;
+    height: calc(100svh + (var(--xp-count) - 1) * 110svh);
     padding: 0;
   }
 
-  .exp.is-pinned .exp-stage {
+  .xp.is-live .xp-frame {
     position: sticky;
     top: 0;
     display: flex;
-    height: 100vh;
+    height: 100svh;
     align-items: center;
-    overflow: hidden;
-    /*
-      The rail sits in the middle of whatever is left below the header. Centred
-      on the whole window instead, the tallest card above the line runs up
-      behind the nav and loses its logo to it.
-    */
-    padding-top: clamp(4.5rem, 7vw, 7rem);
+    padding: clamp(5.5rem, 12vh, 7.5rem) clamp(1.5rem, 4vw, 3rem) clamp(1.5rem, 4vh, 2.5rem);
   }
 
-  .exp.is-pinned .exp-track {
-    position: relative;
+  .xp.is-live .xp-inner {
     display: flex;
-    max-width: none;
-    align-items: center;
-    margin: 0;
-    will-change: transform;
+    height: 100%;
+    flex-direction: column;
+    gap: clamp(1.5rem, 5vh, 3.5rem);
   }
 
-  .exp.is-pinned .exp-panel {
-    position: relative;
-    flex: 0 0 auto;
-    width: min(70vw, 26rem);
-    padding: 0 clamp(2rem, 6vw, 6rem);
-    align-self: stretch;
+  /* Along the foot of the frame, clear of the nav, like the progress of a
+     story you are partway through. */
+  .xp.is-live .xp-steps {
+    order: 2;
+    display: grid;
+    grid-template-columns: repeat(var(--xp-count), 1fr);
+    gap: clamp(0.75rem, 2vw, 1.5rem);
   }
 
-  /*
-    Lifted to sit on top of the rail, level with the cards that hang above it.
-    Centred, the line ran straight through the middle of the words.
-  */
-  .exp.is-pinned .exp-title {
-    position: absolute;
-    left: clamp(2rem, 6vw, 6rem);
-    right: clamp(2rem, 6vw, 6rem);
-    bottom: calc(50% + 2.25rem);
+  .xp-step {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    color: var(--color-ink-muted);
+    font-size: 0.9rem;
+    font-weight: 700;
     text-align: left;
+    opacity: 0.6;
+    transition:
+      color 0.4s ease,
+      opacity 0.4s ease;
   }
-  .exp.is-pinned .exp-title span {
+  .xp-step:hover {
+    opacity: 0.85;
+  }
+  .xp-step[aria-selected="true"] {
+    color: var(--color-blue);
+    opacity: 1;
+  }
+  .xp-step:focus-visible {
+    outline: 2px solid var(--color-blue);
+    outline-offset: 6px;
+    border-radius: 2px;
+  }
+  .xp-step-year {
+    margin-right: 0.6em;
+    font-variant-numeric: tabular-nums;
+    font-weight: 400;
+  }
+  .xp-step-bar {
     display: block;
+    height: 2px;
+    overflow: hidden;
+    border-radius: 2px;
+    background: rgb(0 0 0 / 0.1);
   }
-
-  .exp.is-pinned .exp-items {
-    position: relative;
-    display: flex;
-    height: 74vh;
-    align-items: center;
-    margin: 0;
-    /* A run-up before the first dot, so the rail is already travelling by the
-       time a role reaches the middle of the window. */
-    padding-left: clamp(3rem, 8vw, 9rem);
-  }
-
-  .exp.is-pinned .exp-rail {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    left: 0;
-    display: block;
-    height: 1px;
-    background: rgb(0 0 0 / 0.12);
-  }
-
-  .exp-rail-fill {
+  .xp-step-fill {
     display: block;
     height: 100%;
     background: var(--color-blue);
@@ -299,249 +353,212 @@ const milestones = [...experience].reverse();
     transform-origin: left center;
   }
 
-  .exp.is-pinned .exp-item {
-    position: relative;
-    /*
-      Wide on purpose. Narrow columns fit the whole run on screen at once,
-      which leaves nothing to arrive.
-    */
-    width: clamp(19rem, 34vw, 30rem);
-    height: 100%;
-    flex: 0 0 auto;
-    border: 0;
-    padding: 0;
+  /* Every role sits in the same cell, so changing between them moves nothing
+     around it. */
+  .xp.is-live .xp-stage {
+    flex: 1;
+    min-height: 0;
+    gap: 0;
+    align-items: center;
   }
-
-  .exp.is-pinned .exp-tail {
-    display: block;
-    width: 40vw;
-    flex: 0 0 auto;
-  }
-
-  .exp.is-pinned .exp-dot {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    display: block;
-    height: 0.625rem;
-    width: 0.625rem;
-    margin: -0.3125rem 0 0 -0.3125rem;
-    border-radius: 999px;
-    background: var(--color-blue);
-    opacity: 0;
-    transform: scale(0.4);
-    transition:
-      opacity 0.35s ease,
-      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  /* Drawn rather than faded, so each role reaches up to its own card. */
-  .exp.is-pinned .exp-stem {
-    position: absolute;
-    left: 0;
-    display: block;
-    width: 1px;
-    height: 2.25rem;
-    background: rgb(0 0 0 / 0.18);
-    transform: scaleY(0);
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.06s;
-  }
-  .exp.is-pinned .is-above .exp-stem {
-    bottom: 50%;
-    transform-origin: bottom center;
-  }
-  .exp.is-pinned .is-below .exp-stem {
-    top: 50%;
-    transform-origin: top center;
-  }
-
-  .exp.is-pinned .exp-card {
-    position: absolute;
-    left: 0;
-    /*
-      Wider than it looks like it needs to be. The four-bullet card wrapped to
-      eight lines at 24rem, which made it tall enough to run up behind the
-      header; the same words take six lines here.
-    */
-    width: min(calc(100% - 1.5rem), 27rem);
-    opacity: 0;
-    transition:
-      opacity 0.5s ease 0.12s,
-      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.12s;
-  }
-  .exp.is-pinned .is-above .exp-card {
-    bottom: calc(50% + 2.25rem);
-    transform: translateY(0.75rem);
-  }
-  .exp.is-pinned .is-below .exp-card {
-    top: calc(50% + 2.25rem);
-    transform: translateY(-0.75rem);
-  }
-
-  .exp.is-pinned .exp-logo {
-    height: 1.75rem;
-  }
-
-  /*
-    A laptop window leaves little room above the line, and the tallest card —
-    four bullets — ran up under the header on one. Below this height the card
-    tightens rather than overflowing into the nav.
-  */
-  @media (max-height: 900px) {
-    /* The rail drops further down a short window, which is where the room
-       above it has to come from. */
-    .exp.is-pinned .exp-stage {
-      padding-top: clamp(7rem, 12vw, 10rem);
-    }
-    .exp.is-pinned .exp-logo {
-      height: 1.5rem;
-      margin-bottom: 0.7rem;
-    }
-    .exp.is-pinned .exp-role {
-      font-size: 1.1rem;
-    }
-    .exp.is-pinned .exp-points {
-      font-size: 0.84rem;
-      line-height: 1.45;
-    }
-    .exp.is-pinned .exp-promotion {
-      margin-top: 0.35rem;
-    }
-  }
-
-  .exp.is-pinned .exp-item.is-in .exp-dot {
-    opacity: 1;
-    transform: scale(1);
-  }
-  .exp.is-pinned .exp-item.is-in .exp-stem {
-    transform: scaleY(1);
-  }
-  .exp.is-pinned .exp-item.is-in .exp-card {
+  /* The slot is ScrollReveal's own element, so it carries that component's
+     scope rather than this one's. */
+  .xp.is-live .xp-stage > :global(.xp-slot) {
+    grid-area: 1 / 1;
+    /* Moved by the script in step with the scroll; the reveal's own fade
+       would only lag behind it. */
     opacity: 1;
     transform: none;
+    transition: none;
+  }
+
+  .xp.is-live .xp-role {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(2rem, 6vw, 6rem);
+    align-items: center;
+    padding: 0;
+    background: none;
+    will-change: opacity, transform, filter;
+  }
+  .xp.is-live .xp-role[data-state="next"],
+  .xp.is-live .xp-role[data-state="past"] {
+    pointer-events: none;
+  }
+
+  .xp.is-live .xp-points li,
+  .xp.is-live .xp-title,
+  .xp.is-live .xp-meta {
+    will-change: opacity, transform;
+  }
+
+  /* A laptop window: the same stage, a size down, so the longest role still
+     fits between the nav and the bottom of the screen. */
+  @media (max-height: 820px) {
+    .xp.is-live .xp-num {
+      font-size: clamp(3rem, 1.5rem + 4.5vw, 6.5rem);
+    }
+    .xp.is-live .xp-logo {
+      height: clamp(2.5rem, 1.2rem + 2.6vw, 4rem);
+    }
+    .xp.is-live .xp-points {
+      margin-top: 1rem;
+      font-size: 1.05rem;
+    }
+    .xp.is-live .xp-points li {
+      padding: 0.75rem 0 0.75rem 2rem;
+    }
   }
 </style>
 
 <script>
-  const section = document.querySelector<HTMLElement>("[data-exp]");
-  const stage = document.querySelector<HTMLElement>("[data-exp-stage]");
-  const track = document.querySelector<HTMLElement>("[data-exp-track]");
-  const fill = document.querySelector<HTMLElement>("[data-exp-fill]");
-  const rail = document.querySelector<HTMLElement>("[data-exp-rail]");
-  const items = [...document.querySelectorAll<HTMLElement>("[data-exp-item]")];
+  // Of each role's stretch of scroll, the share either side of its middle it
+  // holds still for, and the share it spends arriving or leaving.
+  const HOLD = 0.28;
+  const FADE = 0.22;
+  // How far a role travels as it arrives or leaves, in pixels.
+  const LIFT = 64;
+  // The most blur a role carries, reached as it fades out completely.
+  const BLUR = 10;
+  // Where in a role's stretch its lines start and finish coming in. Each line
+  // takes `LINE` of the stretch, and they are spread evenly between the two.
+  const LINES_FROM = 0.06;
+  const LINES_TO = 0.62;
+  const LINE = 0.16;
+  // The share of the remaining distance covered each frame, so the steps of a
+  // mouse wheel become one glide.
+  const EASE = 0.14;
 
-  if (section && stage && track && fill && rail && items.length) {
-    // Pinning takes the section out of the flow of the page for as long as it
-    // is on screen, which is a lot to do to a phone for a list of jobs — and on
-    // touch it fights the scroll it is riding on.
-    const wide = window.matchMedia("(min-width: 768px)");
+  const clamp = (v: number) => Math.min(Math.max(v, 0), 1);
+  const smooth = (t: number) => t * t * (3 - 2 * t);
+
+  document.querySelectorAll<HTMLElement>("[data-xp]").forEach((section) => {
+    const roles = [...section.querySelectorAll<HTMLElement>("[data-xp-role]")];
+    const steps = [...section.querySelectorAll<HTMLButtonElement>("[data-xp-step]")];
+    const fills = [...section.querySelectorAll<HTMLElement>("[data-xp-fill]")];
+    const lines = roles.map((r) => [...r.querySelectorAll<HTMLElement>("[data-xp-line]")]);
+    const heads = roles.map((r) => r.querySelector<HTMLElement>("[data-xp-head]"));
+    const count = roles.length;
+
+    // A pinned stage needs a screen wide and tall enough to hold the longest
+    // role. Anything smaller keeps the stacked list, which scrolls on its own.
+    const room = window.matchMedia("(min-width: 768px) and (min-height: 600px)");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    let distance = 0;
+    let live = false;
+    let active = -1;
     let frame = 0;
-    let io: IntersectionObserver | null = null;
-    let ro: ResizeObserver | null = null;
 
-    const paint = () => {
+    // How far through its pinned stretch the section is, in roles: 0 at the
+    // start, `count` at the end.
+    const target = () => {
+      const rect = section.getBoundingClientRect();
+      const travel = rect.height - window.innerHeight;
+      const progress = travel > 0 ? clamp(-rect.top / travel) : 0;
+      return progress * count;
+    };
+    let current = 0;
+
+    const mark = (index: number) => {
+      if (index === active) return;
+      active = index;
+      roles.forEach((r, i) => {
+        r.dataset.state = i === index ? "now" : i < index ? "past" : "next";
+        r.setAttribute("aria-hidden", i === index ? "false" : "true");
+      });
+      steps.forEach((s, i) => s.setAttribute("aria-selected", i === index ? "true" : "false"));
+    };
+
+    const paint = (pos: number) => {
+      roles.forEach((role, i) => {
+        const local = pos - i;
+        // Distance from this role's middle, in roles. The first has nothing to
+        // arrive after and the last nothing to leave for, so they hold at the
+        // ends instead.
+        let d = local - 0.5;
+        if (i === 0 && d < 0) d = 0;
+        if (i === count - 1 && d > 0) d = 0;
+        const away = smooth(clamp((Math.abs(d) - HOLD) / FADE));
+        role.style.opacity = String(1 - away);
+        role.style.transform = `translate3d(0, ${-Math.sign(d) * away * LIFT}px, 0)`;
+        role.style.filter =
+          away > 0.005 && away < 0.995 ? `blur(${(away * BLUR).toFixed(2)}px)` : "";
+
+        // The company lands with the role; what was done there is revealed a
+        // line at a time as the scroll carries on, so it is read in order. A
+        // role that has been read keeps its lines while it leaves.
+        const head = heads[i];
+        const arrive = i === 0 ? 1 : smooth(clamp(local / (0.5 - HOLD)));
+        if (head) head.style.transform = `translate3d(${(1 - arrive) * -40}px, 0, 0)`;
+
+        const own = lines[i];
+        const span = own.length > 1 ? (LINES_TO - LINE - LINES_FROM) / (own.length - 1) : 0;
+        own.forEach((line, j) => {
+          const start = LINES_FROM + j * span;
+          const t = local >= 1 ? 1 : smooth(clamp((local - start) / LINE));
+          line.style.opacity = String(t);
+          line.style.transform = `translate3d(0, ${(1 - t) * 28}px, 0)`;
+        });
+
+        if (fills[i]) fills[i].style.transform = `scaleX(${clamp(local)})`;
+      });
+      mark(Math.min(Math.floor(pos), count - 1));
+    };
+
+    const tick = () => {
       frame = 0;
-      if (distance <= 0) return;
-      const travel = section.offsetHeight - window.innerHeight;
-      if (travel <= 0) return;
-      const progress = Math.min(1, Math.max(0, -section.getBoundingClientRect().top / travel));
-      track.style.transform = `translate3d(${-progress * distance}px, 0, 0)`;
-
-      /*
-        The rail is drawn to the edge of the window, not to the fraction of the
-        run that has been scrolled. Scaling it by progress alone measures it
-        against the whole track — most of which is off to the left — so the
-        drawn end trails a long way behind the role being read.
-      */
-      /*
-        Scaled straight from progress. Because the rail is as long as the track
-        and travels with it, that puts the drawn end at the left of the window
-        when the run starts and walks it across to the right as the run ends —
-        so the line begins grey and fills as it is scrolled, rather than
-        arriving already blue.
-      */
-      fill.style.transform = `scaleX(${progress})`;
+      if (!live) return;
+      const goal = target();
+      current += (goal - current) * EASE;
+      if (Math.abs(goal - current) < 0.001) current = goal;
+      paint(current);
+      if (current !== goal) frame = requestAnimationFrame(tick);
+    };
+    const wake = () => {
+      if (!live || frame) return;
+      frame = requestAnimationFrame(tick);
     };
 
-    const request = () => {
-      if (!frame) frame = requestAnimationFrame(paint);
+    const clear = (el: HTMLElement | null) => {
+      if (!el) return;
+      el.style.opacity = "";
+      el.style.transform = "";
+      el.style.filter = "";
     };
 
-    /*
-      The page has to grow by exactly what the track has left to travel, so the
-      run finishes as the section lets go — any less and it is still moving when
-      it unpins, any more and it sits there stuck.
-
-      Giving the section that height also makes the page taller, which can bring
-      the scrollbar in, which narrows the stage and changes the answer. So this
-      settles rather than measures once: it re-runs on any size change and does
-      nothing when the number has not moved, which stops it chasing itself.
-    */
-    const measure = () => {
-      const next = track.scrollWidth - stage.clientWidth;
-      if (next === distance) return;
-      distance = next;
-      if (distance <= 0) {
-        section.style.height = "";
-        track.style.transform = "";
-        return;
-      }
-      section.style.height = `${distance + window.innerHeight}px`;
-      paint();
-    };
-
-    const enable = () => {
-      section.classList.add("is-pinned");
-      measure();
-      if (!io) {
-        // Rooted on the stage, so a role is "in" once it has travelled into the
-        // window rather than when the page scrolled past it.
-        io = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) entry.target.classList.add("is-in");
-            });
-          },
-          { root: stage, rootMargin: "0px -22% 0px -8%" }
-        );
-        items.forEach((item) => io!.observe(item));
-      }
-      if (!ro) {
-        ro = new ResizeObserver(() => measure());
-        ro.observe(track);
-        ro.observe(stage);
+    const sync = () => {
+      const next = room.matches && !reduced.matches;
+      if (next === live) return;
+      live = next;
+      section.classList.toggle("is-live", live);
+      if (live) {
+        active = -1;
+        current = target();
+        paint(current);
+      } else {
+        roles.forEach((r) => {
+          clear(r);
+          r.removeAttribute("aria-hidden");
+          r.dataset.state = "now";
+        });
+        heads.forEach(clear);
+        lines.flat().forEach(clear);
+        fills.forEach(clear);
       }
     };
 
-    const disable = () => {
-      section.classList.remove("is-pinned");
-      section.style.height = "";
-      track.style.transform = "";
-      fill.style.transform = "";
-      distance = 0;
-      io?.disconnect();
-      io = null;
-      ro?.disconnect();
-      ro = null;
-      items.forEach((item) => item.classList.remove("is-in"));
-    };
-
-    const sync = () => (wide.matches && !reduced.matches ? enable() : disable());
+    // Picking a company scrolls to the point where all of its lines are in,
+    // so the page and the role on screen never disagree.
+    steps.forEach((step, i) =>
+      step.addEventListener("click", () => {
+        const travel = section.offsetHeight - window.innerHeight;
+        const top = section.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({ top: top + ((i + 0.66) / count) * travel, behavior: "smooth" });
+      })
+    );
 
     sync();
-    wide.addEventListener("change", sync);
+    room.addEventListener("change", sync);
     reduced.addEventListener("change", sync);
-    window.addEventListener("scroll", request, { passive: true });
-    window.addEventListener("resize", () => {
-      if (section.classList.contains("is-pinned")) measure();
-      request();
-    });
-    // Logos arriving late change how wide the track is.
-    window.addEventListener("load", () => {
-      if (section.classList.contains("is-pinned")) measure();
-    });
-  }
+    window.addEventListener("scroll", wake, { passive: true });
+    window.addEventListener("resize", wake);
+  });
 </script>

@@ -265,46 +265,50 @@ export const testimonials = [
   },
 ];
 
+/*
+  Newest first, as on the CV. Wrapping part of a point in **double stars**
+  marks it as the result to read first: the experience section sets it in blue.
+*/
 export const experience = [
   {
     company: "Frelo",
-    role: "Creative Head",
+    role: "Creative Designer",
     // One stop, not two: the promotion is the interesting part, and the same
     // logo twice in a row read as a mistake rather than a step up.
     promotedFrom: "Creative Intern",
     promotion: "Promoted Nov 2025",
-    meta: "Full-time",
-    dates: "Sep 2025 — Present",
+    meta: "Full time",
+    dates: "Sep 2025 to Present",
+    year: "2025",
     logo: "/img/logos/logo-4.webp",
     points: [
-      "Directed creative for all video and visual content across campaigns.",
-      "Produced short and long-form video edits and designed graphics for social and brand storytelling.",
-      "Created marketing collateral that boosted brand visibility and recall.",
-      "Ideated and executed content for events, partnerships and community milestones.",
+      "Helped grow Frelo\u2019s community to **100+ members** through website design and brand visuals.",
+      "Conducted **4 offline events** with 20 to 30+ attendees each, handling design and video production from idea to final delivery.",
+      "Create 4 videos and 4 carousels every month (**90+ posts** so far), keeping the brand consistent across Instagram, LinkedIn, and YouTube.",
     ],
   },
   {
     company: "AiVANTA",
-    role: "Creative Designer",
-    meta: "Internship · Mumbai, Hybrid",
-    dates: "Dec 2024 — May 2025",
+    role: "Creative Design Intern",
+    meta: "Internship \u00b7 Mumbai, Hybrid",
+    dates: "Dec 2024 to May 2025",
+    year: "2024",
     logo: "/img/logos/logo-1.webp",
     points: [
-      "Contributed to AI-powered short films, from concept development to final production.",
-      "Worked extensively with Runway, Kling, LumaLabs, ElevenLabs and Midjourney.",
-      "Gained hands-on experience producing AI-generated audio-visual content end to end.",
+      "Created an AI powered short film from first concept to final edit, reaching **10,000+ views** on Instagram.",
+      "Used Runway, Midjourney, Kling, LumaLabs, and ElevenLabs to explore new ways of producing visual content.",
     ],
   },
   {
     company: "Lit Lamps",
     role: "Design Intern",
-    meta: "Internship · Mumbai, On-site",
-    dates: "Jul 2024 — Dec 2024",
+    meta: "Internship \u00b7 Mumbai, On site",
+    dates: "Jul 2024 to Dec 2024",
+    year: "2024",
     logo: "/img/logos/logo-5.webp",
     points: [
-      "Created engaging visuals of the lamps, aligning with the brand's aesthetic.",
-      "Collaborated with the team to deliver a company video reflecting the brand's vision.",
-      "Redesigned the packaging for the lamps.",
+      "Created **product visuals** to help present products clearly and support marketing efforts.",
+      "Assisted in producing the company\u2019s **promotional video** to strengthen its visual communication.",
     ],
   },
 ];
