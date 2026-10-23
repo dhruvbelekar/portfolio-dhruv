@@ -5,6 +5,10 @@
   and what is in a chapter comes in a piece at a time as the scroll carries on,
   so the problem is read before the people, the people before the idea, and
   every chapter gets the same screen to itself.
+
+  The structure is shared; the look is not. Each story names its project's
+  look, and the tokens and label style under `[data-look]` below dress it in
+  that project's own colours and type, so every case study reads as its own.
 */
 import ScrollReveal from "./ScrollReveal.astro";
 import type { Story } from "../data/stories";
@@ -14,22 +18,35 @@ interface Props {
 }
 
 const { story } = Astro.props;
-const chapters = story.chapters;
+const { look, chapters } = story;
 
 // "**simple and reliable**" in the data becomes a run of text in the accent.
 const split = (text: string) =>
   text.split(/\*\*(.+?)\*\*/).map((part, i) => ({ part, strong: i % 2 === 1 }));
 
+// A title marked `stacked` sets each sentence on a line of its own. A
+// sentence can end inside its highlight ("**freedom.** Driving"), so the
+// closing stars may sit between the full stop and the space.
+const sentences = (text: string) => text.split(/(?<=[.?!”](?:\*\*)?)\s+/);
+
 const pad = (n: number) => String(n).padStart(2, "0");
+
+// DRIVE's deck labels its slides like code: 01 THE_HOOK.
+const labelText = (nav: string) =>
+  look === "drive" ? nav.toUpperCase().replace(/\s+/g, "_") : nav;
 ---
 
 <section
   class="cs"
   data-cs
-  style={`--cs-count: ${chapters.length}; --cs-accent: ${story.accent};`}
+  data-look={look}
+  style={`--cs-count: ${chapters.length};`}
   aria-label="Case study"
 >
   <div class="cs-frame">
+    {/* The project's dark colour, faded up behind any chapter marked deep. */}
+    <div class="cs-backdrop" data-cs-backdrop aria-hidden="true"></div>
+
     <div class="cs-inner">
       {/* Where you are in the story, and a way to jump about in it. Hidden in
           the stacked version, where the chapters simply follow one another. */}
@@ -61,181 +78,209 @@ const pad = (n: number) => String(n).padStart(2, "0");
           chapters.map((c, i) => (
             <ScrollReveal class="cs-slot">
               <article
-                class:list={["cs-chapter", "image" in c && c.image && "has-image"]}
+                class:list={["cs-chapter", c.image && "has-image", c.deep && "is-deep"]}
                 data-cs-chapter={i}
                 data-kind={c.kind}
               >
                 <div class="cs-copy">
-                <p class="cs-label" data-cs-line>
-                  <span class="cs-bar" aria-hidden="true" />
-                  {pad(i + 1)} · {c.nav}
-                </p>
+                  <p class="cs-label" data-cs-line>
+                    <span class="cs-bar" aria-hidden="true" />
+                    <span class="cs-label-num">{pad(i + 1)}</span>
+                    <span class="cs-label-sep" aria-hidden="true">
+                      ·
+                    </span>
+                    <span class="cs-label-text">{labelText(c.nav)}</span>
+                  </p>
 
-                <h3 class="cs-title" data-cs-line>
-                  {/* The closing line is three short sentences, each set on
-                      a line of its own. */}
-                  {c.kind === "outro"
-                    ? c.title.split(/(?<=\.)\s+/).map((sentence) => (
-                        <span class="cs-sentence">
-                          {split(sentence).map(({ part, strong }) =>
-                            strong ? <em>{part}</em> : part
-                          )}
-                        </span>
-                      ))
-                    : split(c.title).map(({ part, strong }) =>
-                        strong ? <em>{part}</em> : part
-                      )}
-                </h3>
+                  <h3 class="cs-title" data-cs-line>
+                    {c.stacked
+                      ? sentences(c.title).map((sentence) => (
+                          <span class="cs-sentence">
+                            {split(sentence).map(({ part, strong }) =>
+                              strong ? <em>{part}</em> : part
+                            )}
+                          </span>
+                        ))
+                      : split(c.title).map(({ part, strong }) =>
+                          strong ? <em>{part}</em> : part
+                        )}
+                  </h3>
 
-                {c.kind === "intro" && (
-                  <>
+                  {"lead" in c && c.lead && c.kind !== "outro" && (
                     <p class="cs-lead" data-cs-line>
                       {c.lead}
                     </p>
+                  )}
+
+                  {c.kind === "intro" && c.facts && (
                     <ul class="cs-facts">
                       {c.facts.map((f) => (
                         <li data-cs-line>
                           <span class="cs-fact-name">{f.name}</span>
-                          {f.text}
+                          <span>{f.text}</span>
                         </li>
                       ))}
                     </ul>
-                  </>
-                )}
+                  )}
 
-                {c.kind === "personas" && (
-                  <ul class="cs-people">
-                    {c.people.map((p) => (
-                      <li class="cs-person" data-cs-line>
-                        <div class="cs-person-head">
-                          <img
-                            src={p.photo}
-                            alt=""
-                            width="120"
-                            height="120"
-                            loading="lazy"
-                            decoding="async"
-                          />
-                          <div>
-                            <p class="cs-person-name">{p.name}</p>
-                            <p class="cs-person-meta">
-                              {p.role}, {p.age}, {p.city}
-                            </p>
+                  {c.kind === "personas" && (
+                    <ul class="cs-people">
+                      {c.people.map((p) => (
+                        <li class="cs-person" data-cs-line>
+                          <div class="cs-person-head">
+                            <img
+                              src={p.photo}
+                              alt=""
+                              width="120"
+                              height="120"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                            <div>
+                              <p class="cs-person-name">{p.name}</p>
+                              <p class="cs-person-meta">
+                                {[p.role, p.age, p.city].filter(Boolean).join(", ")}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                        <blockquote class="cs-quote">“{p.quote}”</blockquote>
-                        <p class="cs-feels">Feels {p.feels.toLowerCase()}</p>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                {c.kind === "cards" && (
-                  <>
-                    <ul class="cs-cards">
-                      {c.cards.map((card, j) => (
-                        <li data-cs-line>
-                          <span class="cs-card-num">{pad(j + 1)}</span>
-                          <span class="cs-card-name">{card.name}</span>
-                          <span class="cs-card-text">{card.text}</span>
+                          <blockquote class="cs-quote">“{p.quote}”</blockquote>
+                          <p class="cs-person-note">{p.note}</p>
                         </li>
                       ))}
                     </ul>
-                    {c.note && (
-                      <p class="cs-note" data-cs-line>
-                        {c.note}
-                      </p>
-                    )}
-                  </>
-                )}
+                  )}
 
-                {c.kind === "statement" && c.chips && (
-                  <ul class="cs-chips">
-                    {c.chips.map((chip) => (
-                      <li data-cs-line>{chip}</li>
-                    ))}
-                  </ul>
-                )}
+                  {c.kind === "cards" && (
+                    <>
+                      <ul class="cs-cards">
+                        {c.cards.map((card, j) => (
+                          <li data-cs-line>
+                            <span class="cs-card-num">{pad(j + 1)}</span>
+                            <span class="cs-card-name">{card.name}</span>
+                            <span class="cs-card-text">{card.text}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      {c.note && (
+                        <p class="cs-note" data-cs-line>
+                          {c.note}
+                        </p>
+                      )}
+                    </>
+                  )}
 
-                {c.kind === "steps" && (
-                  <>
-                    {c.meta && (
-                      <p class="cs-meta" data-cs-line>
-                        {c.meta}
-                      </p>
-                    )}
-                    <ol class="cs-steps">
-                      {c.steps.map((s, j) => (
+                  {c.kind === "statement" && c.chips && (
+                    <ul class="cs-chips">
+                      {c.chips.map((chip) => (
+                        <li data-cs-line>{chip}</li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {c.kind === "steps" && (
+                    <>
+                      {c.meta && (
+                        <p class="cs-meta" data-cs-line>
+                          {c.meta}
+                        </p>
+                      )}
+                      <ol class="cs-steps">
+                        {c.steps.map((s, j) => (
+                          <li data-cs-line>
+                            <span class="cs-step-num">{pad(j + 1)}</span>
+                            <span class="cs-step-name">{s.name}</span>
+                            <ul class="cs-step-tags">
+                              {s.tags.map((tag) => (
+                                <li>{tag}</li>
+                              ))}
+                            </ul>
+                          </li>
+                        ))}
+                      </ol>
+                    </>
+                  )}
+
+                  {c.kind === "channels" && (
+                    <ul class="cs-channels">
+                      {c.channels.map((ch) => (
                         <li data-cs-line>
-                          <span class="cs-step-num">{pad(j + 1)}</span>
-                          <span class="cs-step-name">{s.name}</span>
-                          <ul class="cs-step-tags">
-                            {s.tags.map((tag) => (
-                              <li>{tag}</li>
-                            ))}
-                          </ul>
+                          <div class="cs-device">
+                            <img
+                              src={ch.image}
+                              alt={`${ch.name} screen`}
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          </div>
+                          <p class="cs-channel-name">{ch.name}</p>
+                          <p class="cs-channel-text">{ch.text}</p>
                         </li>
                       ))}
-                    </ol>
-                  </>
-                )}
+                    </ul>
+                  )}
 
-                {c.kind === "channels" && (
-                  <ul class="cs-channels">
-                    {c.channels.map((ch) => (
-                      <li data-cs-line>
-                        <div class="cs-device">
-                          <img src={ch.image} alt={`${ch.name} screen`} loading="lazy" decoding="async" />
-                        </div>
-                        <p class="cs-channel-name">{ch.name}</p>
-                        <p class="cs-channel-text">{ch.text}</p>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                  {c.kind === "gallery" && (
+                    <ul class="cs-gallery">
+                      {c.photos.map((photo) => (
+                        <li data-cs-line>
+                          <img src={photo.src} alt={photo.caption} loading="lazy" decoding="async" />
+                          <p>{photo.caption}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
 
-                {c.kind === "fixes" && (
-                  <ul class="cs-fixes">
-                    {c.fixes.map((f) => (
-                      <li data-cs-line>
-                        <span class="cs-fix-name">{f.name}</span>
-                        <span class="cs-fix-before">{f.before}</span>
-                        <span class="cs-fix-arrow" aria-hidden="true">
-                          →
-                        </span>
-                        <span class="cs-sr">became</span>
-                        <span class="cs-fix-after">{f.after}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                  {c.kind === "fixes" && (
+                    <ul class="cs-fixes">
+                      {c.fixes.map((f) => (
+                        <li data-cs-line>
+                          <span class="cs-fix-name">{f.name}</span>
+                          <span class="cs-fix-before">{f.before}</span>
+                          <span class="cs-fix-arrow" aria-hidden="true">
+                            →
+                          </span>
+                          <span class="cs-sr">became</span>
+                          <span class="cs-fix-after">{f.after}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
 
-                {c.kind === "outro" && (
-                  <>
-                    <p class="cs-lead" data-cs-line>
-                      {c.lead}
-                    </p>
-                    <a class="cs-cta" href={c.cta.href} target="_blank" rel="noreferrer" data-cs-line>
-                      {c.cta.label}
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M7 17 17 7M8 7h9v9" />
-                      </svg>
-                    </a>
-                  </>
-                )}
+                  {c.kind === "outro" && (
+                    <>
+                      <p class="cs-lead" data-cs-line>
+                        {c.lead}
+                      </p>
+                      <div class="cs-ctas" data-cs-line>
+                        {c.ctas.map((cta, j) => (
+                          <a
+                            class:list={["cs-cta", j > 0 && "is-secondary"]}
+                            href={cta.href}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {cta.label}
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2.5"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              aria-hidden="true"
+                            >
+                              <path d="M7 17 17 7M8 7h9v9" />
+                            </svg>
+                          </a>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
 
-                {"image" in c && c.image && (
-                  /* Lands with the chapter, so there is something to look
-                     at while the words come in. */
+                {/* Lands with the chapter, so there is something to look at
+                    while the words come in. */}
+                {c.image && (
                   <figure class="cs-figure">
                     <img src={c.image.src} alt={c.image.alt} loading="lazy" decoding="async" />
                   </figure>
@@ -250,6 +295,98 @@ const pad = (n: number) => String(n).padStart(2, "0");
 </section>
 
 <style>
+  /* ---- the looks ---- */
+
+  /*
+    Every colour, weight and corner below comes from these, so a look is a
+    handful of tokens plus, where the deck had one, its own way of labelling a
+    chapter. Each is lifted from that project's own slides.
+  */
+  .cs {
+    --cs-bg: var(--color-paper);
+    --cs-ink: var(--color-ink);
+    --cs-muted: var(--color-ink-muted);
+    --cs-line: rgb(0 0 0 / 0.1);
+    --cs-accent: var(--color-blue);
+    --cs-deep: #111;
+    --cs-panel: rgb(0 0 0 / 0.04);
+    --cs-card-bg: transparent;
+    --cs-card-border: var(--cs-line);
+    --cs-radius: 1.25rem;
+    --cs-dot: 999px;
+    --cs-title-weight: 800;
+    --cs-title-track: -0.035em;
+  }
+
+  /* Mahavitaran: the utility's crimson on white, heavy type, and the red rule
+     every slide in its deck opened with. */
+  .cs[data-look="mahavitaran"] {
+    --cs-accent: #dc143c;
+    --cs-panel: color-mix(in srgb, #dc143c 7%, white);
+    --cs-card-border: color-mix(in srgb, #dc143c 18%, transparent);
+  }
+
+  /* DRIVE: a cool off white, deep navy panels, a muted violet, light type,
+     square corners and labels written like code. */
+  .cs[data-look="drive"] {
+    --cs-bg: #fafafc;
+    --cs-ink: #1c1c24;
+    --cs-muted: #6b6b7b;
+    --cs-line: rgb(28 28 36 / 0.1);
+    --cs-accent: #5b5296;
+    --cs-deep: #252a5e;
+    --cs-panel: #f1f1f5;
+    --cs-card-bg: #f1f1f5;
+    --cs-card-border: transparent;
+    --cs-radius: 6px;
+    --cs-title-weight: 500;
+    --cs-title-track: -0.03em;
+  }
+
+  /* Aria: warm white, burnt orange, regular weight type and hairline rules,
+     the way its process record was set. */
+  .cs[data-look="aria"] {
+    --cs-bg: #fffdfa;
+    --cs-ink: #1a1714;
+    --cs-muted: #7a716a;
+    --cs-line: rgb(26 23 20 / 0.12);
+    --cs-accent: #c2570c;
+    --cs-panel: #f7f0e9;
+    --cs-card-bg: #ffffff;
+    --cs-card-border: rgb(26 23 20 / 0.12);
+    --cs-radius: 8px;
+    --cs-title-weight: 400;
+    --cs-title-track: -0.025em;
+  }
+
+  /* The AI film: black, electric blue, heavy type, no corners at all. */
+  .cs[data-look="film"] {
+    --cs-bg: #000;
+    --cs-ink: #f5f5f5;
+    --cs-muted: #9b9b9b;
+    --cs-line: rgb(255 255 255 / 0.14);
+    --cs-accent: #3b63ff;
+    --cs-panel: #0e0e0e;
+    --cs-card-bg: #0b0b0b;
+    --cs-card-border: rgb(255 255 255 / 0.12);
+    --cs-radius: 0px;
+    --cs-dot: 0px;
+    --cs-title-weight: 800;
+    --cs-title-track: -0.03em;
+  }
+
+  /* Words on a deep panel. DRIVE's navy slides used a lavender for the rules
+     and highlights, and so does this. */
+  .cs-chapter.is-deep,
+  .cs.is-deep-now .cs-nav {
+    --cs-ink: #eeeef7;
+    --cs-muted: #aaadd4;
+    --cs-line: rgb(255 255 255 / 0.16);
+    --cs-accent: #a9a2f2;
+    --cs-panel: rgb(255 255 255 / 0.06);
+    --cs-card-bg: rgb(255 255 255 / 0.06);
+  }
+
   /*
     The stacked chapters are the real section: what ships in the markup, what a
     phone or a short window gets, what reduced motion gets and what anyone
@@ -257,17 +394,20 @@ const pad = (n: number) => String(n).padStart(2, "0");
     for it is scoped under `.is-live` so none of it can strand the content.
   */
   .cs {
-    --cs-tint: color-mix(in srgb, var(--cs-accent) 7%, white);
-    padding: 1rem 1.5rem var(--space-section);
+    background: var(--cs-bg);
+    color: var(--cs-ink);
+    padding: clamp(3rem, 8vw, 5rem) 1.5rem var(--space-section);
   }
 
   .cs-inner {
+    position: relative;
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
   }
 
-  .cs-nav {
+  .cs-nav,
+  .cs-backdrop {
     display: none;
   }
 
@@ -278,6 +418,13 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
   .cs-chapter {
     min-width: 0;
+  }
+
+  /* A deep chapter in the stacked version carries its own panel. */
+  .cs:not(.is-live) .cs-chapter.is-deep {
+    padding: clamp(1.75rem, 5vw, 3rem);
+    border-radius: calc(var(--cs-radius) * 2);
+    background: var(--cs-deep);
   }
 
   /* A chapter with a picture sets it beside the words on a wide screen and
@@ -292,46 +439,42 @@ const pad = (n: number) => String(n).padStart(2, "0");
       grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
       gap: clamp(2rem, 4vw, 4rem);
     }
+    .cs-chapter.has-image[data-kind="outro"] {
+      grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    }
     .has-image .cs-title {
       font-size: clamp(1.9rem, 1rem + 2.4vw, 3.25rem);
     }
   }
+
+  /* Sized by its own proportions within both limits, so the box (and any
+     outline on it) hugs the picture instead of framing empty space beside a
+     portrait one. */
   .cs-figure img {
     display: block;
-    width: 100%;
+    width: auto;
+    max-width: 100%;
     height: auto;
     max-height: 62vh;
-    object-fit: contain;
+    border-radius: var(--cs-radius);
   }
-  /* The brief has the old platforms in a frame; the facts drop to one column
-     beside it. */
-  .has-image .cs-facts {
-    grid-template-columns: 1fr;
-    gap: 0;
-    margin-top: 1.5rem;
+  .cs-figure {
+    display: flex;
+    justify-content: center;
   }
-  .has-image .cs-facts li {
-    display: grid;
-    grid-template-columns: 5.5rem 1fr;
-    align-items: baseline;
-    padding: 0.7rem 0;
-    border-top: 1px solid rgb(0 0 0 / 0.08);
-    border-radius: 0;
-    background: none;
-  }
-  .has-image .cs-fact-name {
-    margin: 0;
-  }
-  [data-kind="intro"] .cs-figure img {
-    border-radius: 1rem;
+  [data-look="mahavitaran"] [data-kind="intro"] .cs-figure img {
     box-shadow: 0 20px 50px rgb(0 0 0 / 0.1);
   }
+  [data-look="film"] .cs-figure img {
+    outline: 1px solid var(--cs-card-border);
+  }
 
-  /* The red rule every slide in the deck opened with, carried over. */
+  /* ---- labels ---- */
+
   .cs-label {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.6rem;
     color: var(--cs-accent);
     font-size: 0.8rem;
     font-weight: 700;
@@ -339,47 +482,120 @@ const pad = (n: number) => String(n).padStart(2, "0");
     text-transform: uppercase;
   }
   .cs-bar {
+    display: none;
     width: 2.5rem;
     height: 4px;
     border-radius: 2px;
     background: var(--cs-accent);
   }
+  .cs-label-num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-look="mahavitaran"] .cs-bar {
+    display: block;
+    margin-right: 0.15rem;
+  }
+
+  /* 01  THE_HOOK, small and spaced, number dark and name grey. */
+  [data-look="drive"] .cs-label {
+    gap: 0.9rem;
+    color: var(--cs-muted);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+  }
+  [data-look="drive"] .cs-label-num {
+    color: var(--cs-ink);
+  }
+  [data-look="drive"] .cs-label-sep {
+    display: none;
+  }
+
+  /* A hairline across the top and the phase in orange beneath it. */
+  [data-look="aria"] .cs-label {
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--cs-ink);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+  }
+
+  /* A big blue numeral with the step's name small beside it. */
+  [data-look="film"] .cs-label {
+    align-items: baseline;
+    gap: 0.9rem;
+  }
+  [data-look="film"] .cs-label-num {
+    color: var(--cs-accent);
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 1.5rem + 1.8vw, 3.4rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.85;
+  }
+  [data-look="film"] .cs-label-sep {
+    display: none;
+  }
+  [data-look="film"] .cs-label-text {
+    color: var(--cs-muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+  }
+
+  /* ---- type ---- */
 
   .cs-title {
     max-width: 22ch;
     margin-top: 1rem;
-    color: var(--color-ink);
+    color: var(--cs-ink);
     font-family: var(--font-display);
     font-size: clamp(1.9rem, 1.2rem + 2.6vw, 3.6rem);
-    font-weight: 800;
-    letter-spacing: -0.035em;
-    line-height: 1.05;
+    font-weight: var(--cs-title-weight);
+    letter-spacing: var(--cs-title-track);
+    line-height: 1.06;
     text-wrap: balance;
   }
   .cs-title em {
     color: var(--cs-accent);
     font-style: normal;
   }
+  .cs-sentence {
+    display: block;
+  }
   [data-kind="statement"] .cs-title {
     max-width: 30ch;
+  }
+  [data-look="mahavitaran"] [data-kind="statement"] .cs-title {
     font-weight: 700;
   }
 
   .cs-lead {
     max-width: 44ch;
     margin-top: 1.25rem;
-    color: var(--color-ink-muted);
+    color: var(--cs-muted);
     font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.3rem);
     line-height: 1.45;
+  }
+  /* DRIVE's hook ends on a question set off by a violet rule. */
+  [data-look="drive"] [data-kind="intro"] .cs-lead,
+  [data-look="drive"] [data-kind="statement"] .cs-lead {
+    padding-left: 1.1rem;
+    border-left: 2px solid var(--cs-accent);
+    color: var(--cs-ink);
+  }
+  [data-look="film"] .cs-lead {
+    padding-left: 1rem;
+    border-left: 3px solid var(--cs-accent);
   }
 
   .cs-meta {
     margin-top: 0.75rem;
-    color: var(--color-ink-muted);
+    color: var(--cs-muted);
     font-size: 0.95rem;
   }
 
-  /* ---- Brief ---- */
+  /* ---- brief ---- */
 
   .cs-facts {
     display: grid;
@@ -389,9 +605,9 @@ const pad = (n: number) => String(n).padStart(2, "0");
   }
   .cs-facts li {
     padding: 1.25rem 1.4rem;
-    border-radius: 1.25rem;
-    background: var(--cs-tint);
-    color: var(--color-ink);
+    border-radius: var(--cs-radius);
+    background: var(--cs-panel);
+    color: var(--cs-ink);
     font-size: 1rem;
     line-height: 1.4;
   }
@@ -399,13 +615,32 @@ const pad = (n: number) => String(n).padStart(2, "0");
     display: block;
     margin-bottom: 0.35rem;
     color: var(--cs-accent);
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
   }
+  /* Beside a picture the facts drop to plain rows. */
+  .has-image .cs-facts {
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin-top: 1.5rem;
+  }
+  .has-image .cs-facts li {
+    display: grid;
+    grid-template-columns: minmax(6rem, 9rem) 1fr;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-top: 1px solid var(--cs-line);
+    border-radius: 0;
+    background: none;
+  }
+  .has-image .cs-fact-name {
+    margin: 0;
+  }
 
-  /* ---- Users ---- */
+  /* ---- users ---- */
 
   .cs-people {
     display: grid;
@@ -417,8 +652,15 @@ const pad = (n: number) => String(n).padStart(2, "0");
     display: flex;
     flex-direction: column;
     padding: 1.4rem;
-    border-radius: 1.5rem;
-    background: var(--cs-tint);
+    border: 1px solid var(--cs-card-border);
+    border-radius: calc(var(--cs-radius) * 1.2);
+    background: var(--cs-panel);
+  }
+  [data-look="mahavitaran"] .cs-person {
+    border-color: transparent;
+  }
+  [data-look="aria"] .cs-person {
+    background: var(--cs-card-bg);
   }
   .cs-person-head {
     display: flex;
@@ -433,32 +675,42 @@ const pad = (n: number) => String(n).padStart(2, "0");
     object-fit: cover;
   }
   .cs-person-name {
-    color: var(--color-ink);
+    color: var(--cs-ink);
     font-weight: 700;
     font-size: 1.05rem;
   }
   .cs-person-meta {
-    color: var(--color-ink-muted);
+    color: var(--cs-muted);
     font-size: 0.85rem;
   }
   .cs-quote {
     flex: 1;
     margin-top: 1.1rem;
-    color: var(--color-ink);
+    color: var(--cs-ink);
     font-family: var(--font-display);
     font-size: clamp(1.1rem, 0.95rem + 0.5vw, 1.4rem);
     font-weight: 600;
     letter-spacing: -0.015em;
     line-height: 1.25;
   }
-  .cs-feels {
+  [data-look="aria"] .cs-quote {
+    color: var(--cs-accent);
+    font-weight: 500;
+  }
+  .cs-person-note {
     margin-top: 1rem;
     color: var(--cs-accent);
     font-size: 0.8rem;
     font-weight: 700;
   }
+  [data-look="aria"] .cs-person-note {
+    color: var(--cs-muted);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
 
-  /* ---- Pain points ---- */
+  /* ---- cards ---- */
 
   .cs-cards {
     display: grid;
@@ -471,8 +723,9 @@ const pad = (n: number) => String(n).padStart(2, "0");
     flex-direction: column;
     gap: 0.4rem;
     padding: 1.25rem;
-    border-radius: 1.25rem;
-    border: 1px solid color-mix(in srgb, var(--cs-accent) 18%, transparent);
+    border: 1px solid var(--cs-card-border);
+    border-radius: var(--cs-radius);
+    background: var(--cs-card-bg);
   }
   .cs-card-num {
     color: var(--cs-accent);
@@ -481,28 +734,55 @@ const pad = (n: number) => String(n).padStart(2, "0");
     font-variant-numeric: tabular-nums;
   }
   .cs-card-name {
-    color: var(--color-ink);
+    color: var(--cs-ink);
     font-weight: 700;
     font-size: 1.05rem;
   }
   .cs-card-text {
-    color: var(--color-ink-muted);
+    color: var(--cs-muted);
     font-size: 0.92rem;
     line-height: 1.4;
   }
+  /* The project itself, last in Aria's benchmark, is the one in its colour. */
+  [data-look="aria"] .cs-cards li:last-child {
+    border-color: var(--cs-accent);
+  }
+  [data-look="aria"] .cs-cards li:last-child .cs-card-name {
+    color: var(--cs-accent);
+  }
+  [data-look="film"] .cs-card-name {
+    font-size: 1.25rem;
+    font-weight: 800;
+  }
+  [data-look="film"] .cs-cards li:last-child .cs-card-name {
+    color: var(--cs-accent);
+  }
+  .has-image .cs-cards {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  @media (min-width: 900px) {
+    .has-image .cs-cards li {
+      display: grid;
+      grid-template-columns: 2rem 9rem 1fr;
+      align-items: baseline;
+      padding: 0.85rem 1rem;
+    }
+  }
+
   .cs-note {
     margin-top: 1.5rem;
     padding-left: 1rem;
     border-left: 3px solid var(--cs-accent);
-    color: var(--color-ink);
+    color: var(--cs-ink);
     font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem);
     font-weight: 600;
   }
 
-  /* ---- How might we ---- */
+  /* ---- how might we ---- */
 
-  /* The three smaller questions the big one was built from, set as plain
-     lines under a rule rather than as pills. */
+  /* The smaller questions the big one was built from, set as plain lines
+     under a rule rather than as pills. */
   .cs-chips {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
@@ -512,24 +792,23 @@ const pad = (n: number) => String(n).padStart(2, "0");
   }
   .cs-chips li {
     padding-top: 0.85rem;
-    border-top: 1px solid rgb(0 0 0 / 0.12);
-    color: var(--color-ink-muted);
+    border-top: 1px solid var(--cs-line);
+    color: var(--cs-muted);
     font-size: 1rem;
     line-height: 1.4;
   }
 
-  /* ---- Process ---- */
+  /* ---- steps ---- */
 
   /*
     One thin line the stages sit on, a dot for each, the way a timeline is
     drawn. The rule is only on the stages themselves (`> li`): matched loosely
-    it also landed on every tag in the lists inside them, which striped the
-    whole slide red.
+    it also landed on every tag in the lists inside them.
   */
   .cs-steps {
     position: relative;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
     gap: 2rem 1.5rem;
     margin-top: clamp(2rem, 5vh, 3rem);
   }
@@ -539,7 +818,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
     right: 0;
     left: 0;
     height: 1px;
-    background: rgb(0 0 0 / 0.12);
+    background: var(--cs-line);
     content: "";
   }
   .cs-steps > li {
@@ -555,10 +834,14 @@ const pad = (n: number) => String(n).padStart(2, "0");
     left: 0;
     width: 0.65rem;
     height: 0.65rem;
-    border-radius: 999px;
+    border-radius: var(--cs-dot);
     background: var(--cs-accent);
-    box-shadow: 0 0 0 5px var(--color-paper);
+    box-shadow: 0 0 0 5px var(--cs-bg);
     content: "";
+  }
+  /* On a deep panel the dot sits on navy, not on the page. */
+  .is-deep .cs-steps > li::before {
+    box-shadow: 0 0 0 5px var(--cs-deep);
   }
   .cs-step-num {
     color: var(--cs-accent);
@@ -567,21 +850,30 @@ const pad = (n: number) => String(n).padStart(2, "0");
     font-variant-numeric: tabular-nums;
   }
   .cs-step-name {
-    color: var(--color-ink);
+    color: var(--cs-ink);
     font-family: var(--font-display);
     font-size: 1.2rem;
     font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1.15;
   }
+  [data-look="drive"] .cs-step-name,
+  [data-look="aria"] .cs-step-name {
+    font-weight: 500;
+  }
   .cs-step-tags {
     margin-top: 0.25rem;
-    color: var(--color-ink-muted);
+    color: var(--cs-muted);
     font-size: 0.9rem;
-    line-height: 1.7;
+    line-height: 1.6;
+  }
+  [data-look="film"] .cs-step-tags {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
   }
 
-  /* ---- Solution ---- */
+  /* ---- channels ---- */
 
   .cs-channels {
     display: grid;
@@ -601,11 +893,17 @@ const pad = (n: number) => String(n).padStart(2, "0");
     justify-content: center;
     padding: 1.25rem 1rem 0;
     overflow: hidden;
-    border-radius: 1.25rem;
-    background: var(--cs-tint);
+    border-radius: var(--cs-radius);
+    background: var(--cs-panel);
+  }
+  /* Aria's screens are wide, so they sit in the middle of the panel rather
+     than standing on its floor like a phone. */
+  [data-look="aria"] .cs-device {
+    align-items: center;
+    padding: 1rem;
   }
   /* The screens were cut from white slides; multiply drops the white into the
-     tint instead of leaving a pale box around each device. */
+     panel instead of leaving a pale box around each one. */
   .cs-device img {
     height: 100%;
     width: auto;
@@ -614,19 +912,53 @@ const pad = (n: number) => String(n).padStart(2, "0");
     object-position: bottom;
     mix-blend-mode: multiply;
   }
+  [data-look="aria"] .cs-device img {
+    height: auto;
+    max-height: 100%;
+    object-position: center;
+  }
   .cs-channel-name {
     margin-top: 0.85rem;
-    color: var(--color-ink);
+    color: var(--cs-ink);
     font-weight: 700;
   }
   .cs-channel-text {
     margin-top: 0.2rem;
-    color: var(--color-ink-muted);
+    color: var(--cs-muted);
     font-size: 0.9rem;
     line-height: 1.4;
   }
 
-  /* ---- Testing ---- */
+  /* ---- gallery ---- */
+
+  .cs-gallery {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: clamp(1.5rem, 4vh, 2.5rem);
+  }
+  @media (min-width: 900px) {
+    .cs-gallery {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .cs-gallery img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--cs-radius);
+  }
+  .cs-gallery p {
+    margin-top: 0.75rem;
+    color: var(--cs-muted);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  /* ---- fixes ---- */
 
   .cs-fixes {
     margin-top: clamp(1.5rem, 4vh, 2.5rem);
@@ -639,11 +971,17 @@ const pad = (n: number) => String(n).padStart(2, "0");
     align-items: baseline;
     gap: 0.35rem 0.5rem;
     padding: 1.1rem 0;
-    border-top: 1px solid rgb(0 0 0 / 0.08);
+    border-top: 1px solid var(--cs-line);
+  }
+  .cs-fix-name {
+    grid-column: 1 / -1;
+    color: var(--cs-ink);
+    font-weight: 700;
+    font-size: 1.05rem;
   }
   @media (min-width: 768px) {
     .cs-fixes li {
-      grid-template-columns: minmax(0, 15rem) minmax(0, 16rem) 1.5rem minmax(0, 1fr);
+      grid-template-columns: minmax(0, 13rem) minmax(0, 16rem) 1.5rem minmax(0, 1fr);
       align-items: center;
       gap: 1.25rem;
     }
@@ -651,14 +989,8 @@ const pad = (n: number) => String(n).padStart(2, "0");
       grid-column: auto;
     }
   }
-  .cs-fix-name {
-    grid-column: 1 / -1;
-    color: var(--color-ink);
-    font-weight: 700;
-    font-size: 1.05rem;
-  }
   .cs-fix-before {
-    color: var(--color-ink-muted);
+    color: var(--cs-muted);
     text-decoration: line-through;
     text-decoration-color: color-mix(in srgb, var(--cs-accent) 60%, transparent);
   }
@@ -667,7 +999,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
     font-weight: 700;
   }
   .cs-fix-after {
-    color: var(--color-ink);
+    color: var(--cs-ink);
     font-weight: 600;
   }
   .cs-sr {
@@ -679,33 +1011,54 @@ const pad = (n: number) => String(n).padStart(2, "0");
     white-space: nowrap;
   }
 
-  /* ---- Outcome ---- */
+  /* ---- outcome ---- */
 
   [data-kind="outro"] .cs-title {
     max-width: none;
     font-size: clamp(2.2rem, 0.9rem + 3.4vw, 4.5rem);
+    line-height: 1.02;
+  }
+  [data-look="mahavitaran"] [data-kind="outro"] .cs-title,
+  [data-look="film"] [data-kind="outro"] .cs-title {
     font-weight: 900;
-    line-height: 1;
   }
-  .cs-sentence {
-    display: block;
+  /* The longer closing lines, DRIVE's and Aria's, are quotes rather than
+     slogans, and sit a size down. */
+  [data-look="drive"] [data-kind="outro"] .cs-title,
+  [data-look="aria"] [data-kind="outro"] .cs-title {
+    font-size: clamp(1.9rem, 1rem + 2.4vw, 3.4rem);
+    line-height: 1.12;
   }
-  @media (min-width: 900px) {
-    .cs-chapter.has-image[data-kind="outro"] {
-      grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
-    }
+
+  .cs-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
   }
   .cs-cta {
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
-    margin-top: 2rem;
     padding: 0.95rem 1.4rem;
-    border-radius: 0.9rem;
+    border: 1px solid var(--cs-accent);
+    border-radius: min(var(--cs-radius), 0.9rem);
     background: var(--cs-accent);
     color: white;
     font-weight: 700;
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .cs-cta.is-secondary {
+    background: transparent;
+    color: var(--cs-accent);
+  }
+  .cs-chapter.is-deep .cs-cta:not(.is-secondary) {
+    color: var(--cs-deep);
+  }
+  [data-look="film"] .cs-cta {
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
   }
   .cs-cta svg {
     width: 1rem;
@@ -736,6 +1089,17 @@ const pad = (n: number) => String(n).padStart(2, "0");
     padding: clamp(5.5rem, 12vh, 7rem) clamp(1.5rem, 4vw, 2.5rem) clamp(1.5rem, 4vh, 2.5rem);
   }
 
+  /* Starts below the site header so the header never sits on navy. */
+  .cs.is-live .cs-backdrop {
+    position: absolute;
+    inset: clamp(6.75rem, 13vh, 7.5rem) 1rem 1rem;
+    display: block;
+    border-radius: calc(var(--cs-radius) * 3);
+    background: var(--cs-deep);
+    opacity: 0;
+    pointer-events: none;
+  }
+
   .cs.is-live .cs-inner {
     display: grid;
     height: 100%;
@@ -761,8 +1125,9 @@ const pad = (n: number) => String(n).padStart(2, "0");
     left: 0;
     width: 2px;
     border-radius: 2px;
-    background: rgb(0 0 0 / 0.08);
+    background: var(--cs-line);
     overflow: hidden;
+    transition: background-color 0.4s ease;
   }
   .cs-nav-fill {
     display: block;
@@ -771,13 +1136,14 @@ const pad = (n: number) => String(n).padStart(2, "0");
     background: var(--cs-accent);
     transform: scaleY(0);
     transform-origin: top center;
+    transition: background-color 0.4s ease;
   }
   .cs-nav-item {
     display: flex;
     width: 100%;
     gap: 0.6rem;
     padding: 0.35rem 0;
-    color: var(--color-ink-muted);
+    color: var(--cs-muted);
     font-size: 0.875rem;
     font-weight: 600;
     text-align: left;
@@ -801,6 +1167,10 @@ const pad = (n: number) => String(n).padStart(2, "0");
   .cs-nav-num {
     font-variant-numeric: tabular-nums;
     font-weight: 400;
+  }
+  [data-look="drive"] .cs-nav-item,
+  [data-look="aria"] .cs-nav-item {
+    font-weight: 500;
   }
 
   /* Every chapter sits in the same cell, so changing between them moves
@@ -831,6 +1201,9 @@ const pad = (n: number) => String(n).padStart(2, "0");
   .cs.is-live .cs-device {
     height: min(36vh, 20rem);
   }
+  .cs.is-live .cs-gallery img {
+    max-height: 44vh;
+  }
 
   /* A laptop window: the same stage a size down, so the fullest chapter still
      fits between the nav and the bottom of the screen. */
@@ -839,7 +1212,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
       font-size: clamp(1.8rem, 1rem + 2.2vw, 2.8rem);
     }
     .cs.is-live [data-kind="outro"] .cs-title {
-      font-size: clamp(2.2rem, 0.9rem + 3vw, 3.75rem);
+      font-size: clamp(2rem, 0.9rem + 2.8vw, 3.6rem);
     }
     .cs.is-live .cs-quote {
       font-size: 1.05rem;
@@ -878,8 +1251,10 @@ const pad = (n: number) => String(n).padStart(2, "0");
     const chapters = [...section.querySelectorAll<HTMLElement>("[data-cs-chapter]")];
     const steps = [...section.querySelectorAll<HTMLButtonElement>("[data-cs-step]")];
     const fill = section.querySelector<HTMLElement>("[data-cs-fill]");
+    const backdrop = section.querySelector<HTMLElement>("[data-cs-backdrop]");
     const frame = section.querySelector<HTMLElement>(".cs-frame");
     const pieces = chapters.map((c) => [...c.querySelectorAll<HTMLElement>("[data-cs-line]")]);
+    const deep = chapters.map((c) => c.classList.contains("is-deep"));
     const count = chapters.length;
 
     // A pinned stage needs a screen wide and tall enough to hold the fullest
@@ -910,9 +1285,13 @@ const pad = (n: number) => String(n).padStart(2, "0");
       steps.forEach((s, i) =>
         i === index ? s.setAttribute("aria-current", "step") : s.removeAttribute("aria-current")
       );
+      // The chapter list sits on the deep panel too, so it changes colour
+      // with it.
+      section.classList.toggle("is-deep-now", deep[index]);
     };
 
     const paint = (pos: number) => {
+      let depth = 0;
       chapters.forEach((chapter, i) => {
         const local = pos - i;
         // Distance from this chapter's middle, in chapters. The first has
@@ -926,6 +1305,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
         chapter.style.transform = `translate3d(0, ${-Math.sign(d) * away * LIFT}px, 0)`;
         chapter.style.filter =
           away > 0.005 && away < 0.995 ? `blur(${(away * BLUR).toFixed(2)}px)` : "";
+        if (deep[i]) depth = Math.max(depth, 1 - away);
 
         // The label and title land with the chapter; the rest is revealed a
         // piece at a time as the scroll carries on. A chapter that has been
@@ -940,6 +1320,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
           piece.style.transform = t === 1 ? "" : `translate3d(0, ${(1 - t) * 24}px, 0)`;
         });
       });
+      if (backdrop) backdrop.style.opacity = String(depth);
       if (fill) fill.style.transform = `scaleY(${clamp(pos / count)})`;
       mark(Math.min(Math.floor(pos), count - 1));
     };
@@ -964,9 +1345,9 @@ const pad = (n: number) => String(n).padStart(2, "0");
     const fits = () => {
       if (!frame) return false;
       const style = getComputedStyle(frame);
-      const room =
+      const space =
         frame.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
-      return chapters.every((c) => c.offsetHeight <= room);
+      return chapters.every((c) => c.offsetHeight <= space);
     };
 
     const clear = (el: HTMLElement) => {
@@ -1001,6 +1382,8 @@ const pad = (n: number) => String(n).padStart(2, "0");
         });
         pieces.flat().forEach(clear);
         if (fill) fill.style.transform = "";
+        if (backdrop) backdrop.style.opacity = "";
+        section.classList.remove("is-deep-now");
       }
     };
 
