@@ -58,6 +58,19 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
                 <span class="tm-name">{t.name}</span>
                 <span class="tm-role">{t.role}</span>
               </figcaption>
+              {t.metrics && t.metrics.length > 0 && (
+                <dl class="tm-metrics">
+                  {t.metrics.map((m) => (
+                    <div class="tm-metric">
+                      <dt class="tm-metric-label">{m.label}</dt>
+                      <dd class="tm-metric-value" style="font-family: var(--font-display);">
+                        <span data-tm-count={m.value}>{m.value}</span>
+                        {m.suffix}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
             </figure>
           ))
         }
@@ -191,6 +204,49 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
     color: var(--color-ink-muted);
   }
 
+  /* The numbers behind the quote: the largest type after the quote itself, in
+     the brand blue, each over a short plain label. The label sits under the
+     number visually but first in the markup, so it is read before the value. */
+  .tm-metrics {
+    margin: clamp(1.5rem, 4vh, 2.5rem) auto 0;
+    padding-top: clamp(1.25rem, 3vh, 2rem);
+    border-top: 1px solid color-mix(in srgb, var(--color-ink) 12%, transparent);
+    display: flex;
+    justify-content: center;
+    gap: clamp(1.5rem, 6vw, 4.5rem);
+    max-width: 760px;
+  }
+  .tm-metric {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 0.4rem;
+    min-width: 0;
+  }
+  .tm-metric-value {
+    margin: 0;
+    color: var(--color-blue);
+    font-weight: 900;
+    font-size: clamp(2rem, 1.2rem + 2.6vw, 3.75rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .tm-metric-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-ink-muted);
+    text-wrap: balance;
+  }
+  @media (max-width: 480px) {
+    .tm-metrics {
+      gap: 1rem;
+    }
+    .tm-metric-label {
+      font-size: 0.6875rem;
+    }
+  }
+
   .tm-count {
     font-size: 0.75rem;
     font-weight: 700;
@@ -239,6 +295,8 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
   // the scroll by a few frames, which turns the steps of a mouse wheel into
   // one glide.
   const EASE = 0.14;
+  // How long a quote's numbers take to count up once it is on stage.
+  const COUNT_MS = 1400;
 
   const smooth = (t: number) => t * t * (3 - 2 * t);
 
@@ -249,6 +307,7 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     const count = quotes.length;
     let active = -1;
+    let inView = false;
 
     // How far through its pinned stretch the section is, in quotes: 0 at the
     // start, `count` at the end.
@@ -260,6 +319,30 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
     };
     let current = target();
 
+    // Each time a quote takes the stage its numbers run up from zero, so the
+    // result lands as the quote does. The page is served with the final
+    // values, which is what shows with motion turned down.
+    const countUp = (quote: HTMLElement) => {
+      quote.querySelectorAll<HTMLElement>("[data-tm-count]").forEach((el) => {
+        const goal = Number(el.dataset.tmCount);
+        const run = Number(el.dataset.tmRun ?? 0) + 1;
+        el.dataset.tmRun = String(run);
+        const start = performance.now();
+        const step = (now: number) => {
+          if (el.dataset.tmRun !== String(run)) return;
+          const t = Math.min(1, (now - start) / COUNT_MS);
+          el.textContent = String(Math.round((1 - Math.pow(1 - t, 3)) * goal));
+          if (t < 1) requestAnimationFrame(step);
+        };
+        el.textContent = "0";
+        requestAnimationFrame(step);
+        // Frames stop in a background tab; a timer still lands the final value.
+        setTimeout(() => {
+          if (el.dataset.tmRun === String(run)) el.textContent = String(goal);
+        }, COUNT_MS + 100);
+      });
+    };
+
     const mark = (index: number) => {
       if (index === active) return;
       active = index;
@@ -269,6 +352,7 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
       });
       people.forEach((p, i) => p.setAttribute("aria-selected", i === index ? "true" : "false"));
       if (counter) counter.textContent = String(index + 1).padStart(2, "0");
+      if (inView) countUp(quotes[index]);
     };
 
     const paint = (pos: number) => {
@@ -321,6 +405,16 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
       mark(0);
       return;
     }
+    // The first quote is on stage before the section is on screen, so its
+    // numbers wait for the section to come into view, and run again whenever
+    // it comes back.
+    new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting;
+        if (inView && active >= 0) countUp(quotes[active]);
+      },
+      { threshold: 0.25 }
+    ).observe(section.querySelector(".tm-frame") ?? section);
     paint(current);
     window.addEventListener("scroll", wake, { passive: true });
     window.addEventListener("resize", wake);

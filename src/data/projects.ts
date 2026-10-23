@@ -235,13 +235,31 @@ export const projects: Project[] = [
   },
 ];
 
-export const testimonials = [
+/*
+  `metrics` are the numbers the work behind each quote moved, counted up under
+  it as the quote takes the stage. They come from the CV, so a quote with no
+  measured result simply carries none.
+*/
+export type Metric = { value: number; suffix?: string; label: string };
+
+export const testimonials: {
+  name: string;
+  role: string;
+  quote: string;
+  avatar: string;
+  metrics?: Metric[];
+}[] = [
   {
     name: "Vaishakh Sajeevan",
     role: "Founder, Frelo",
     quote:
       "Dhruv played a key role in building Frelo's brand through our website, social media, reels, and creative content, helping us grow our community.",
     avatar: "/img/testimonials/vaishakh-sajeevan.webp",
+    metrics: [
+      { value: 100, suffix: "+", label: "Community members" },
+      { value: 90, suffix: "+", label: "Posts delivered" },
+      { value: 4, label: "Offline events" },
+    ],
   },
   {
     name: "Nikhil Kulkarni",
@@ -255,6 +273,11 @@ export const testimonials = [
     quote:
       "Over three months, Dhruv used Runway, Midjourney, Kling, and ElevenLabs to create an AI film with strong visual storytelling.",
     avatar: "/img/testimonials/rupak-shah.webp",
+    metrics: [
+      { value: 10, suffix: "K+", label: "Instagram views" },
+      { value: 5, label: "AI tools used" },
+      { value: 3, label: "Months to final cut" },
+    ],
   },
   {
     name: "Ankit Savla",
