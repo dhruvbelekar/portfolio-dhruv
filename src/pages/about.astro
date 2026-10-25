@@ -11,8 +11,12 @@ import TestimonialsSection from "../components/TestimonialsSection.astro";
 ---
 
 <Layout title="About — Dhruv Belekar" ogImage="/og/og-projects-about-contact.png">
-  <section class="px-6 pt-16 md:px-10">
-    <div class="mx-auto max-w-[1400px]">
+  {/*
+    Set the way the landing page sets it: a narrow centred column with room
+    either side, the portrait on top and the bio quiet beneath it.
+  */}
+  <section class="px-6 pt-16 sm:px-12 md:px-20 lg:px-32">
+    <div class="mx-auto max-w-[960px]">
       <LetterReveal
         as="h1"
         class="select-none text-center font-black leading-[0.9] text-blue"
@@ -21,8 +25,8 @@ import TestimonialsSection from "../components/TestimonialsSection.astro";
         About Dhruv
       </LetterReveal>
 
-      <div class="mt-12 grid grid-cols-1 items-start gap-6 sm:grid-cols-[280px_1fr] sm:gap-10 md:grid-cols-[360px_1fr]">
-        <ScrollReveal>
+      <div class="mt-12 flex flex-col items-center gap-10 text-center">
+        <ScrollReveal class="w-[220px] sm:w-[260px]">
           <div class="group w-full focus:outline-none" tabindex="0">
             <div class="relative aspect-square w-full overflow-hidden rounded-2xl group-focus-visible:ring-2 group-focus-visible:ring-blue">
               <img
@@ -47,11 +51,10 @@ import TestimonialsSection from "../components/TestimonialsSection.astro";
           Same as the landing page: the words lighting up one at a time is the
           reveal, so the block does not also need fading in underneath it.
         */}
-        <MagicText class="min-w-0">
-          <BioCopy />
+        <MagicText class="w-full max-w-[42rem]">
+          <BioCopy quiet />
         </MagicText>
       </div>
-
     </div>
   </section>
 
