@@ -1,10 +1,11 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import ScrollReveal from "../components/ScrollReveal.astro";
+import LetterReveal from "../components/LetterReveal.astro";
 import BioCopy from "../components/BioCopy.astro";
 import MagicText from "../components/MagicText.astro";
 import ExperienceSection from "../components/ExperienceSection.astro";
-import ServicesSection from "../components/ServicesSection.astro";
+import SkillsSection from "../components/SkillsSection.astro";
 import ClientLogos from "../components/ClientLogos.astro";
 import TestimonialsSection from "../components/TestimonialsSection.astro";
 ---
@@ -12,14 +13,13 @@ import TestimonialsSection from "../components/TestimonialsSection.astro";
 <Layout title="About — Dhruv Belekar" ogImage="/og/og-projects-about-contact.png">
   <section class="px-6 pt-16 md:px-10">
     <div class="mx-auto max-w-[1400px]">
-      <ScrollReveal>
-        <h1
-          class="select-none text-center font-black leading-[0.9] text-blue"
-          style="font-family: var(--font-display); font-size: var(--type-section);"
-        >
-          About Dhruv
-        </h1>
-      </ScrollReveal>
+      <LetterReveal
+        as="h1"
+        class="select-none text-center font-black leading-[0.9] text-blue"
+        style="font-family: var(--font-display); font-size: var(--type-section);"
+      >
+        About Dhruv
+      </LetterReveal>
 
       <div class="mt-12 grid grid-cols-1 items-start gap-6 sm:grid-cols-[280px_1fr] sm:gap-10 md:grid-cols-[360px_1fr]">
         <ScrollReveal>
@@ -55,22 +55,16 @@ import TestimonialsSection from "../components/TestimonialsSection.astro";
     </div>
   </section>
 
-  {/*
-    The skills used to stream past in two tickers, which meant none of them
-    could be read for longer than a second and none of them could be shown.
-    They stand still now, and each one has a picture.
-  */}
-  <ServicesSection />
-
-  {/*
-    Full bleed and outside the usual shell: the section pins itself and runs a
-    track the width of the window, which a 1400px column with padding would
-    crop. The reveal wrapper goes too — the milestones arrive on their own as
-    the track brings them in.
-  */}
+  {/* Where the work was made: a trail drawn down the page from one company to the next. */}
   <ExperienceSection />
 
   <TestimonialsSection />
 
-  <ClientLogos class="mb-16" />
+  <ClientLogos />
+
+  {/*
+    The same pile that closes the landing page, in place of the old services
+    list: every skill and tool, raining in to be picked up and thrown.
+  */}
+  <SkillsSection />
 </Layout>
