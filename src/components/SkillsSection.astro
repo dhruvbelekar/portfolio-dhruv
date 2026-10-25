@@ -1,0 +1,101 @@
+---
+import LetterReveal from "./LetterReveal.astro";
+import { TagPile } from "./ui/tag-pile";
+import { skills } from "../data/projects";
+
+/*
+  The last thing on the page before the footer: every skill and tool in one
+  pile that rains in as it comes into view, to be picked up and thrown about.
+  It replaces the tech stack shelf and the services list, which said the same
+  things in two places.
+*/
+---
+
+<section class="px-6 pt-[var(--space-section)] pb-[var(--space-section)] md:px-10">
+  <div class="mx-auto max-w-[1400px]">
+    <LetterReveal
+      class="select-none text-center font-black leading-[0.9] text-blue"
+      style="font-family: var(--font-display); font-size: var(--type-section);"
+    >
+      My Skills
+    </LetterReveal>
+    <LetterReveal as="p" by="words" class="mt-4 text-center text-base text-ink-muted">
+      Everything I work with. Go on, throw them around.
+    </LetterReveal>
+
+    <TagPile client:visible tags={skills} className="skills-pile" />
+  </div>
+</section>
+
+<style is:global>
+  /*
+    The box the tags fall into. Before they fall they sit in a plain wrapped
+    row along its floor, which is also what shows with no JS.
+  */
+  .skills-pile {
+    position: relative;
+    /* Room for the pile and a little air above it to throw into. */
+    height: clamp(24rem, 54vh, 32rem);
+    margin-top: clamp(2rem, 5vh, 3.5rem);
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-end;
+    justify-content: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid rgb(0 0 0 / 0.08);
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  /* Measured where they are, but not shown until they fall. */
+  .skills-pile[data-armed]:not([data-live]) .pile-tag {
+    visibility: hidden;
+  }
+  .skills-pile[data-live] .pile-tag {
+    position: absolute;
+    top: 0;
+    left: 0;
+    will-change: transform;
+    cursor: grab;
+  }
+  .skills-pile[data-grabbing] .pile-tag {
+    cursor: grabbing;
+  }
+
+  .pile-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.6em 1.15em;
+    border-radius: 999px;
+    font-family: var(--font-display);
+    font-size: clamp(0.85rem, 0.7rem + 0.45vw, 1.15rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    white-space: nowrap;
+    /* Sideways drags pick a tag up; up and down still scroll the page, so a
+       phone is never caught in the pile. */
+    touch-action: pan-y;
+  }
+  .pile-tag[data-tone="strong"] {
+    background: var(--color-blue);
+    color: var(--color-paper);
+  }
+  .pile-tag[data-tone="dark"] {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+  /* A phone stacks the same tags much higher. */
+  @media (max-width: 640px) {
+    .skills-pile {
+      height: 36rem;
+    }
+  }
+
+  .pile-tag[data-tone="light"] {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    box-shadow: inset 0 0 0 1.5px rgb(32 36 47 / 0.18);
+  }
+</style>

@@ -39,6 +39,11 @@
   --color-blue: #1343f0; /* brand accent — headlines, links, icons */
   --color-gray: #b3b3b3; /* secondary hero copy, timestamp */
   --color-paper: #ffffff;
+  /* shadcn's names for the same colours, for components brought in from its
+     ecosystem; a section can point them elsewhere for itself. */
+  --color-background: var(--color-paper);
+  --color-foreground: var(--color-ink);
+  --color-muted-foreground: var(--color-ink-muted);
 
   --font-display: "Inter Variable", "Inter", sans-serif;
   --font-sans: "Inter Variable", "Inter", sans-serif;

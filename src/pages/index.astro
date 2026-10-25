@@ -2,14 +2,14 @@
 import Layout from "../layouts/Layout.astro";
 import IntroLoader from "../components/IntroLoader.astro";
 import ScrollReveal from "../components/ScrollReveal.astro";
+import LetterReveal from "../components/LetterReveal.astro";
 import ProjectRow from "../components/ProjectRow.astro";
 import ProjectFilterNav from "../components/ProjectFilterNav.astro";
 import HighlightsCarousel from "../components/HighlightsCarousel.astro";
 import BioCopy from "../components/BioCopy.astro";
 import MagicText from "../components/MagicText.astro";
 import ExperienceSection from "../components/ExperienceSection.astro";
-import ServicesSection from "../components/ServicesSection.astro";
-import TechStackSection from "../components/TechStackSection.astro";
+import SkillsSection from "../components/SkillsSection.astro";
 import ClientLogos from "../components/ClientLogos.astro";
 import TestimonialsSection from "../components/TestimonialsSection.astro";
 import HeroPortal from "../components/HeroPortal";
@@ -27,20 +27,27 @@ const moreProjects = projects.filter((p) => !highlightSlugs.includes(p.slug));
   <!--
     Hero. The name is a way in: scrolling takes the camera into one of its
     letters until the screen is all blue, and the introduction is inside.
-    The face and the introduction are written here and handed to the portal,
-    so the intro reaches them as it always has.
+    The face is written here and handed to the portal, so the intro reaches
+    it as it always has; the lines that burn through the blue come in as data.
   -->
   <div data-hero-portal>
-    <HeroPortal client:load>
+    <HeroPortal
+      client:load
+      intro={[
+        "i take ideas from 0 to 1, turning them into things people need.",
+        "from designing products to creating visuals, i combine human thinking with AI to make ideas happen.",
+        "i also have a slight obsession with the color blue. you'll notice.",
+      ]}
+    >
       <div slot="front" class="hero-front">
         <h1 class="sr-only">Dhruv Belekar</h1>
-        <div class="hero-face-spot" data-hero-depth="28">
+        <div class="hero-face-spot">
           {/*
             Both faces ship stacked and cross-faded: fetching the second on first
             hover would land it after the pointer had gone. `active` carries the
             swap to touch, where there is no hover.
           */}
-          <span data-hero-face data-hero-depth="20" class="group block">
+          <span data-hero-face class="group block">
             <span
               class="block rotate-[8deg] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-rotate-[5deg] group-hover:scale-105 group-active:-rotate-[5deg] group-active:scale-105 motion-reduce:transition-none"
             >
@@ -64,13 +71,6 @@ const moreProjects = projects.filter((p) => !highlightSlugs.includes(p.slug));
           </span>
         </div>
       </div>
-
-      <p class="hero-intro" style="font-family: var(--font-display);">
-        I design <span>digital experiences</span>,{" "}
-        create <span>visual stories</span>,{" "}
-        and bring ideas to life through <span>design and film</span>.{" "}
-        I&nbsp;also have a&nbsp;slight obsession with the color <span>blue</span>. You'll notice.
-      </p>
     </HeroPortal>
   </div>
 
@@ -84,15 +84,15 @@ const moreProjects = projects.filter((p) => !highlightSlugs.includes(p.slug));
     class="scroll-mt-24 px-6 pt-[var(--space-section)] md:px-10 sm:scroll-mt-28"
   >
     <div class="mx-auto max-w-[1400px]">
-      <ScrollReveal>
-        <h2
-          class="select-none text-center font-black leading-[0.9] text-blue"
-          style="font-family: var(--font-display); font-size: var(--type-section);"
-        >
-          Highlights
-        </h2>
-        <p class="mt-4 text-center text-base text-ink-muted">A few projects I'm proud of.</p>
-      </ScrollReveal>
+      <LetterReveal
+        class="select-none text-center font-black leading-[0.9] text-blue"
+        style="font-family: var(--font-display); font-size: var(--type-section);"
+      >
+        Highlights
+      </LetterReveal>
+      <LetterReveal as="p" by="words" class="mt-4 text-center text-base text-ink-muted">
+        A few projects I'm proud of.
+      </LetterReveal>
 
       <ScrollReveal delay={0.05} y={40} class="mt-12">
         <HighlightsCarousel projects={highlights} />
@@ -183,32 +183,26 @@ const moreProjects = projects.filter((p) => !highlightSlugs.includes(p.slug));
   <TestimonialsSection />
 
   {/*
-    Straight after the testimonials: what the work is made with, then where
-    it was made, before the longer introduction.
-  */}
-  <TechStackSection />
-
-  {/*
-    Outside the usual shell: the section pins itself and hands the screen to
-    one company at a time, revealing what was done there as the page scrolls.
+    Straight after the testimonials: where the work was made, a trail drawn
+    down the page from one company to the next, before the longer
+    introduction.
   */}
   <ExperienceSection />
 
   <!-- About preview. No top padding: the experience section above already
-       ends on a full section gap. -->
-  <section class="px-6 md:px-10">
-    <div class="mx-auto max-w-[1400px]">
-      <ScrollReveal>
-        <h2
-          class="select-none text-center font-black leading-[0.9] text-blue"
-          style="font-family: var(--font-display); font-size: var(--type-section);"
-        >
-          About Dhruv
-        </h2>
-      </ScrollReveal>
+       ends on a full section gap. A narrow centred column with room either
+       side: the portrait, then the bio set quietly beneath it. -->
+  <section class="px-6 sm:px-12 md:px-20 lg:px-32">
+    <div class="mx-auto max-w-[960px]">
+      <LetterReveal
+        class="select-none text-center font-black leading-[0.9] text-blue"
+        style="font-family: var(--font-display); font-size: var(--type-section);"
+      >
+        About Dhruv
+      </LetterReveal>
 
-      <div class="mt-12 grid grid-cols-1 items-start gap-6 sm:grid-cols-[280px_1fr] sm:gap-10 md:grid-cols-[360px_1fr]">
-        <ScrollReveal>
+      <div class="mt-12 flex flex-col items-center gap-10 text-center">
+        <ScrollReveal class="w-[220px] sm:w-[260px]">
           <div class="group w-full focus:outline-none" tabindex="0">
             <div class="relative aspect-square w-full overflow-hidden rounded-2xl group-focus-visible:ring-2 group-focus-visible:ring-blue">
               <img
@@ -235,165 +229,19 @@ const moreProjects = projects.filter((p) => !highlightSlugs.includes(p.slug));
           the reveal, and fading the whole block in underneath it just made the
           same copy fade twice.
         */}
-        <MagicText class="min-w-0">
-          <BioCopy />
+        <MagicText class="w-full max-w-[42rem]">
+          <BioCopy quiet />
         </MagicText>
       </div>
-
     </div>
   </section>
 
   {/*
-    The skills used to stream past in two tickers, which meant none of them
-    could be read for longer than a second and none of them could be shown.
-    They stand still now, and each one has a picture.
+    Last before the footer: every skill and tool in one pile, which rains in
+    as it comes into view and can be picked up and thrown.
   */}
-  <ServicesSection />
+  <SkillsSection />
 </Layout>
-
-<script>
-  /*
-    The hero follows the pointer. Each layer carries a reach in pixels and the
-    ones further forward travel further, so the face clears the name and the
-    hero reads as having depth rather than sliding as one sheet. The name is
-    drawn by the portal, cut out of its blue layer, so that layer is what
-    moves; the face rides with it and then a little further on its own.
-
-    It writes `translate` rather than `transform`: the intro owns `transform`
-    on the face while it reveals it, and the face tilts on hover from its own,
-    so neither is touched.
-
-    Once the camera starts into the name, the lean is let go over the first
-    stretch of the scroll: the blue layer fills the screen by the end, and a
-    screen of blue sliding about would show its edges.
-  */
-  const hero = document.querySelector<HTMLElement>("[data-hero-portal]");
-  const layers: { find: () => HTMLElement | null; reach: number }[] = [
-    { find: () => document.querySelector(".hero-portal [data-gp-field]"), reach: 28 },
-    ...[...document.querySelectorAll<HTMLElement>("[data-hero-depth]")].map((el) => ({
-      find: () => el,
-      reach: Number(el.dataset.heroDepth) || 0,
-    })),
-  ];
-
-  if (hero) {
-    const fine = window.matchMedia("(pointer: fine)");
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    // The share of the remaining distance covered each 60th of a second. Low
-    // enough that the hero drifts after the pointer rather than snapping to it.
-    const EASE = 0.14;
-    // How far into the dive, as the portal counts it, the lean is gone.
-    const LET_GO = 0.08;
-
-    let listening = false;
-    let onScreen = true;
-    let frame = 0;
-    let last = 0;
-    let targetX = 0;
-    let targetY = 0;
-    let x = 0;
-    let y = 0;
-
-    const presence = () => {
-      const progress = Number(document.querySelector<HTMLElement>(".hero-portal")?.dataset.gpProgress ?? 0);
-      const t = Math.min(Math.max(progress / LET_GO, 0), 1);
-      return 1 - t * t * (3 - 2 * t);
-    };
-
-    const paint = (now: number) => {
-      // Scaled by the time since the last frame, so a 120Hz screen eases at
-      // the same pace as a 60Hz one instead of twice as fast.
-      const steps = last ? Math.min((now - last) / (1000 / 60), 4) : 1;
-      last = now;
-      const k = 1 - Math.pow(1 - EASE, steps);
-      x += (targetX - x) * k;
-      y += (targetY - y) * k;
-
-      // Close enough to land on the target exactly, so the hero comes to rest
-      // where it was set rather than a hundredth of a pixel off it.
-      const settled = Math.abs(targetX - x) < 0.0005 && Math.abs(targetY - y) < 0.0005;
-      if (settled) {
-        x = targetX;
-        y = targetY;
-      }
-
-      const share = presence();
-      for (const { find, reach } of layers) {
-        const el = find();
-        if (!el) continue;
-        const dx = x * reach * share;
-        const dy = y * reach * share;
-        el.style.translate = dx || dy ? `${dx.toFixed(2)}px ${dy.toFixed(2)}px` : "";
-      }
-
-      // Once it has caught up there is nothing to draw until the pointer moves.
-      if (settled) {
-        frame = 0;
-        last = 0;
-        return;
-      }
-      frame = requestAnimationFrame(paint);
-    };
-
-    const wake = () => {
-      if (!frame && onScreen) frame = requestAnimationFrame(paint);
-    };
-
-    // Measured against the whole window rather than the hero, as the reference
-    // does: the pointer anywhere on screen is somewhere the hero can lean to.
-    const onMove = (e: MouseEvent) => {
-      targetX = (e.clientX / window.innerWidth - 0.5) * 2;
-      targetY = (e.clientY / window.innerHeight - 0.5) * 2;
-      wake();
-    };
-
-    // Leaving the window lets the hero settle back to where it was set.
-    const onLeave = () => {
-      targetX = 0;
-      targetY = 0;
-      wake();
-    };
-
-    // Scrolled past, the hero is not drawn at all.
-    const observer = new IntersectionObserver(([entry]) => {
-      onScreen = entry.isIntersecting;
-      if (onScreen) wake();
-    });
-
-    const start = () => {
-      if (listening) return;
-      listening = true;
-      document.addEventListener("mousemove", onMove, { passive: true });
-      document.documentElement.addEventListener("mouseleave", onLeave);
-      // The lean follows the scroll out as well as the pointer.
-      window.addEventListener("scroll", wake, { passive: true });
-      observer.observe(hero);
-    };
-
-    const stop = () => {
-      if (!listening) return;
-      listening = false;
-      cancelAnimationFrame(frame);
-      frame = 0;
-      last = 0;
-      targetX = targetY = x = y = 0;
-      document.removeEventListener("mousemove", onMove);
-      document.documentElement.removeEventListener("mouseleave", onLeave);
-      window.removeEventListener("scroll", wake);
-      observer.disconnect();
-      for (const { find } of layers) {
-        const el = find();
-        if (el) el.style.translate = "";
-      }
-    };
-
-    // Touch has no pointer to follow, and reduced motion asked for stillness.
-    const sync = () => (fine.matches && !reduced.matches ? start() : stop());
-    sync();
-    fine.addEventListener("change", sync);
-    reduced.addEventListener("change", sync);
-  }
-</script>
 
 <style>
   /*
@@ -432,25 +280,62 @@ const moreProjects = projects.filter((p) => !highlightSlugs.includes(p.slug));
     left: calc(50cqw + (4.475 - 0.0283 - 5.7095 / 2) * var(--em));
     top: calc(var(--gp-word-top, 40%) + (0.7275 - 1.14) * var(--em));
     width: calc(0.7 * var(--em));
+    /* While the name follows the pointer its weight moves the k; the face
+       moves with it. */
+    translate: var(--face-shift, 0px) 0;
     /* The front layer ignores the pointer; the face still wants its hover. */
     pointer-events: auto;
   }
 
-  /* Inside the blue: the introduction, in white, with the parts that matter
-     at full strength and the rest let back. */
-  .hero-intro {
-    max-width: 22em;
-    margin: 0 auto;
-    text-align: center;
-    color: rgb(255 255 255 / 0.62);
-    font-weight: 700;
-    font-size: clamp(1.625rem, 1rem + 2.6vw, 3.75rem);
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    text-wrap: balance;
+  /*
+    The name that answers the pointer, laid exactly over the portal's own: the
+    same face, size, tracking and kerning, on the baseline the portal drew.
+    The line's box is centred, so heavier and lighter weights grow evenly
+    either side; at Bold its letters sit 0.0323em right of the box's centre,
+    which is taken back so the two names coincide.
+  */
+  :global(.hero-name) {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
   }
-  .hero-intro span {
-    color: var(--color-paper);
+  :global(.hero-name-row) {
+    --em: calc((var(--gp-word-bottom, 60%) - var(--gp-word-top, 40%)) / 0.7393);
+    position: absolute;
+    left: 50%;
+    top: calc(var(--gp-word-top, 40%) + (0.7275 - 0.765) * var(--em));
+    translate: calc(-50% - 0.0323 * var(--em)) 0;
+    font-family: var(--font-display);
+    font-size: var(--em);
+    font-weight: 700;
+    line-height: 0.8;
+    letter-spacing: -0.05em;
+    font-kerning: normal;
+    white-space: nowrap;
+    color: var(--color-blue);
+  }
+  /* One name at a time: the live line while it follows the pointer, the
+     portal's own once it is back at Bold. */
+  :global(.hero-portal:not([data-name-live]) .hero-name) {
+    visibility: hidden;
+  }
+  :global(.hero-portal[data-name-live] [data-gp-field]) {
+    visibility: hidden;
+  }
+
+  /*
+    Inside the blue: the three lines that burn through, one after another.
+    The portal's content box drops its padding so the burn can pin the whole
+    screen, and the burn draws no background of its own, so the portal's blue
+    behind it carries on unbroken from the dive.
+  */
+  :global(.hero-portal [data-gp-content]) {
+    padding: 0;
+  }
+  :global(.hero-burn) {
+    --color-background: transparent;
+    --color-foreground: var(--color-paper);
+    --color-muted-foreground: rgb(255 255 255 / 0.6);
   }
 
   /* The portal's own caption, as one quiet line under the name. Picking a

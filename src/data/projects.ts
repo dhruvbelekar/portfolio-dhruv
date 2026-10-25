@@ -393,6 +393,47 @@ export const techStack: Tool[] = [
   { name: "Claude", mark: "claude.webp" },
 ];
 
+/*
+  Everything in one pile, for the skills section at the foot of the page: what
+  Dhruv does in blue, the tools in ink, and the craft that sits between them
+  in white.
+*/
+export const skills: { label: string; tone: "strong" | "dark" | "light" }[] = [
+  { label: "UI/UX Design", tone: "strong" },
+  { label: "Brand Identity", tone: "strong" },
+  { label: "Visual Design", tone: "strong" },
+  { label: "Experience Design", tone: "strong" },
+  { label: "Creative Direction", tone: "strong" },
+  { label: "Filmmaking", tone: "strong" },
+  { label: "Photography", tone: "strong" },
+  { label: "AI", tone: "strong" },
+  { label: "Figma", tone: "dark" },
+  { label: "Photoshop", tone: "dark" },
+  { label: "Illustrator", tone: "dark" },
+  { label: "Premiere Pro", tone: "dark" },
+  { label: "ChatGPT", tone: "dark" },
+  { label: "Codex", tone: "dark" },
+  { label: "Claude", tone: "dark" },
+  { label: "Claude Code", tone: "dark" },
+  { label: "Midjourney", tone: "dark" },
+  { label: "Runway", tone: "dark" },
+  { label: "Kling", tone: "dark" },
+  { label: "ElevenLabs", tone: "dark" },
+  { label: "Google Flow", tone: "dark" },
+  { label: "Wispr Flow", tone: "dark" },
+  { label: "User Research", tone: "light" },
+  { label: "Personas", tone: "light" },
+  { label: "Journey Mapping", tone: "light" },
+  { label: "Prototyping", tone: "light" },
+  { label: "Web Design", tone: "light" },
+  { label: "Social Media", tone: "light" },
+  { label: "Reels", tone: "light" },
+  { label: "Video Editing", tone: "light" },
+  { label: "2D Animation", tone: "light" },
+  { label: "Product Visuals", tone: "light" },
+  { label: "Storytelling", tone: "light" },
+];
+
 export const clientLogos = [
   { src: "/img/logos/logo-1.webp", width: 653, height: 122 },
   { src: "/img/logos/logo-2.webp", width: 584, height: 339 },

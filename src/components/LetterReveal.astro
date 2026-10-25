@@ -1,0 +1,120 @@
+---
+/*
+  A line that builds itself as it scrolls into view, the way the greeting and
+  the name arrive in the intro: each letter (or word) up out of its own blur,
+  from just below, one after the next. It is played by the scroll rather than
+  set off once, so it runs back if the reader scrolls up again.
+
+  It takes a slot rather than a string so any spans inside keep their colour;
+  the pieces are split out of the DOM after render.
+*/
+interface Props {
+  as?: "h1" | "h2" | "h3" | "p" | "div";
+  by?: "letters" | "words";
+  class?: string;
+  style?: string;
+}
+
+const { as = "h2", by = "letters", class: className, style } = Astro.props;
+const Tag = as;
+---
+
+<Tag data-letter-reveal={by} class={className} style={style}><slot /></Tag>
+
+<script>
+  import { splitChars, splitWords } from "../scripts/split-words";
+
+  // Where the line's top sits, as a share of the window, when it starts
+  // building and when it is whole. It finishes well before the middle of the
+  // screen, so it is never caught half made while being read.
+  const START = 0.95;
+  const END = 0.55;
+  // The share of the build each piece spends arriving. Wider than its own
+  // slot, so neighbours overlap and the line flows in rather than ticking.
+  const WINDOW = 0.45;
+  // How far a piece rises and how much blur it carries, in its own em, so the
+  // look is the same on a 40px line and a 150px one.
+  const RISE = 0.4;
+  const BLUR = 0.15;
+  // The share of the remaining distance covered each frame, so the steps of
+  // a mouse wheel become one glide.
+  const EASE = 0.16;
+
+  const smooth = (t: number) => t * t * (3 - 2 * t);
+  const clamp = (n: number) => Math.min(Math.max(n, 0), 1);
+
+  type Line = { el: HTMLElement; pieces: HTMLElement[]; current: number; drawn: number };
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const blocks = [...document.querySelectorAll<HTMLElement>("[data-letter-reveal]")];
+
+  // Hidden by script only, so with no JS or with motion turned down the words
+  // are simply there.
+  if (blocks.length && !reduced.matches) {
+    const lines: Line[] = blocks.map((el) => {
+      const byWords = el.dataset.letterReveal === "words";
+      // A heading split into letters would be spelled out by a screen reader,
+      // so it is named once instead.
+      if (!byWords) el.setAttribute("aria-label", el.textContent!.trim().replace(/\s+/g, " "));
+      const pieces = byWords ? splitWords(el, "lr-piece") : splitChars(el, "lr-piece");
+      pieces.forEach((p) => {
+        p.style.display = "inline-block";
+        if (!byWords) p.setAttribute("aria-hidden", "true");
+      });
+      return { el, pieces, current: 0, drawn: -1 };
+    });
+
+    const target = (el: HTMLElement) => {
+      const vh = window.innerHeight;
+      return clamp((vh * START - el.getBoundingClientRect().top) / (vh * (START - END)));
+    };
+
+    const draw = (line: Line) => {
+      if (line.current === line.drawn) return;
+      line.drawn = line.current;
+      const n = line.pieces.length;
+      line.pieces.forEach((piece, i) => {
+        const from = n > 1 ? (i * (1 - WINDOW)) / (n - 1) : 0;
+        const t = smooth(clamp((line.current - from) / WINDOW));
+        if (t >= 1) {
+          // At rest it is plain type again, with nothing left for the browser
+          // to composite.
+          piece.style.opacity = "";
+          piece.style.transform = "";
+          piece.style.filter = "";
+          return;
+        }
+        piece.style.opacity = String(t);
+        piece.style.transform = `translate3d(0, ${((1 - t) * RISE).toFixed(3)}em, 0)`;
+        piece.style.filter = t > 0 ? `blur(${((1 - t) * BLUR).toFixed(3)}em)` : "";
+      });
+    };
+
+    // A page opened partway down shows what is already on screen as it is,
+    // rather than building it in front of the reader.
+    for (const line of lines) {
+      line.current = target(line.el);
+      draw(line);
+    }
+
+    let frame = 0;
+    const tick = () => {
+      frame = 0;
+      let moving = false;
+      for (const line of lines) {
+        const goal = target(line.el);
+        line.current += (goal - line.current) * EASE;
+        if (Math.abs(goal - line.current) < 0.001) line.current = goal;
+        else moving = true;
+        draw(line);
+      }
+      if (moving) frame = requestAnimationFrame(tick);
+    };
+    const wake = () => {
+      if (!frame) frame = requestAnimationFrame(tick);
+    };
+
+    window.addEventListener("scroll", wake, { passive: true });
+    window.addEventListener("resize", wake);
+  }
+</script>

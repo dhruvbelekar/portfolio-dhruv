@@ -25,13 +25,21 @@ import HoverPeek from "./HoverPeek.astro";
 
 interface Props {
   class?: string;
+  /*
+    Set in the regular weight, a size down and a shade darker, for the
+    centred bio on the landing page. Bold at heading size read as shouting
+    there; the about page keeps the bold.
+  */
+  quiet?: boolean;
 }
-const { class: className = "" } = Astro.props;
+const { class: className = "", quiet = false } = Astro.props;
+const look = quiet ? "font-normal leading-snug text-ink-muted" : "font-bold leading-tight text-gray";
+const size = quiet ? "clamp(1.15rem, 0.95rem + 0.75vw, 1.6rem)" : "var(--type-heading)";
 ---
 
 <div
-  class={`font-bold leading-tight text-gray ${className}`}
-  style="font-family: var(--font-display); font-size: var(--type-heading);"
+  class={`${look} ${className}`}
+  style={`font-family: var(--font-display); font-size: ${size};`}
 >
   <p>Hi, I'm Dhruv</p>
   <div class="mt-4 space-y-4">

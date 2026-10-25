@@ -1,13 +1,16 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
+import { useAnimationFrame } from "framer-motion";
 import GlyphPortal from "@/components/ui/glyph-portal";
+import { VariableFontAndCursor } from "@/components/ui/variable-font-and-cursor";
+import { ScrollBurnText } from "@/components/ui/scroll-burn-text";
 
 /*
   The landing name as a way in. It opens as the hero always has, the name big
   and blue, and scrolling takes the camera into one of its letters until the
   screen is nothing but the blue, where the introduction is waiting.
 
-  The face and the introduction are written in the page and handed in as
-  slots, so the intro reaches them as it always has.
+  The face is written in the page and handed in as a slot, so the intro
+  reaches it as it always has.
 */
 const WORD = "dhruv belekar";
 const FAMILY = '"Inter Variable", Arial, sans-serif';
@@ -37,9 +40,133 @@ function anchorFor(frame: number, width: number) {
   return (frame / 2 + (FACE_RISE * em) / 2) / frame;
 }
 
-type Props = { front?: ReactNode; children?: ReactNode };
+/*
+  On the opening screen the name answers the pointer: thin with the cursor at
+  the top of the screen, heavy at the bottom. It is an ordinary line of type
+  laid exactly over the portal's own name, which waits underneath. The moment
+  the page scrolls the weight is drawn back to Bold, and at Bold the two are
+  the same letters in the same place, so the line hands over to the portal
+  without a seam and the dive runs on the Bold it measured.
+*/
+const LIGHTEST = 100;
+const HEAVIEST = 900;
+// How far into the dive, as the portal counts it, the weight is back at Bold:
+// early, while the opening layer it sits in has barely begun to fade, so the
+// handover to the portal's name is the same strength on both sides.
+const LET_GO = 0.02;
+// How long the name takes to wake into the pointer the first time it moves,
+// rather than snapping from Bold to wherever the cursor happens to be.
+const WAKE_MS = 500;
+/*
+  Inter has no slant, so the left and right half of the mapping holds the
+  optical size at 32, where type this large already sits: moving sideways
+  changes nothing, as asked.
+*/
+const OPTICAL = { name: "opsz", min: 32, max: 32 };
 
-export default function HeroPortal({ front, children }: Props) {
+const smooth = (t: number) => t * t * (3 - 2 * t);
+const clamp = (n: number) => Math.min(Math.max(n, 0), 1);
+
+/*
+  Where the k's centre sits from the centre of the line at a given weight, in
+  em, measured the way the browser sets the line: tracked and kerned. The
+  face follows the difference from Bold, so it stays perched on the k.
+*/
+const measure = (() => {
+  let context: CanvasRenderingContext2D | null = null;
+  return (weight: number) => {
+    context ??= document.createElement("canvas").getContext("2d");
+    if (!context) return 0;
+    context.font = `${weight} 100px "Inter Variable"`;
+    context.fontKerning = "normal";
+    if ("letterSpacing" in context) context.letterSpacing = `${TRACKING * 100}px`;
+    const head = context.measureText("dhruv bele").width;
+    const k = context.measureText("k").width;
+    const line = context.measureText(WORD).width;
+    return (head + k / 2 - line / 2) / 100;
+  };
+})();
+
+function LiveName({ progress }: { progress: RefObject<number> }) {
+  const frameRef = useRef<HTMLDivElement>(null);
+  const [hold, setHold] = useState(1);
+  const holdRef = useRef(1);
+  const woken = useRef(0);
+  const moved = useRef(false);
+  const restK = useRef<number | null>(null);
+
+  useEffect(() => {
+    const wake = () => {
+      moved.current = true;
+      window.removeEventListener("mousemove", wake);
+    };
+    window.addEventListener("mousemove", wake, { passive: true });
+    const frame = frameRef.current;
+    return () => {
+      window.removeEventListener("mousemove", wake);
+      // Gone, it leaves the portal's own name showing and the face at rest.
+      const section = frame?.closest<HTMLElement>(".hero-portal");
+      section?.removeAttribute("data-name-live");
+      section?.style.removeProperty("--face-shift");
+    };
+  }, []);
+
+  useAnimationFrame((_, delta) => {
+    const section = frameRef.current?.closest<HTMLElement>(".hero-portal");
+    if (!section) return;
+    if (moved.current) woken.current = Math.min(1, woken.current + delta / WAKE_MS);
+
+    // Held at Bold until the pointer first moves, and again as the page
+    // scrolls into the dive.
+    const scrolled = smooth(clamp((progress.current ?? 0) / LET_GO));
+    const next = Math.round(Math.max(scrolled, 1 - smooth(woken.current)) * 1000) / 1000;
+    if (next !== holdRef.current) {
+      holdRef.current = next;
+      setHold(next);
+    }
+    // While the line is live the portal's own name is hidden under it.
+    section.toggleAttribute("data-name-live", next < 1);
+
+    const line = frameRef.current?.querySelector<HTMLElement>(".hero-name-line");
+    // Read back as the browser stores it, which may swap the quotes.
+    const match = line?.style.fontVariationSettings.match(/["']wght["']\s+([\d.]+)/);
+    const weight = next < 1 && match ? Number(match[1]) : WEIGHT;
+    restK.current ??= measure(WEIGHT);
+    const em = parseFloat(getComputedStyle(line ?? section).fontSize) || 0;
+    const shift = (measure(weight) - restK.current) * em;
+    section.style.setProperty("--face-shift", `${shift.toFixed(2)}px`);
+  });
+
+  const mapping = {
+    x: OPTICAL,
+    y: {
+      name: "wght",
+      min: LIGHTEST + (WEIGHT - LIGHTEST) * hold,
+      max: HEAVIEST + (WEIGHT - HEAVIEST) * hold,
+    },
+  };
+
+  return (
+    <div ref={frameRef} className="hero-name" aria-hidden="true">
+      <div className="hero-name-row">
+        <VariableFontAndCursor
+          label={WORD}
+          className="hero-name-line"
+          fontVariationMapping={mapping}
+          containerRef={frameRef as RefObject<HTMLDivElement>}
+        />
+      </div>
+    </div>
+  );
+}
+
+/*
+  `intro` is what waits inside the blue: a few short lines, each coming up out
+  of the distance and burning off to uncover the next.
+*/
+type Props = { front?: ReactNode; intro: string[] };
+
+export default function HeroPortal({ front, intro }: Props) {
   /*
     The portal measures its letters once, when it mounts, and stays still if
     the face it was given has not arrived yet. Inter is preloaded and usually
@@ -48,6 +175,23 @@ export default function HeroPortal({ front, children }: Props) {
   */
   const [mount, setMount] = useState(0);
   const [anchor, setAnchor] = useState(0.46);
+  const progress = useRef(0);
+  // Only where there is a pointer to follow, and not where motion was turned
+  // down. Decided after hydration, so the page is served with the portal's
+  // own name and nothing changes for touch screens.
+  const [live, setLive] = useState(false);
+  useEffect(() => {
+    const fine = window.matchMedia("(pointer: fine)");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setLive(fine.matches && !reduced.matches);
+    sync();
+    fine.addEventListener("change", sync);
+    reduced.addEventListener("change", sync);
+    return () => {
+      fine.removeEventListener("change", sync);
+      reduced.removeEventListener("change", sync);
+    };
+  }, []);
 
   useEffect(() => {
     const measure = () => {
@@ -111,9 +255,19 @@ export default function HeroPortal({ front, children }: Props) {
           }}
         />
       }
-      front={front}
+      onProgress={(p) => {
+        progress.current = p;
+      }}
+      front={
+        <>
+          {live && <LiveName progress={progress} />}
+          {front}
+        </>
+      }
     >
-      {children}
+      {/* A screen and a quarter of scroll per line, down from the component's
+          1.7: long enough to read each one, short enough not to drag. */}
+      <ScrollBurnText sections={intro} runway="125vh" className="hero-burn" />
     </GlyphPortal>
   );
 }
