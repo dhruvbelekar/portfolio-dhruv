@@ -81,7 +81,6 @@ export function ScrollBurnText({
 }: ScrollBurnTextProps) {
   const prefersReducedMotion = useReducedMotion();
   const runwayRef = React.useRef<HTMLDivElement>(null);
-  const counterRef = React.useRef<HTMLDivElement>(null);
   const hintRef = React.useRef<HTMLDivElement>(null);
   const blockRefs = React.useRef<(HTMLParagraphElement | null)[]>([]);
 
@@ -133,7 +132,6 @@ export function ScrollBurnText({
     // rest hold at 0 or 1, and writing those every frame would recalculate a few
     // hundred glyph opacities for nothing.
     const burnt: number[] = [];
-    let active = -1;
     let raf = 0;
 
     const update = () => {
@@ -150,13 +148,11 @@ export function ScrollBurnText({
       // its burn would start, so the piece ends on that copy whole rather than
       // on a frame of ash.
       const t = -LEAD + p * (count - 1 + LEAD + BURN_AT);
-      let front = 0;
 
       blockRefs.current.forEach((block, i) => {
         const wrap = block?.parentElement;
         if (!block || !wrap) return;
         const q = t - i;
-        if (q > 1) front = Math.min(i + 1, count - 1);
 
         const alpha =
           clamp01((q + LEAD + OPEN) / 0.45) *
@@ -197,12 +193,6 @@ export function ScrollBurnText({
       // Off by the time the first block is anywhere near readable.
       if (hintRef.current) {
         hintRef.current.style.opacity = `${clamp01(1 - p / 0.08)}`;
-      }
-      if (active !== front) {
-        active = front;
-        if (counterRef.current) {
-          counterRef.current.textContent = `${String(front + 1).padStart(2, "0")} / ${String(count).padStart(2, "0")}`;
-        }
       }
     };
 
@@ -264,11 +254,6 @@ export function ScrollBurnText({
         className="w-full"
       >
         <div className="sticky top-0 h-screen w-full overflow-hidden bg-background">
-          <div
-            ref={counterRef}
-            className="pointer-events-none absolute bottom-5 left-6 z-10 text-[0.65rem] font-medium uppercase tracking-[0.22em] tabular-nums text-muted-foreground"
-          />
-
           {hint ? (
             <div
               ref={hintRef}

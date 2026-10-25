@@ -73,10 +73,6 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
           ))
         }
       </div>
-
-      <p class="tm-count" aria-hidden="true">
-        <span data-tm-index>01</span> / {String(quotes.length).padStart(2, "0")}
-      </p>
     </div>
   </div>
 </section>
@@ -245,19 +241,11 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
     }
   }
 
-  .tm-count {
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    color: var(--color-ink-muted);
-    font-variant-numeric: tabular-nums;
-  }
-
   /*
     The way in. While the section is coming up the page, the script sets one
     value per part, 0 to 1, and each part rises into place on its own: the
-    faces first, then the quote out of a blur, the name, the numbers and the
-    counter. Only the quote on stage is touched; the rest are hidden anyway.
+    faces first, then the quote out of a blur, the name and the numbers.
+    Only the quote on stage is touched; the rest are hidden anyway.
   */
   .tm[data-entering] .tm-people {
     opacity: var(--tm-in-people);
@@ -276,9 +264,6 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
     opacity: var(--tm-in-metrics);
     transform: translate3d(0, calc((1 - var(--tm-in-metrics)) * 32px), 0);
   }
-  .tm[data-entering] .tm-count {
-    opacity: var(--tm-in-count);
-  }
 
   /* With motion turned down the quotes simply stack, one after another. */
   @media (prefers-reduced-motion: reduce) {
@@ -290,8 +275,7 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
       height: auto;
       padding-top: 3rem;
     }
-    .tm-people,
-    .tm-count {
+    .tm-people {
       display: none;
     }
     .tm-stage {
@@ -325,7 +309,7 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
   // Where the section's top sits, as a share of the window, when the reveal
   // starts. It is complete the moment the frame pins.
   const ENTER_FROM = 0.75;
-  // The reveal in order: faces, quote, name, numbers, counter. Each part
+  // The reveal in order: faces, quote, name, numbers. Each part
   // plays across its own share of the way in, overlapping the next, so the
   // stage fills one piece at a time.
   const STAGES: [string, number, number][] = [
@@ -333,7 +317,6 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
     ["--tm-in-text", 0.15, 0.7],
     ["--tm-in-who", 0.4, 0.85],
     ["--tm-in-metrics", 0.55, 1],
-    ["--tm-in-count", 0.65, 1],
   ];
   // How far in the numbers have to be before they start counting.
   const COUNT_AT = 0.55;
@@ -343,7 +326,6 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
   document.querySelectorAll<HTMLElement>("[data-tm]").forEach((section) => {
     const quotes = [...section.querySelectorAll<HTMLElement>("[data-tm-quote]")];
     const people = [...section.querySelectorAll<HTMLButtonElement>("[data-tm-person]")];
-    const counter = section.querySelector("[data-tm-index]");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     const count = quotes.length;
     let active = -1;
@@ -400,7 +382,6 @@ const quotes = order.map((name) => testimonials.find((t) => t.name === name)!);
         q.setAttribute("aria-hidden", i === index ? "false" : "true");
       });
       people.forEach((p, i) => p.setAttribute("aria-selected", i === index ? "true" : "false"));
-      if (counter) counter.textContent = String(index + 1).padStart(2, "0");
       if (showing) countUp(quotes[index]);
     };
 
