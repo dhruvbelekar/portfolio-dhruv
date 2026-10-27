@@ -63,6 +63,10 @@ const BESIDE = 32;
 const ABOVE = 30;
 // Path length, in px, between the points the line is sampled at.
 const STEP = 4;
+// The least scroll, in px, each px of line takes to draw, so a sweep across
+// the page, which goes no further down, still draws over the scroll rather
+// than in one go.
+const PACE = 2;
 
 const clamp = (n: number) => Math.min(Math.max(n, 0), 1);
 const smooth = (t: number) => t * t * (3 - 2 * t);
@@ -140,6 +144,7 @@ type Layout = {
   height: number;
   d: string;
   stroke: number;
+  stops: { x: number; y: number }[];
   cards: { top: number; left: number; width: number }[];
 };
 
@@ -225,6 +230,7 @@ export default function ExperienceTrail({ roles }: { roles: TrailRole[] }) {
         height,
         d: draw(sx, sy, ox, tail),
         stroke,
+        stops,
         cards: stops.map((s, i) => ({
           top: tops[i],
           // On the inside of the swing, right up against the line: to its
@@ -270,12 +276,12 @@ export default function ExperienceTrail({ roles }: { roles: TrailRole[] }) {
     (y: number) => {
       const r = reach.current;
       if (r) {
-        // The line loops back up on itself, so it is sampled once into the
-        // furthest point down it has reached by each length; it is drawn as
-        // far as the last length whose furthest point is above the reading line.
+        // The table gives, for each length, the reading line it is drawn at;
+        // between two samples the length is eased across, so it never steps.
         const { table, total } = r;
         let length = 0;
-        if (y >= table[0]) {
+        if (y >= table[table.length - 1]) length = total;
+        else if (y > table[0]) {
           let lo = 0;
           let hi = table.length - 1;
           while (lo < hi) {
@@ -283,7 +289,8 @@ export default function ExperienceTrail({ roles }: { roles: TrailRole[] }) {
             if (table[mid] <= y) lo = mid;
             else hi = mid - 1;
           }
-          length = lo * STEP;
+          const span = table[lo + 1] - table[lo];
+          length = (lo + (span > 0 ? (y - table[lo]) / span : 0)) * STEP;
         }
         drawn.set(Math.min(length / total, 1));
       }
@@ -309,13 +316,42 @@ export default function ExperienceTrail({ roles }: { roles: TrailRole[] }) {
     const path = pathRef.current;
     const wrap = wrapRef.current;
     if (!layout || !path || !wrap) return;
+    /*
+      The line loops back up on itself and sweeps flat across the page, so it
+      cannot simply be drawn down to the reading line: a sweep would come in
+      all at once. Each length is given the reading line it is drawn at
+      instead. Between one company's stop and the next, every px of line
+      takes a little scroll, plus as much again as it goes further down, and
+      the whole is fitted so the line still reaches each stop as the reading
+      line does.
+    */
     const total = path.getTotalLength();
     const samples = Math.ceil(total / STEP) + 1;
-    const table = new Float32Array(samples);
-    let furthest = -Infinity;
+    const furthest = new Float32Array(samples);
+    const anchors = [0];
+    const near = layout.stops.slice(1).map(() => ({ at: 0, off: Infinity }));
+    let deepest = -Infinity;
     for (let i = 0; i < samples; i++) {
-      furthest = Math.max(furthest, path.getPointAtLength(Math.min(i * STEP, total)).y);
-      table[i] = furthest;
+      const p = path.getPointAtLength(Math.min(i * STEP, total));
+      deepest = Math.max(deepest, p.y);
+      furthest[i] = deepest;
+      layout.stops.slice(1).forEach((s, k) => {
+        const off = Math.hypot(p.x - s.x, p.y - s.y);
+        if (off < near[k].off) near[k] = { at: i, off };
+      });
+    }
+    anchors.push(...near.map((n) => n.at), samples - 1);
+    anchors.sort((a, b) => a - b);
+    const table = new Float32Array(samples);
+    table[0] = furthest[0];
+    for (let a = 0; a + 1 < anchors.length; a++) {
+      const [from, to] = [anchors[a], anchors[a + 1]];
+      if (to <= from) continue;
+      const step = (i: number) => furthest[i] - furthest[i - 1] + PACE * STEP;
+      let sum = 0;
+      for (let i = from + 1; i <= to; i++) sum += step(i);
+      const fit = (furthest[to] - furthest[from]) / sum;
+      for (let i = from + 1; i <= to; i++) table[i] = table[i - 1] + step(i) * fit;
     }
     reach.current = { table, total };
     items.current = [...wrap.querySelectorAll<HTMLElement>("[data-trail-card]")].flatMap((card, i) =>
