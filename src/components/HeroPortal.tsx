@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode, type RefObject } from "rea
 import { useAnimationFrame } from "framer-motion";
 import GlyphPortal from "@/components/ui/glyph-portal";
 import { VariableFontAndCursor } from "@/components/ui/variable-font-and-cursor";
+import { useMousePositionRef } from "@/components/hooks/use-mouse-position-ref";
 import { ScrollBurnText } from "@/components/ui/scroll-burn-text";
 
 /*
@@ -94,6 +95,14 @@ function LiveName({ progress }: { progress: RefObject<number> }) {
   const woken = useRef(0);
   const moved = useRef(false);
   const restK = useRef<number | null>(null);
+  // The crosshair through the pointer, and where it is, read out in the corner.
+  const pointer = useMousePositionRef(frameRef as RefObject<HTMLDivElement>);
+  const acrossRef = useRef<HTMLDivElement>(null);
+  const downRef = useRef<HTMLDivElement>(null);
+  const markRef = useRef<HTMLDivElement>(null);
+  const readXRef = useRef<HTMLSpanElement>(null);
+  const readYRef = useRef<HTMLSpanElement>(null);
+  const [inside, setInside] = useState(true);
 
   useEffect(() => {
     const wake = () => {
@@ -101,9 +110,16 @@ function LiveName({ progress }: { progress: RefObject<number> }) {
       window.removeEventListener("mousemove", wake);
     };
     window.addEventListener("mousemove", wake, { passive: true });
+    // The crosshair goes when the pointer leaves the window.
+    const leave = () => setInside(false);
+    const enter = () => setInside(true);
+    document.documentElement.addEventListener("mouseleave", leave);
+    document.documentElement.addEventListener("mouseenter", enter);
     const frame = frameRef.current;
     return () => {
       window.removeEventListener("mousemove", wake);
+      document.documentElement.removeEventListener("mouseleave", leave);
+      document.documentElement.removeEventListener("mouseenter", enter);
       // Gone, it leaves the portal's own name showing and the face at rest.
       const section = frame?.closest<HTMLElement>(".hero-portal");
       section?.removeAttribute("data-name-live");
@@ -135,6 +151,13 @@ function LiveName({ progress }: { progress: RefObject<number> }) {
     const em = parseFloat(getComputedStyle(line ?? section).fontSize) || 0;
     const shift = (measure(weight) - restK.current) * em;
     section.style.setProperty("--face-shift", `${shift.toFixed(2)}px`);
+
+    const { x, y } = pointer.current;
+    if (acrossRef.current) acrossRef.current.style.transform = `translate3d(0, ${y}px, 0)`;
+    if (downRef.current) downRef.current.style.transform = `translate3d(${x}px, 0, 0)`;
+    if (markRef.current) markRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    if (readXRef.current) readXRef.current.textContent = String(Math.round(x));
+    if (readYRef.current) readYRef.current.textContent = String(Math.round(y));
   });
 
   const mapping = {
@@ -148,6 +171,20 @@ function LiveName({ progress }: { progress: RefObject<number> }) {
 
   return (
     <div ref={frameRef} className="hero-name" aria-hidden="true">
+      {/* Shown as the name wakes to the pointer, and gone as it lets go. */}
+      <div className="hero-crosshair" style={{ opacity: inside ? 1 - hold : 0 }}>
+        <div ref={acrossRef} className="hero-crosshair-across" />
+        <div ref={downRef} className="hero-crosshair-down" />
+        <div ref={markRef} className="hero-crosshair-mark" />
+        <div className="hero-crosshair-read">
+          <span>
+            x: <span ref={readXRef}>0</span>
+          </span>
+          <span>
+            y: <span ref={readYRef}>0</span>
+          </span>
+        </div>
+      </div>
       <div className="hero-name-row">
         <VariableFontAndCursor
           label={WORD}

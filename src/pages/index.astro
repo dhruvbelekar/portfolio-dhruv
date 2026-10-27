@@ -314,6 +314,60 @@ const moreProjects = projects.filter((p) => !highlightSlugs.includes(p.slug));
     white-space: nowrap;
     color: var(--color-blue);
   }
+  /*
+    The crosshair: a hairline across and one down through the pointer, a
+    small square where they meet, and where that is, in px, in the corner.
+  */
+  :global(.hero-crosshair) {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    transition: opacity 0.3s ease;
+  }
+  :global(.hero-crosshair-across),
+  :global(.hero-crosshair-down),
+  :global(.hero-crosshair-mark) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    will-change: transform;
+  }
+  :global(.hero-crosshair-across) {
+    width: 100%;
+    height: 1px;
+    margin-top: -0.5px;
+    background: color-mix(in srgb, var(--color-ink-muted) 45%, transparent);
+  }
+  :global(.hero-crosshair-down) {
+    width: 1px;
+    height: 100%;
+    margin-left: -0.5px;
+    background: color-mix(in srgb, var(--color-ink-muted) 45%, transparent);
+  }
+  :global(.hero-crosshair-mark) {
+    width: 10px;
+    height: 10px;
+    margin: -5px 0 0 -5px;
+    background: var(--color-blue);
+  }
+  :global(.hero-crosshair-read) {
+    position: absolute;
+    left: 1.5rem;
+    bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink-muted);
+  }
+  @media (min-width: 640px) {
+    :global(.hero-crosshair-read) {
+      left: 2.5rem;
+      bottom: 2.5rem;
+    }
+  }
+
   /* One name at a time: the live line while it follows the pointer, the
      portal's own once it is back at Bold. */
   :global(.hero-portal:not([data-name-live]) .hero-name) {
